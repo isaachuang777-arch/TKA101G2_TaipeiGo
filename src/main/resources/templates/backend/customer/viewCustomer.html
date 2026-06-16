@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員詳細 - TaipeiGo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --sidebar-width: 240px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+        }
+
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2236;
+        }
+
+        .topbar-title span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+
+        .content-area {
+            padding: 32px;
+            flex: 1;
+        }
+
+        .breadcrumb-custom {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumb-custom a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .breadcrumb-custom a:hover {
+            color: var(--primary);
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, #1a2236, #243653);
+            color: #fff;
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(26,34,54,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .profile-main {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .avatar-lg {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .profile-name {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .profile-sub {
+            color: rgba(255,255,255,0.72);
+            font-size: 0.9rem;
+        }
+
+        .id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.16);
+            color: #fff;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .info-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e8edf2;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .info-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 700;
+            color: #1e293b;
+            background: #fafbfc;
+        }
+
+        .info-card-body {
+            padding: 20px 24px;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            width: 120px;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: #1e293b;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-active {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .status-inactive {
+            background: #fff1f2;
+            color: #dc2626;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-active .status-dot {
+            background: #16a34a;
+        }
+
+        .status-inactive .status-dot {
+            background: #dc2626;
+        }
+
+        .sex-badge {
+            font-size: 0.78rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .sex-m {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .sex-f {
+            background: #fdf4ff;
+            color: #a855f7;
+        }
+
+        .action-area {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-back {
+            background: #fff;
+            color: #64748b;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-back:hover {
+            border-color: #94a3b8;
+            color: #374151;
+        }
+
+        .btn-edit-custom {
+            background: #f97316;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-edit-custom:hover {
+            background: #ea6c06;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-label {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+<div class="main-wrap">
+
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="bi bi-person-lines-fill me-2" style="color:var(--primary);"></i>
+            會員詳細資料
+            <span th:text="${'/ ' + customerVO.custName}">/ Detail</span>
+        </div>
+
+        <div class="text-secondary small">
+            <i class="bi bi-eye me-1"></i>
+            查看模式
+        </div>
+    </header>
+
+    <main class="content-area">
+
+        <div class="breadcrumb-custom">
+            <a th:href="@{/customer/list}">
+                <i class="bi bi-house-door"></i>
+                會員列表
+            </a>
+            <i class="bi bi-chevron-right" style="font-size:0.7rem;"></i>
+            <span th:text="${customerVO.custName}">會員詳細</span>
+        </div>
+
+        <section class="profile-card">
+            <div class="profile-main">
+                <div class="avatar-lg" th:text="${#strings.substring(customerVO.custName, 0, 1)}">會</div>
+
+                <div>
+                    <div class="profile-name" th:text="${customerVO.custName}">會員姓名</div>
+                    <div class="profile-sub">
+                        <i class="bi bi-at"></i>
+                        <span th:text="${customerVO.custAccount}">account</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="id-badge">
+                <i class="bi bi-hash"></i>
+                <span th:text="${'會員編號：' + customerVO.custId}">會員編號</span>
+            </div>
+        </section>
+
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <i class="bi bi-person-circle me-2" style="color:var(--primary);"></i>
+                        基本資料
+                    </div>
+
+                    <div class="info-card-body">
+
+                        <div class="info-row">
+                            <div class="info-label">會員編號</div>
+                            <div class="info-value" th:text="${customerVO.custId}"></div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">姓名</div>
+                            <div class="info-value" th:text="${customerVO.custName}"></div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">性別</div>
+                            <div class="info-value">
+                                <span th:if="${customerVO.custSex == 'm' or customerVO.custSex == 'M'}"
+                                      class="sex-badge sex-m">男</span>
+                                <span th:if="${customerVO.custSex == 'f' or customerVO.custSex == 'F'}"
+                                      class="sex-badge sex-f">女</span>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">生日</div>
+                            <div class="info-value" th:text="${customerVO.custBirthday}"></div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">身分證字號</div>
+                            <div class="info-value" th:text="${customerVO.custIdCard}"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <i class="bi bi-telephone me-2" style="color:var(--primary);"></i>
+                        聯絡資訊
+                    </div>
+
+                    <div class="info-card-body">
+
+                        <div class="info-row">
+                            <div class="info-label">手機</div>
+                            <div class="info-value" th:text="${customerVO.custTel}"></div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">Email</div>
+                            <div class="info-value" th:text="${customerVO.custEmail}"></div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">地址</div>
+                            <div class="info-value"
+                                 th:text="${customerVO.custAddress != null and customerVO.custAddress != '' ? customerVO.custAddress : '未填寫'}">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <i class="bi bi-shield-lock me-2" style="color:var(--primary);"></i>
+                        帳號資訊
+                    </div>
+
+                    <div class="info-card-body">
+
+                        <div class="info-row">
+                            <div class="info-label">登入帳號</div>
+                            <div class="info-value" th:text="${customerVO.custAccount}"></div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">帳號狀態</div>
+                            <div class="info-value">
+                                <span th:if="${customerVO.custStatus == 1}" class="status-badge status-active">
+                                    <span class="status-dot"></span>
+                                    正常
+                                </span>
+
+                                <span th:if="${customerVO.custStatus == 0}" class="status-badge status-inactive">
+                                    <span class="status-dot"></span>
+                                    停權
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="action-area">
+            <a class="btn-back" th:href="@{/customer/list}">
+                <i class="bi bi-arrow-left"></i>
+                返回列表
+            </a>
+
+            <a class="btn-edit-custom" th:href="@{/customer/edit(id=${customerVO.custId})}">
+                <i class="bi bi-pencil-square"></i>
+                修改會員
+            </a>
+        </div>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

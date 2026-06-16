@@ -48,7 +48,7 @@ public class CustomerController {
         model.addAttribute("totalPages", customerPage.getTotalPages());
         model.addAttribute("totalItems", customerPage.getTotalElements());
 
-        return "back-end/customer/listAllCustomer";
+        return "backend/customer/listAllCustomer";
     }
 
     // =========================
@@ -59,7 +59,7 @@ public class CustomerController {
     	
     	model.addAttribute("activePage", "customer");
         model.addAttribute("customerVO", new CustomerVO());
-        return "back-end/customer/addCustomer";
+        return "backend/customer/addCustomer";
     }
 
     // =========================
@@ -73,7 +73,7 @@ public class CustomerController {
 
         if(result.hasErrors()) {
         	model.addAttribute("customerVO", customerVO);
-            return "back-end/customer/addCustomer";
+            return "backend/customer/addCustomer";
         }
 
         customerService.addCustomer(customerVO);
@@ -94,7 +94,7 @@ public class CustomerController {
         model.addAttribute("activePage", "customer");
         model.addAttribute("customerVO", customerVO);
 
-        return "back-end/customer/updateCustomer";
+        return "backend/customer/updateCustomer";
     }
 
     // =========================
@@ -131,7 +131,7 @@ public class CustomerController {
         model.addAttribute("activePage", "customer");
         model.addAttribute("customerVO", customerVO);
 
-        return "back-end/customer/viewCustomer";
+        return "backend/customer/viewCustomer";
     }
     
     

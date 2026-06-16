@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增會員 - TaipeiGo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0a58ca;
+            --sidebar-bg: #1a2236;
+            --sidebar-width: 240px;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+        }
+
+
+        .main-wrap { margin-left: var(--sidebar-width); min-height: 100vh; display: flex; flex-direction: column; }
+
+        .topbar { background: #fff; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
+        .topbar-title { font-size: 1.1rem; font-weight: 700; color: #1a2236; }
+        .topbar-title span { color: #94a3b8; font-weight: 400; font-size: 0.85rem; margin-left: 8px; }
+
+        .content-area { padding: 32px; flex: 1; }
+
+        /* Breadcrumb */
+        .breadcrumb-custom { font-size: 0.82rem; color: #94a3b8; margin-bottom: 20px; display: flex; align-items: center; gap: 6px; }
+        .breadcrumb-custom a { color: #64748b; text-decoration: none; }
+        .breadcrumb-custom a:hover { color: var(--primary); }
+
+        /* Form Card */
+        .form-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf2;
+            overflow: hidden;
+            max-width: 860px;
+        }
+
+        .form-card-header {
+            padding: 22px 28px;
+            border-bottom: 1px solid #f1f5f9;
+            background: #fafbfc;
+        }
+
+        .form-card-header h5 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .form-card-header p {
+            margin: 4px 0 0;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .form-card-body { padding: 28px; }
+
+        /* Section Divider */
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 20px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i { color: var(--primary); font-size: 0.9rem; }
+
+        /* Form Label */
+        .form-label {
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .required-mark { color: #ef4444; margin-left: 2px; }
+
+        /* Form Control */
+        .form-control, .form-select {
+            border-radius: 9px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 0.88rem;
+            padding: 9px 13px;
+            color: #1e293b;
+            transition: border .18s, box-shadow .18s;
+            background: #fff;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+            outline: none;
+        }
+
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+        }
+
+        .form-control.is-valid {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34,197,94,0.08);
+        }
+
+        /* Input Group Icon */
+        .input-group-text {
+            border-radius: 9px 0 0 9px;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-right: none;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .input-group .form-control { border-radius: 0 9px 9px 0; }
+
+        /* Password Strength */
+        .password-hint {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: #e2e8f0;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 2px;
+            width: 0;
+            transition: width .3s, background .3s;
+        }
+
+        .strength-text {
+            font-size: 0.72rem;
+            margin-top: 3px;
+            font-weight: 600;
+        }
+
+        /* Validation feedback */
+        .invalid-feedback-custom {
+            font-size: 0.77rem;
+            color: #ef4444;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .valid-feedback-custom {
+            font-size: 0.77rem;
+            color: #16a34a;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Error Summary */
+        .error-summary {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 22px;
+            font-size: 0.85rem;
+            color: #be123c;
+        }
+
+        .error-summary .error-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .error-summary ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .error-summary ul li { margin-bottom: 2px; }
+
+        /* Buttons */
+        .btn-submit {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 28px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background .2s, transform .1s;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-submit:active { transform: translateY(0); }
+
+        .btn-cancel {
+            background: #fff;
+            color: #64748b;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .2s;
+        }
+
+        .btn-cancel:hover { border-color: #94a3b8; color: #374151; }
+
+        /* Toggle password visibility */
+        .toggle-pw {
+            cursor: pointer;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-left: none;
+            border-radius: 0 9px 9px 0;
+            padding: 0 12px;
+            color: #94a3b8;
+            transition: color .18s;
+        }
+
+        .toggle-pw:hover { color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-wrap { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+<!-- Main -->
+<div class="main-wrap">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="bi bi-person-plus me-2" style="color:var(--primary);"></i>
+            新增會員
+            <span>/ 填寫會員資料</span>
+        </div>
+    </header>
+
+    <div class="content-area">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-custom">
+            <a href="/customer/list"><i class="bi bi-house-door"></i> 會員列表</a>
+            <i class="bi bi-chevron-right" style="font-size:0.7rem;"></i>
+            <span>新增會員</span>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-header">
+                <h5><i class="bi bi-person-plus-fill me-2" style="color:var(--primary);"></i>新增會員資料</h5>
+                <p>請填寫以下欄位，帶有 <span style="color:#ef4444;">*</span> 的欄位為必填。</p>
+            </div>
+
+            <div class="form-card-body">
+
+                <!-- Error Summary (Thymeleaf) -->
+                <div class="error-summary"
+     				 th:if="${not #lists.isEmpty(#fields.errors())}">
+                    <div class="error-title">
+                        <i class="bi bi-exclamation-circle-fill"></i> 請修正以下錯誤：
+                    </div>
+                    <ul>
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
+                <form th:action="@{/customer/insert}" method="post" th:object="${customerVO}"
+                      id="addForm" novalidate>
+
+                    <!-- Section: 基本資料 -->
+                    <div class="section-title"><i class="bi bi-person-circle"></i> 基本資料</div>
+
+                    <div class="row g-3 mb-4">
+
+                        <!-- 姓名 -->
+                        <div class="col-md-6">
+                            <label class="form-label">姓名 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" th:field="*{custName}"
+                                       th:classappend="${#fields.hasErrors('custName')} ? 'is-invalid'"
+                                       placeholder="請輸入真實姓名" id="custName" maxlength="20">
+                            </div>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custName')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custName}"></span>
+                            </div>
+                            <div class="invalid-feedback-custom" id="nameError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> 姓名長度需 2~20 字元
+                            </div>
+                        </div>
+
+                        <!-- 性別 -->
+                        <div class="col-md-6">
+                            <label class="form-label">性別 <span class="required-mark">*</span></label>
+                            <select class="form-select" th:field="*{custSex}"
+                                    th:classappend="${#fields.hasErrors('custSex')} ? 'is-invalid'">
+                                <option value="">-- 請選擇 --</option>
+                                <option value="m">男 (Male)</option>
+                                <option value="f">女 (Female)</option>
+                            </select>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custSex')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custSex}"></span>
+                            </div>
+                        </div>
+
+                        <!-- 生日 -->
+                        <div class="col-md-6">
+                            <label class="form-label">生日 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                <input type="date" class="form-control" th:field="*{custBirthday}"
+                                       th:classappend="${#fields.hasErrors('custBirthday')} ? 'is-invalid'"
+                                       id="custBirthday">
+                            </div>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custBirthday')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custBirthday}"></span>
+                            </div>
+                            <div class="invalid-feedback-custom" id="birthdayError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> 生日必須是過去的日期
+                            </div>
+                        </div>
+
+                        <!-- 身分證 -->
+                        <div class="col-md-6">
+                            <label class="form-label">身分證字號 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-credit-card-2-front"></i></span>
+                                <input type="text" class="form-control" th:field="*{custIdCard}"
+                                       th:classappend="${#fields.hasErrors('custIdCard')} ? 'is-invalid'"
+                                       placeholder="A123456789" id="custIdCard"
+                                       maxlength="10" style="text-transform:uppercase;">
+                            </div>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custIdCard')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custIdCard}"></span>
+                            </div>
+                            <div class="invalid-feedback-custom" id="idCardError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> 身分證格式錯誤（格式：英文大寫 + 9 碼數字）
+                            </div>
+                            <div class="valid-feedback-custom" id="idCardOk" style="display:none;">
+                                <i class="bi bi-check-circle"></i> 格式正確
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Section: 聯絡資訊 -->
+                    <div class="section-title"><i class="bi bi-telephone"></i> 聯絡資訊</div>
+
+                    <div class="row g-3 mb-4">
+
+                        <!-- 手機 -->
+                        <div class="col-md-6">
+                            <label class="form-label">手機號碼 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                <input type="tel" class="form-control" th:field="*{custTel}"
+                                       th:classappend="${#fields.hasErrors('custTel')} ? 'is-invalid'"
+                                       placeholder="09xxxxxxxx" id="custTel" maxlength="10">
+                            </div>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custTel')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custTel}"></span>
+                            </div>
+                            <div class="invalid-feedback-custom" id="telError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> 格式錯誤，請輸入 09 開頭共 10 碼
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label">Email <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" th:field="*{custEmail}"
+                                       th:classappend="${#fields.hasErrors('custEmail')} ? 'is-invalid'"
+                                       placeholder="example@email.com" id="custEmail">
+                            </div>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custEmail')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custEmail}"></span>
+                            </div>
+                            <div class="invalid-feedback-custom" id="emailError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> Email 格式錯誤，必須包含 @ 符號
+                            </div>
+                        </div>
+
+                        <!-- 地址 -->
+                        <div class="col-12">
+                            <label class="form-label">地址</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                <input type="text" class="form-control" th:field="*{custAddress}"
+                                       placeholder="請輸入通訊地址（選填）" maxlength="200">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Section: 帳號設定 -->
+                    <div class="section-title"><i class="bi bi-shield-lock"></i> 帳號設定</div>
+
+                    <div class="row g-3 mb-4">
+
+                        <!-- 帳號 -->
+                        <div class="col-md-6">
+                            <label class="form-label">帳號 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-at"></i></span>
+                                <input type="text" class="form-control" th:field="*{custAccount}"
+                                       th:classappend="${#fields.hasErrors('custAccount')} ? 'is-invalid'"
+                                       placeholder="6~20 個英文或數字" id="custAccount" maxlength="20">
+                            </div>
+                            <div class="password-hint">只能包含英文字母與數字，長度 6~20</div>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custAccount')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custAccount}"></span>
+                            </div>
+                            <div class="invalid-feedback-custom" id="accountError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> 帳號只能使用英文字母與數字，長度 6~20
+                            </div>
+                        </div>
+
+                        <!-- 密碼 -->
+                        <div class="col-md-6">
+                            <label class="form-label">密碼 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" th:field="*{custPassword}"
+                                       th:classappend="${#fields.hasErrors('custPassword')} ? 'is-invalid'"
+                                       placeholder="8~20 字元" id="custPassword" maxlength="20">
+                                <button type="button" class="toggle-pw" id="togglePw" tabindex="-1">
+                                    <i class="bi bi-eye" id="togglePwIcon"></i>
+                                </button>
+                            </div>
+                            <!-- 強度條 -->
+                            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                            <div class="strength-text" id="strengthText" style="color:#94a3b8;"></div>
+                            <div class="password-hint">需包含大寫、小寫英文字母及數字；長度 8~20；不可含特殊字元</div>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custPassword')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custPassword}"></span>
+                            </div>
+                            <div class="invalid-feedback-custom" id="pwError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> 密碼不符合規則
+                            </div>
+                        </div>
+
+                        <!-- 確認密碼（前端輔助，不送後端） -->
+                        <div class="col-md-6 offset-md-6">
+                            <label class="form-label">確認密碼 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" class="form-control" id="confirmPassword"
+                                       placeholder="再次輸入密碼" maxlength="20">
+                            </div>
+                            <div class="invalid-feedback-custom" id="confirmPwError" style="display:none;">
+                                <i class="bi bi-exclamation-circle"></i> 兩次輸入的密碼不一致
+                            </div>
+                            <div class="valid-feedback-custom" id="confirmPwOk" style="display:none;">
+                                <i class="bi bi-check-circle"></i> 密碼一致
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Section: 系統設定 -->
+                    <div class="section-title"><i class="bi bi-toggles"></i> 系統設定</div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">帳號狀態 <span class="required-mark">*</span></label>
+                            <select class="form-select" th:field="*{custStatus}"
+                                    th:classappend="${#fields.hasErrors('custStatus')} ? 'is-invalid'">
+                                <option value="">-- 請選擇 --</option>
+								<option value="0">未啟用</option>
+								<option value="1">啟用</option>
+								<option value="2">停權</option>
+                            </select>
+                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custStatus')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{custStatus}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div style="display:flex; gap:12px; padding-top:8px; border-top:1px solid #f1f5f9; margin-top:8px;">
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-person-plus-fill"></i> 新增會員
+                        </button>
+                        <a th:href="@{/customer/list}" class="btn-cancel">
+                            <i class="bi bi-arrow-left"></i> 返回列表
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ---- 密碼顯示/隱藏 ----
+    document.getElementById('togglePw').addEventListener('click', function () {
+        const input = document.getElementById('custPassword');
+        const icon  = document.getElementById('togglePwIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    });
+
+    // ---- 密碼強度計算 ----
+    function calcPasswordStrength(pw) {
+        let score = 0;
+        if (pw.length >= 8)  score++;
+        if (pw.length >= 12) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[a-z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        return score;
+    }
+
+    document.getElementById('custPassword').addEventListener('input', function () {
+        const pw    = this.value;
+        const fill  = document.getElementById('strengthFill');
+        const text  = document.getElementById('strengthText');
+        const score = calcPasswordStrength(pw);
+
+        const levels = [
+            { pct: '0%',   color: '#e2e8f0', label: '' },
+            { pct: '20%',  color: '#ef4444', label: '非常弱' },
+            { pct: '40%',  color: '#f97316', label: '弱' },
+            { pct: '60%',  color: '#eab308', label: '普通' },
+            { pct: '80%',  color: '#22c55e', label: '強' },
+            { pct: '100%', color: '#16a34a', label: '非常強' },
+        ];
+
+        const level = pw.length === 0 ? levels[0] : levels[Math.min(score, 5)];
+        fill.style.width    = level.pct;
+        fill.style.background = level.color;
+        text.textContent    = level.label;
+        text.style.color    = level.color;
+    });
+
+    // ---- 確認密碼比對 ----
+    function checkConfirmPassword() {
+        const pw  = document.getElementById('custPassword').value;
+        const cpw = document.getElementById('confirmPassword').value;
+        const err = document.getElementById('confirmPwError');
+        const ok  = document.getElementById('confirmPwOk');
+        if (cpw.length === 0) { err.style.display = 'none'; ok.style.display = 'none'; return; }
+        if (pw === cpw) {
+            err.style.display = 'none';
+            ok.style.display  = 'flex';
+        } else {
+            ok.style.display  = 'none';
+            err.style.display = 'flex';
+        }
+    }
+
+    document.getElementById('confirmPassword').addEventListener('input', checkConfirmPassword);
+    document.getElementById('custPassword').addEventListener('input', checkConfirmPassword);
+
+    // ---- 台灣身分證格式（前端初步驗證） ----
+    function validateTaiwanId(id) {
+        return /^[A-HJ-NPR-Z][12][0-9]{8}$/.test(id.toUpperCase());
+    }
+
+    document.getElementById('custIdCard').addEventListener('input', function () {
+        this.value = this.value.toUpperCase();
+        const err = document.getElementById('idCardError');
+        const ok  = document.getElementById('idCardOk');
+        if (this.value.length === 0) { err.style.display='none'; ok.style.display='none'; return; }
+        if (validateTaiwanId(this.value)) {
+            err.style.display = 'none';
+            ok.style.display  = 'flex';
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            ok.style.display  = 'none';
+            err.style.display = 'flex';
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+    });
+
+    // ---- 手機格式 ----
+    document.getElementById('custTel').addEventListener('input', function () {
+        const err = document.getElementById('telError');
+        if (this.value.length === 0) { err.style.display='none'; return; }
+        err.style.display = /^09[0-9]{8}$/.test(this.value) ? 'none' : 'flex';
+    });
+
+    // ---- Email 格式 ----
+    document.getElementById('custEmail').addEventListener('input', function () {
+        const err = document.getElementById('emailError');
+        if (this.value.length === 0) { err.style.display='none'; return; }
+        err.style.display = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value) ? 'none' : 'flex';
+    });
+
+    // ---- 帳號格式 ----
+    document.getElementById('custAccount').addEventListener('input', function () {
+        const err = document.getElementById('accountError');
+        if (this.value.length === 0) { err.style.display='none'; return; }
+        err.style.display = /^[A-Za-z0-9]{6,20}$/.test(this.value) ? 'none' : 'flex';
+    });
+
+    // ---- 生日不能是未來 ----
+    document.getElementById('custBirthday').addEventListener('change', function () {
+        const err = document.getElementById('birthdayError');
+        const today = new Date().toISOString().split('T')[0];
+        err.style.display = this.value >= today ? 'flex' : 'none';
+    });
+
+    // ---- 表單送出前再次驗證 ----
+    document.getElementById('addForm').addEventListener('submit', function (e) {
+        const pw  = document.getElementById('custPassword').value;
+        const cpw = document.getElementById('confirmPassword').value;
+        const pwRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z0-9]{8,20}$/;
+
+        if (!pwRegex.test(pw)) {
+            document.getElementById('pwError').style.display = 'flex';
+            e.preventDefault();
+            return;
+        }
+
+        if (pw !== cpw) {
+            document.getElementById('confirmPwError').style.display = 'flex';
+            e.preventDefault();
+            return;
+        }
+    });
+</script>
+</body>
+</html>
