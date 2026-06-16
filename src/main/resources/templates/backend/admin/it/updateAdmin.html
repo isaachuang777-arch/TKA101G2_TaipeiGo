@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改管理員資料</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h2>修改管理員資料 - <span th:text="${adminVO.admAcc}"></span></h2>
+
+    <form th:action="@{/admin/it/updateAdmintoDB}" method="post">
+        
+        <label>員工編號：</label><span th:text="${adminVO.admId}"> </span>
+        <br>
+        <label>登入帳號： </label><span th:text="${adminVO.admAcc}"> </span><br>
+        <input type="hidden" name="admId" th:value="${adminVO.admId}">
+        
+        <label>管理員姓名：</label>
+        <input type ="text" name ="admName" th:value="${adminVO.admName}" required><br>
+        
+        <label>到職日：</label>
+        <input type ="date" name ="hireDate" th:value="${adminVO.hireDate}" required><br>
+        
+        <label>帳號狀態：</label>
+        <select name="admStatus">
+            <option value="1" th:selected="${adminVO.admStatus == 1}">🟢 啟用</option>
+            <option value="0" th:selected="${adminVO.admStatus == 0}">🔴 停權</option>
+        </select><br><br>
+        <button type="submit">💾 確認修改</button>
+
+    </form>
+</body>
+</html>
