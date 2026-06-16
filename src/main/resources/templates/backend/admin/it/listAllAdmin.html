@@ -34,17 +34,17 @@
 </head>
 <body>
     <h2>系統管理員全名單</h2>
-    <a th:href="@{/admin/profileindex}">🔙 回到總大廳</a>
+    <a th:href="@{/backend/dashboard/index}">🔙 回到Dashboard</a>
     <hr>
     
-    <form th:action="@{/admin/it/listContaining}" method="get" style="margin-bottom: 20px;">
+    <form th:action="@{/backend/admin/it/listContaining}" method="get" style="margin-bottom: 20px;">
     <label>搜尋管理員：</label>
     <input type="text" name="keyword" placeholder="請輸入帳號或姓名..." >
     <button type="submit">搜尋</button>    
     <!-- 重置 -->
-    <a th:href="@{/admin/it/listAll}"><button type="button">重置</button></a>
+    <a th:href="@{/backend/admin/it/listAll}"><button type="button">重置</button></a>
 </form>
-<a th:href="@{/admin/it/addAdmin}">新增管理員</a>
+<a th:href="@{/backend/admin/it/addAdmin}">新增管理員</a>
 <div th:if="${successMsg}" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; margin-bottom: 20px; border-radius: 5px; position: relative;">
         <span th:text="${successMsg}"></span>
         <!-- 點擊這個叉叉，就會利用簡單的 JS 把這個 div 給隱藏起來 -->
@@ -108,14 +108,14 @@
                 
                 <!-- 操作按鈕 (修改功能我們下一步再做，先預留位子) -->
                 <td>
-                    <a th:href ="@{/admin/it/updateAdmin(admId=${adminVOList.admId})}">修改資料</a>
+                    <a th:href ="@{/backend/admin/it/updateAdmin(admId=${adminVOList.admId})}">修改資料</a>
                     <a href="#">修改權限</a>
                 </td>
             </tr>
         </tbody>
     </table>
     <hr>
-        <form th:action="@{/admin/auth/logout}" method="post">
+        <form th:action="@{/backend/auth/logout}" method="post">
         <button type="submit">安全登出</button>
     </form>
     <script>
@@ -136,7 +136,7 @@ function toggleStatus(admId, newadmStatus, buttonElement) {
     formData.append('admId', admId);
     formData.append('newadmStatus', newadmStatus);
 
-    fetch('/admin/it/updateadmStatus', {
+    fetch('/backend/admin/it/updateadmStatus', {
         method: 'POST',
         body: formData
     })

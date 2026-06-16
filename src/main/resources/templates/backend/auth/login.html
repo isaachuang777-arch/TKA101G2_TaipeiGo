@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>TaipeiGO 後台登入</title>
+</head>
+<body>
+    <h2>TaipeiGO 後台系統 - 登入</h2>
+    
+    <!-- 顯示錯誤訊息 (對應 Controller 的 model.addAttribute("errorMsg", ...)) -->
+    <div th:if="${errorMsg != null}" style="color: red;">
+        <p th:text="${errorMsg}"></p>
+    </div>
+
+    <!-- 表單送出到 Controller 的 @PostMapping -->
+    <form th:action="@{/backend/auth/login}" method="post">
+        <div>
+            <label>帳號：</label>
+            <input type="text" name="admAcc" required>
+        </div>
+        <div>
+            <label>密碼：</label>
+            <input type="password" name="admPw" required>
+        </div>
+        <button type="submit">登入</button>
+    </form>
+</body>
+</html>

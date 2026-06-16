@@ -14,7 +14,7 @@
 <body>
     <h2>修改管理員資料 - <span th:text="${adminVO.admAcc}"></span></h2>
 
-    <form th:action="@{/admin/it/updateAdmintoDB}" method="post">
+    <form th:action="@{/backend/admin/it/updateAdmintoDB}" method="post">
         
         <label>員工編號：</label><span th:text="${adminVO.admId}"> </span>
         <br>

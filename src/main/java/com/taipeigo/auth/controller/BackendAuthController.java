@@ -1,0 +1,77 @@
+package com.taipeigo.auth.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.taipeigo.admin.model.AdminService;
+import com.taipeigo.admin.model.AdminVO;
+
+import jakarta.servlet.http.HttpSession;
+
+////////////////////////////////////////
+/// This controller
+//no need filter
+///  the adminuser login or logout
+///  :)
+////////////////////////////////////////
+
+@Controller
+@RequestMapping("/backend")
+public class BackendAuthController {
+
+    @Autowired
+    private AdminService adminService;
+
+//只是顯示login page
+@GetMapping("/auth/login")
+    public String showLoginPage() {
+        return "backend/auth/login"; // 導向 templates 裡的 login.html
+    }
+
+// 登入
+@PostMapping("/auth/login")
+	public String adminLogin(@RequestParam("admAcc") String admAcc,
+							@RequestParam("admPw") String admPw,
+							Model model, HttpSession session) {
+		try {
+            //Service的adminLogin
+            AdminVO adminVO =adminService.adminLogin(admAcc, admPw);
+            //有找到 可以登入
+            if(adminVO != null) {
+                session.setAttribute("adminVO", adminVO);
+                return "redirect:/backend/dashboard/index";
+            }
+		}catch(RuntimeException e){
+			model.addAttribute("errorMsg", e.getMessage());
+		}
+				
+		return "backend/auth/login";
+	}
+
+//登出
+@PostMapping("/auth/logout")
+    public String logout (HttpSession session) {
+        
+        session.invalidate();
+            return "redirect:/backend/auth/login";
+    }
+
+//轉去首頁+沒登入時踢回login
+@GetMapping("/dashboard/index")
+   public String showDashboard(HttpSession session) {
+       if (session.getAttribute("adminVO") == null) {
+           // 如果是空值，代表沒登入過，直接把它踢回登入頁面
+           return "redirect:/backend/auth/login";
+       }
+       
+       // 如果有登入，才放行讓他看 index.html
+       return "backend/dashboard/index";
+
+   }
+	
+}

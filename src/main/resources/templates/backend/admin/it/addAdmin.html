@@ -6,10 +6,10 @@
 </head>
 <body>
     <h2>➕ 新增系統管理員</h2>
-    <a th:href="@{/admin/listAll}">🔙 回到管理員名單</a>
+    <a th:href="@{/backend/admin/it/listAll}">🔙 回到管理員名單</a>
     <hr>
     
-    <form th:action="@{/admin/it/createAdmin}" method="post">
+    <form th:action="@{/backend/admin/it/createAdmin}" method="post">
         
         <label>登入帳號：</label>
         <input type="text" name="admAcc" required><br><br>
