@@ -44,6 +44,17 @@ public class BackendAuthController {
             //有找到 可以登入
             if(adminVO != null) {
                 session.setAttribute("adminVO", adminVO);
+                
+                //有了Filter後新增:強登後可以回去剛才被踢掉的頁面[reUrl]
+                //先去Session找有沒有reUrl 如果有 就先redirect去剛被踢的
+                String reUrl = (String) session.getAttribute("reUrl");
+                if(reUrl !=null) {
+                	//先移除session裡面的redirectUrl
+                	session.removeAttribute("reUrl");
+                	//再redirect String裡面存的redirectUrl
+                	return "redirect:"+ reUrl;
+                }
+                
                 return "redirect:/backend/dashboard/index";
             }
 		}catch(RuntimeException e){
