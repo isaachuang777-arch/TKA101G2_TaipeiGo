@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>訂單管理</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    margin:20px;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background-color:#f5f5f5;
+}
+
+tr:nth-child(even){
+    background-color:#fafafa;
+}
+
+.btn{
+    padding:5px 10px;
+    text-decoration:none;
+    border:1px solid #999;
+    border-radius:4px;
+}
+</style>
+
+</head>
+<body>
+
+<h2>訂單管理</h2>
+
+<table>
+
+    <thead>
+        <tr>
+            <th>訂單編號</th>
+            <th>會員編號</th>
+            <th>訂單狀態</th>
+            <th>付款狀態</th>
+            <th>付款方式</th>
+            <th>訂單金額</th>
+            <th>建立時間</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        <tr th:each="order : ${allOrders}">
+
+            <td th:text="${order.orderId}"></td>
+
+            <td th:text="${order.custId}"></td>
+
+            <td th:text="${order.orderStatus}"></td>
+
+            <td th:text="${order.paymentStatus}"></td>
+
+            <td th:text="${order.paymentMethod}"></td>
+
+            <td th:text="${order.orderTotal}"></td>
+
+            <td th:text="${order.createdAt}"></td>
+
+            <td>
+                <a href="#" class="btn">查看明細</a>
+            </td>
+
+        </tr>
+
+    </tbody>
+
+</table>
+
+</body>
+</html>
