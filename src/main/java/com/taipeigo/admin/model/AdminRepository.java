@@ -1,0 +1,23 @@
+package com.taipeigo.admin.model;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.taipeigo.admin.model.AdminVO;
+
+@Repository
+public interface AdminRepository extends JpaRepository<AdminVO, Integer> {
+    // 用admAcc檢查有沒有重複->create前置行為
+    AdminVO findByadmAcc(String admAcc);
+
+    // 用帳號狀態admStatus找人(List)
+    List<AdminVO> findByadmStatus(Byte admStatus);
+
+    // 登入前置作業
+    AdminVO findByAdmAccAndAdmPw(String admAcc, String admPw);
+
+    //模糊search
+    List<AdminVO> findByAdmAccContainingOrAdmNameContaining(String keyword1, String keyword2);
+}
