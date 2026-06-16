@@ -16,7 +16,6 @@ import com.taipeigo.orders.model.OrdersVO;
 @Controller
 /*凡是網址開頭是 /orders 的請求，都交給這個 Controller 處理*/
 //**********
-/*@RequestMapping("/admin/orders")*/
 @RequestMapping("/orders")
 
 public class OrdersController {
