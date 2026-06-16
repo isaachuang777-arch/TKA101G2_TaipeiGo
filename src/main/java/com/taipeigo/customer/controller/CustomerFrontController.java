@@ -10,11 +10,11 @@ public class CustomerFrontController {
 	
 	@GetMapping("/login")
     public String loginPage() {
-		return "front-end/customer/login";
+		return "front/customer/login";
 	}
 
     @GetMapping("/register")
     public String registerPage() {
-    	return "front-end/customer/register";
+    	return "front/customer/register";
     }
 }

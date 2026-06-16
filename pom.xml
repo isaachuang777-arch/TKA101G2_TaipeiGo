@@ -87,25 +87,25 @@
 		<!-- ●前面的jpa已經包含有hibernate，以下為純 hibernate 使用● -->
 
 		<!-- hibernate-core 核心 -->  <!-- spring-boot-starter-data-jpa(3.4.1) 已內建 Hibernate 6.6.4.Final 依賴 -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>6.6.4.Final</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.hibernate</groupId>-->
+<!--			<artifactId>hibernate-core</artifactId>-->
+<!--			<version>6.6.4.Final</version>-->
+<!--		</dependency>-->
 
-		<!-- hibernate-c3p0 連線池 -->               <!-- spring-boot 已內建依賴，但預設未下載 -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-c3p0</artifactId>
-			<version>6.6.4.Final</version>
-		</dependency>
+<!--		 hibernate-c3p0 連線池                 spring-boot 已內建依賴，但預設未下載 -->
+<!--		<dependency>-->
+<!--			<groupId>org.hibernate</groupId>-->
+<!--			<artifactId>hibernate-c3p0</artifactId>-->
+<!--			<version>6.6.4.Final</version>-->
+<!--		</dependency>-->
 
-		<!-- hibernate-proxool 連線池 -->            <!-- spring-boot 已內建依賴，但預設未下載 -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-proxool</artifactId>
-			<version>6.6.4.Final</version>
-		</dependency>
+<!--		 hibernate-proxool 連線池              spring-boot 已內建依賴，但預設未下載 -->
+<!--		<dependency>-->
+<!--			<groupId>org.hibernate</groupId>-->
+<!--			<artifactId>hibernate-proxool</artifactId>-->
+<!--			<version>6.6.4.Final</version>-->
+<!--		</dependency>-->
 
 
 		<!-- ========================================================================================== -->
