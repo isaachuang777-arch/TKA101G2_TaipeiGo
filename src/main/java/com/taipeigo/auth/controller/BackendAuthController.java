@@ -29,7 +29,11 @@ public class BackendAuthController {
 
 //只是顯示login page
 @GetMapping("/auth/login")
-    public String showLoginPage() {
+    public String showLoginPage(HttpSession session) {
+        if (session.getAttribute("adminVO") !=null) {
+            // 如果session已經有VO 還跑login就跑回後台首頁
+            return "redirect:/backend/dashboard/index";
+        }
         return "backend/auth/login"; // 導向 templates 裡的 login.html
     }
 
@@ -73,14 +77,14 @@ public class BackendAuthController {
     }
 
 //轉去首頁+沒登入時踢回login
-@GetMapping("/dashboard/index")
+@GetMapping({"/dashboard/index","/dashboard/","/"})
    public String showDashboard(HttpSession session) {
 //       if (session.getAttribute("adminVO") == null) {
 //           // 如果是空值，代表沒登入過，直接把它踢回登入頁面
 //           return "redirect:/backend/auth/login";
 //       }
        
-       // 如果有登入，才放行讓他看 index.html
+       // 如果有登入，才放行讓他看 index
        return "backend/dashboard/index";
 
    }

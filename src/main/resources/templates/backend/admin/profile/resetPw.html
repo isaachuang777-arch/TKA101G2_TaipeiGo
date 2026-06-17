@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>重返密碼</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #495057; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .btn-submit { width: 100%; padding: 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .btn-submit:hover { background-color: #c82333; }
+        .msg-error { color: #721c24; background-color: #f8d7da; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-weight: bold; border: 1px solid #f5c6cb; }
+        .logout-link { display: block; margin-top: 25px; color: #6c757d; text-decoration: none; font-size: 14px; }
+        .logout-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div style="width: 400px;">
+    <!-- 錯誤訊息提示區 -->
+    <div th:if="${errorMsg}" class="msg-error" th:text="${errorMsg}"></div>
+
+    <form th:action="@{/backend/admin/profile/resetPw}" method="post">
+        
+        <div class="form-group">
+            <label>目前密碼：</label>
+            <input type="password" name="oldPw" placeholder="請輸入登入時用的密碼" required>
+        </div>
+
+        <div class="form-group">
+            <label>設定新密碼：</label>
+            <input type="password" name="newPw" placeholder="至少 8 碼英文或數字" required minlength="8">
+        </div>
+
+        <div class="form-group">
+            <label>再次確認新密碼：</label>
+            <input type="password" name="confirmPw" placeholder="請再次輸入新密碼" required minlength="8">
+        </div>
+
+        <button type="submit" class="btn-submit">重返密碼</button>
+    </form>
+
+</div>
+
+</body>
+</html>
