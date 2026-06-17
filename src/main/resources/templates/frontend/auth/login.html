@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+
+<head>
+<meta charset="UTF-8">
+<title>會員登入</title>
+</head>
+
+<body>
+
+<h2>會員登入</h2>
+
+<!-- 錯誤訊息 -->
+<div th:if="${errorMsg}">
+    <span style="color:red"
+          th:text="${errorMsg}">
+    </span>
+</div>
+
+<form th:action="@{/frontend/auth/login}"
+      method="post">
+
+    <div>
+        <label>帳號：</label>
+
+        <input type="text"
+               name="custAccount">
+    </div>
+
+    <br>
+
+    <div>
+        <label>密碼：</label>
+
+        <input type="password"
+               name="custPassword">
+    </div>
+
+    <br>
+
+    <button type="submit">
+        登入
+    </button>
+
+</form>
+
+</body>
+</html>
