@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>管理員全名單</title>
+    <title>系統管理員列表</title>
     <style>
         table, th, td {
             border: 1px solid black;
@@ -33,8 +33,14 @@
     </style>
 </head>
 <body>
-    <h2>系統管理員全名單</h2>
-    <a th:href="@{/backend/dashboard/index}">🔙 回到Dashboard</a>
+    <h2>系統管理員列表</h2>
+    <div style="margin-bottom: 20px;">
+    <a th:href="@{/backend/admin/it/index}">
+        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+        返回 系統管理員控制中心
+        </button>
+    </a>
+</div>
     <hr>
     
     <form th:action="@{/backend/admin/it/listContaining}" method="get" style="margin-bottom: 20px;">
@@ -43,9 +49,9 @@
     <button type="submit">搜尋</button>    
     <!-- 重置 -->
     <a th:href="@{/backend/admin/it/listAll}"><button type="button">重置</button></a>
-</form>
-<a th:href="@{/backend/admin/it/addAdmin}">新增管理員</a>
-<div th:if="${successMsg}" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; margin-bottom: 20px; border-radius: 5px; position: relative;">
+    </form>
+
+    <div th:if="${successMsg}" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; margin-bottom: 20px; border-radius: 5px; position: relative;">
         <span th:text="${successMsg}"></span>
         <!-- 點擊這個叉叉，就會利用簡單的 JS 把這個 div 給隱藏起來 -->
         <button type="button" onclick="this.parentElement.style.display='none';" style="position: absolute; right: 10px; top: 12px; background: none; border: none; cursor: pointer; font-size: 16px;">✖</button>
@@ -76,21 +82,21 @@
             <td th:text="${adminVOList.hireDate}">到職日</td>
                 
             <!-- 狀態顯示-->
+            <!-- 狀態顯示-->
             <td>
-            <!-- 如果狀態是 1 (啟用) -->
-            <button type="button" th:if="${adminVOList.admStatus == 1}" 
-                    class="btn-toggle btn-active"
-                    th:onclick="toggleStatus([[${adminVOList.admId}]], 0, this)">
-                🟢 啟用
-            </button>
-            
-            <!-- 如果狀態是 0 (停權) -->
-            <button type="button" th:if="${adminVOList.admStatus == 0}" 
-                    class="btn-toggle btn-inactive"
-                    th:onclick="toggleStatus([[${adminVOList.admId}]], 1, this)">
-                🔴 停權
-            </button>
-        </td>
+                <!-- 狀態為 1：顯示切換為 0 的按鈕 -->
+                <button th:if="${adminVOList.admStatus == 1}" type="button" class="btn-toggle btn-active"
+                        th:onclick="'toggleStatus(' + ${adminVOList.admId} + ', 0, this)'">啟用</button>
+                
+                <!-- 狀態為 0：顯示切換為 1 的按鈕 -->
+                <button th:if="${adminVOList.admStatus == 0}" type="button" class="btn-toggle btn-inactive"
+                        th:onclick="'toggleStatus(' + ${adminVOList.admId} + ', 1, this)'">停權</button>
+                
+                <!-- 狀態為 9：純顯示標籤，不可用按鈕直接切換 (必須等員工自己改密碼解鎖) -->
+                <span th:if="${adminVOList.admStatus == 9}" style="background-color: #ffc107; color: #212529; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    強制重設密碼
+                </span>
+            </td>
                 
 			  <!-- 權限顯示 -->
 			    <td>

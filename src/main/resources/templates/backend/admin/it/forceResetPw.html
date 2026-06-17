@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>強制密碼重設</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 30px; background-color: #f8f9fa; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
+        h2 { color: #dc3545; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: center; }
+        th { background-color: #343a40; color: white; }
+        .badge { background-color: #17a2b8; color: white; border-radius: 4px; padding: 4px 8px; font-size: 12px; margin: 2px; display: inline-block; }
+        .btn-search { background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-reset { background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-reset:hover { background-color: #c82333; }
+        .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #6c757d; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a th:href="@{/backend/admin/it/index}" class="back-link"> 回 系統管理員控制中心</a>
+    
+    <h2>強制密碼重設</h2>
+    <p>請小心使用此特權功能，重設後對方的狀態將變更為「登入後強制更改密碼」。</p>
+    <p>重設後密碼為帳號加上今天日期[格式為YYYYMMDD]</p>
+
+    <hr style="border: 1px solid #eee; margin: 20px 0;">
+
+    <!-- ================= 步驟 1：搜尋區塊 ================= -->
+    <div>
+        <h3>請搜尋欲重設密碼的帳號</h3>
+        <form th:action="@{/backend/admin/it/forceResetPw}" method="get">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="請輸入帳號或姓名..." 
+                   style="padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 4px;" required>
+            <button type="submit" class="btn-search">搜尋</button>
+        </form>
+        
+        <!-- 找不到時顯示錯誤訊息 -->
+        <p th:if="${errorMsg}" th:text="${errorMsg}" style="color: #dc3545; font-weight: bold; margin-top: 10px;"></p>
+    </div>
+
+    <!-- ================= 步驟 2：結果列表 ================= -->
+    <div th:if="${adminVOList != null}">
+        <h3 style="margin-top: 40px;">請選擇需要更改密碼的管理員</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>帳號</th>
+                    <th>擁有權限</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="admin : ${adminVOList}">
+                    <td th:text="${admin.admName}"></td>
+                    <td th:text="${admin.admAcc}"></td>
+                    
+                    <!-- 迴圈印出他擁有的所有權限名稱 (Badge 樣式) -->
+                    <td>
+                        <span th:each="per : ${admin.admPerVO}" 
+                              th:text="${per.admfuncVO.funcName}" 
+                              class="badge">
+                        </span>
+                    </td>
+                    
+                    <td>
+                        <!-- ★ 重頭戲：結合了 JS Confirm 的表單送出 ★ -->
+                    <form th:action="@{/backend/admin/it/saveForcePwtoDB}" method="post"
+                    th:data-name="${admin.admAcc}"
+                    onsubmit="return confirm('目標帳號是【' + this.getAttribute('data-name') + '】\n您確定要強制重設密碼嗎？\n(按確定後將立即生效，覆寫為預設值)');">
+                            
+                            <input type="hidden" name="admId" th:value="${admin.admId}">
+                            <button type="submit" class="btn-reset"> 強制重設</button>
+                            
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
