@@ -26,10 +26,10 @@ public class BackendLoginFilter extends OncePerRequestFilter {
 // ===================================
 // 開發用 || 要測試Filter請解開
 // ===================================
-		if (false) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+//		if (false) {
+//			filterChain.doFilter(request, response);
+//			return;
+//		}
 		
 		
 //===================

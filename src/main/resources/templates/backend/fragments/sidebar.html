@@ -146,6 +146,15 @@
         <i class="bi bi-shield-lock-fill"></i>
         <span>管理員管理</span>
     </a>
+    
+       <!-- 登出是 post 一定要用form-->
+    <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>後台登出</span>
+    </a>
+
+    <form id="logout-form" th:action="@{/backend/auth/logout}" method="post" style="display: none;"></form>
+
 
     <div class="sidebar-footer">
         TaipeiGo Admin System
