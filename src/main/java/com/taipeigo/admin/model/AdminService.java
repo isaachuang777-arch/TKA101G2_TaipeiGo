@@ -1,5 +1,7 @@
 package com.taipeigo.admin.model;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.management.RuntimeErrorException;
@@ -14,6 +16,9 @@ import com.taipeigo.admin.model.AdmPerRepository;
 import com.taipeigo.admin.model.AdminRepository;
 
 import jakarta.transaction.Transactional;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class AdminService {
@@ -150,5 +155,44 @@ public class AdminService {
 		adminRepository.save(dbAdmin);
 
 	}
-	
+
+//IT可以強制更改密碼 密碼會是admAcc+今日日期YYYYMMDD
+@Transactional
+	public void itforceResetPw(Integer admId){
+		//防呆
+		AdminVO adminVO = adminRepository.findById(admId).orElseThrow(() -> new RuntimeException("修改失敗：找不到帳號資料！"));
+
+		//取得今天日期
+		String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		
+		//組新密碼
+		String newAdmPw = adminVO.getAdmAcc() + todayStr;
+
+		//OverWrite 密碼+改狀態
+		adminVO.setAdmPw(newAdmPw);
+		adminVO.setAdmStatus(AdminVO.StatusForcetoChangePW);
+
+		//存進DB
+		adminRepository.save(adminVO);
+
+	}
+
+//管理員改密碼
+@Transactional
+	public void adminResetPw(Integer admId, String oldPw, String newPw){
+		AdminVO adminVO = adminRepository.findById(admId).orElseThrow(() -> new RuntimeException("修改失敗：找不到您的帳號資料！"));
+		
+		//防呆 再打一次密碼
+		if (!adminVO.getAdmPw().equals(oldPw)) {
+			throw new RuntimeException("修改失敗：您輸入的舊密碼不正確！");
+		}
+
+		
+		//寫新密碼進去 status也改回enable 他就能進去了
+		adminVO.setAdmPw(newPw);
+		adminVO.setAdmStatus(AdminVO.StatusEnabled);
+
+		adminRepository.save(adminVO);
+
+	}
 }

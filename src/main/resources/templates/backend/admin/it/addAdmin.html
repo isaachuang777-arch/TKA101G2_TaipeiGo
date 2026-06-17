@@ -5,8 +5,12 @@
     <title>新增系統管理員</title>
 </head>
 <body>
-    <h2>➕ 新增系統管理員</h2>
-    <a th:href="@{/backend/admin/it/listAll}">🔙 回到管理員名單</a>
+    <h2> 新增系統管理員</h2>
+    <div style="margin-top: 20px;">
+    <a th:href="@{/backend/admin/it/index}">
+        <button type="button">返回 系統管理員控制中心</button>
+    </a>
+</div>
     <hr>
     
     <form th:action="@{/backend/admin/it/createAdmin}" method="post">
@@ -23,7 +27,7 @@
 		<label>到職日：</label>
 		<input type ="date" name="hireDate" required><br><br>
 		
-		<!--admStatus已經在Service裡寫了 是1 (開通)  -->
+		<!--admStatus已經在Service裡寫 (預設開通)  -->
 
         <hr>
         <h3>設定操作權限：</h3>
@@ -33,7 +37,7 @@
         </th:block>
         
         <br><br>
-        <button type="submit">💾 確認新增</button>
+        <button type="submit">確認新增</button>
     </form>
     
     <div th:text="${errorMsg}" style="color:red; font-weight:bold;"></div>
