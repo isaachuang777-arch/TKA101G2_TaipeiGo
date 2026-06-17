@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"></html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統管理員控制中心</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6; /* 淡灰色背景，讓卡片更立體 */
+            margin: 0;
+            padding: 40px;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c3e50;
+        }
+        
+        /* 網格系統：自動根據螢幕大小排列卡片 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* 卡片本體設計 */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease; /* 微動畫過渡效果 */
+            border: 1px solid #e1e8ed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+        }
+        /* 👑 滑鼠游標移過去的 Hover 效果 (非常重要，提升質感的關鍵) */
+        .card:hover {
+            transform: translateY(-8px); /* 向上浮起 */
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+            border-color: #3498db;
+        }
+        /* 各卡片的 Icon 設計 */
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .card-desc {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        /* 回大廳的按鈕 */
+        .back-btn {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 10px 20px;
+            background-color: #95a5a6;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-header">
+        <h1> 系統管理員控制中心</h1>
+        <p>後台管理員帳號與權限管理</p>
+    </div>
+    <!-- 4 格卡片區 -->
+    <div class="grid-container">
+        
+        <!-- 卡片 1：現有的管理員列表 -->
+        <a th:href="@{/backend/admin/it/listAll}" class="card">
+            <div class="card-title">系統管理員總覽</div>
+            <div class="card-desc">檢視、搜尋與修改所有人員資料</div>
+        </a>
+        <!-- 卡片 2：現有的新增管理員 -->
+        <a th:href="@{/backend/admin/it/addAdmin}" class="card">
+            <div class="card-title">新增系統管理員</div>
+            <div class="card-desc">為新進員工建立帳號與綁定權限</div>
+        </a>
+        <!-- 卡片 3：未來的權限管理 -->
+        <a href="#" class="card" onclick="alert('功能即將上線！請期待！'); return false;">
+            <div class="card-title">權限控制中心</div>
+            <div class="card-desc">依權限過濾名單與批量調整 (開發中)</div>
+        </a>
+        <!-- 卡片 4：未來的強制密碼重設 -->
+        <a th:href="@{/backend/admin/it/forceResetPw}" class="card" >
+            <div class="card-title">強制密碼重設</div>
+            <div class="card-desc">登入後將需要重新設定密碼才能正常使用</div>
+        </a>
+    </div>
+    <div style="text-align: center;">
+        <a th:href="@{/backend/dashboard/index}" class="back-btn"> 返回後台首頁</a>
+    </div>
+</body>
+</html>

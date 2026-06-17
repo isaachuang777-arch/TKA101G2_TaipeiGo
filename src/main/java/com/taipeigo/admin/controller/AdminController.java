@@ -1,5 +1,6 @@
 package com.taipeigo.admin.controller;
 
+import com.taipeigo.IndexController;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ import jakarta.servlet.http.HttpSession;
 /// ---->Need force login
 ////////////////////////////////////////
 public class AdminController {
+    private final IndexController indexController;
+
     @Autowired
     private AdminService adminService;
     
@@ -39,6 +42,13 @@ public class AdminController {
     private AdmFuncService adminFuncService;
 
 
+
+    AdminController(IndexController indexController) {
+        this.indexController = indexController;
+    }
+
+
+    
 //列出全員
 @GetMapping("/it/listAll")
     public String listAlladmin(Model model, HttpSession session) {
@@ -106,10 +116,10 @@ public class AdminController {
 
         try{
             adminService.updateAdmin(adminVO);
-            redirectAttributes.addFlashAttribute("successMsg", "✅ 已經成功修改管理員 " + adminVO.getAdmName() + " 資料！");
+            redirectAttributes.addFlashAttribute("successMsg", "已經成功修改管理員 " + adminVO.getAdmName() + " 資料！");
 
         }catch(RuntimeException e){
-                        redirectAttributes.addFlashAttribute("successMsg", "❌ " + e.getMessage());
+                        redirectAttributes.addFlashAttribute("errorMsg",  e.getMessage());
         }
         return "redirect:/backend/admin/it/listAll";
     }
@@ -164,18 +174,117 @@ public class AdminController {
         }
     }
 
-///////////////////User dashboard///////////////////////
+//==========================================
+//User Profile首頁
+//==========================================
 //轉去首頁+沒登入時踢回login
 @GetMapping("/profile/index")
   public String showDashboard(HttpSession session) {
-      if (session.getAttribute("adminVO") == null) {
-          // 如果是空值，代表沒登入過，直接把它踢回登入頁面
-          return "redirect:/backend/auth/login";
-      }
+//      if (session.getAttribute("adminVO") == null) {
+//          // 如果是空值，代表沒登入過，直接把它踢回登入頁面
+//          return "redirect:/backend/auth/login";
+//      }
       
       // 如果有登入，才放行讓他看 index.html
       return "backend/admin/profile/index";
 
   }
+// ==========================================
+// IT 管理中心首頁 (4 格卡片入口)
+// ==========================================
+@GetMapping({"/it/index","/it/"})
+public String showITDashboard() {
+        
+    return "backend/admin/it/index";
+}
+
+// ==========================================
+// IT強制更改密碼頁面 + Containing搜查
+// ==========================================
+@GetMapping("/it/forceResetPw")
+public String showforceResetPw(Model model , @RequestParam(value = "keyword", required = false) String keyword){
+
+    if(keyword != null && !keyword.trim().isEmpty()){
+        try{
+            //Containing查詢
+            List<AdminVO> searchResult = adminService.findAdminsbyContaining(keyword);
+            model.addAttribute("adminVOList", searchResult);
+        }catch(RuntimeException e){
+            model.addAttribute("errorMsg", e.getMessage());
+        }
+    }
+    
+    //Keyword留在網頁
+    model.addAttribute("keyword", keyword);
+    
+    return "backend/admin/it/forceResetPw";
+}
+
+// ==========================================
+// 確定 IT強制更改密碼
+// ==========================================
+@PostMapping("/it/saveForcePwtoDB")
+    public String saveForcePwtoDB(@RequestParam("admId") Integer admId, RedirectAttributes redirectAttributes,AdminVO adminVO){
+        try {
+            // 將表格的 admId 丟給itforceResetPw處理
+            adminService.itforceResetPw(admId);
+            
+            
+            redirectAttributes.addFlashAttribute("successMsg", "密碼已成功強制重設為預設值！" + adminVO.getAdmName() + " 登入時將被強制重設密碼。");
+            
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "重設失敗：" + e.getMessage());
+        }
+
+    return "redirect:/backend/admin/it/listAll";
+
+}
+// ==========================================
+// 掛管理員 重設密碼頁面
+// ==========================================
+@GetMapping("/profile/resetPw")
+    public String showForceChangePwPage() {
+        return "backend/admin/profile/resetPw"; 
+    }
+// ==========================================
+// 管理員重設密碼
+// ==========================================
+@PostMapping("/profile/resetPw")
+    public String adminResetPw (
+        @RequestParam("oldPw") String oldPw,
+        @RequestParam("newPw") String newPw,
+        @RequestParam("confirmPw") String confirmPW,
+        HttpSession session,
+        RedirectAttributes redirectAttributes
+    ){
+        AdminVO adminVO = (AdminVO) session.getAttribute("adminVO");
+
+        //新密碼防呆
+        if(!newPw.equals(confirmPW)){
+            redirectAttributes.addFlashAttribute("errorMsg", "兩次輸入的新密碼不一致！請重新輸入。");
+            return "redirect:/backend/admin/profile/resetPw";
+        }
+        try {
+                // Service ->驗證密碼+改密碼+轉Status
+                adminService.adminResetPw(adminVO.getAdmId(), oldPw, newPw);
+                
+                //確保session裡的adminVO是最新的
+                adminVO.setAdmPw(newPw);
+                adminVO.setAdmStatus(AdminVO.StatusEnabled);
+                session.setAttribute("adminVO", adminVO);
+                
+                //重設完成
+                redirectAttributes.addFlashAttribute("successMsg", "密碼修改成功！");
+                return "redirect:/backend/dashboard/index"; 
+                
+            } catch (RuntimeException e) {
+                // 舊密碼打錯，或是其他錯誤
+                redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+                return "redirect:/backend/admin/profile/resetPw";
+            }
+
+
+
+}
 
 }
