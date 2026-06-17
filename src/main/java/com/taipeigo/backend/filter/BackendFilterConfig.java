@@ -13,8 +13,8 @@ public class BackendFilterConfig {
 	        FilterRegistrationBean<BackendLoginFilter> registrationBean = new FilterRegistrationBean<>();
 	        registrationBean.setFilter(new BackendLoginFilter());
 	        
-	        //要測試強登先開這行
-	        //registrationBean.addUrlPatterns("/backend/*"); 
+	        
+	        registrationBean.addUrlPatterns("/backend/*"); 
 	        registrationBean.setOrder(1);
 			
 			  return registrationBean;

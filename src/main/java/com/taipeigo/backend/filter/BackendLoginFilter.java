@@ -21,7 +21,16 @@ public class BackendLoginFilter extends OncePerRequestFilter {
 //        HttpServletRequest req = (HttpServletRequest) request;
 //        HttpServletResponse res = (HttpServletResponse) response;
 		
+		
 		String requestURI = request.getRequestURI();
+// ===================================
+// 開發用 || 要測試Filter請解開
+// ===================================
+//		if (false) {
+//			filterChain.doFilter(request, response);
+//			return;
+//		}
+		
 		
 //===================
 // login logout 不用強登
