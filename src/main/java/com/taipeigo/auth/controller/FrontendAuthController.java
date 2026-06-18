@@ -65,6 +65,29 @@ public class FrontendAuthController {
         // 登入成功後回前台首頁
         return "redirect:/";
     }
+    
+	// 顯示註冊頁面
+	// 使用 GET 請求進入註冊頁
+	// 並提供 CustomerVO 給表單綁定
+    @GetMapping("/auth/register")
+    public String showRegisterPage(Model model) {
+
+        model.addAttribute("customerVO", new CustomerVO());
+
+        return "frontend/auth/register";
+    }
+    
+    // 接收會員註冊資料
+    // 註冊後預設為未啟用帳號，需完成 Email 驗證後才能登入
+    @PostMapping("/auth/register")
+    public String register(CustomerVO customerVO) {
+
+    		customerVO.setCustStatus(0); // 0 = 未啟用
+
+    		customerService.addCustomer(customerVO);
+
+    		return "redirect:/frontend/auth/login";
+    }
 
     // 前台會員登出
     // 網址：GET /frontend/auth/logout
