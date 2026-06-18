@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>訂單明細</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f8f9fa;
+}
+
+.container{
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+h2{
+    margin-bottom: 20px;
+}
+
+.card{
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.info-row{
+    margin-bottom: 15px;
+}
+
+.info-label{
+    display:inline-block;
+    width:120px;
+    font-weight:bold;
+}
+
+select{
+    width: 200px;
+    padding: 8px;
+}
+
+table{
+    width:100%;
+    border-collapse: collapse;
+    background:white;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:#f5f5f5;
+}
+
+.btn{
+    display:inline-block;
+    padding:8px 16px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    text-decoration:none;
+    color:white;
+}
+
+.btn-save{
+    background:#198754;
+}
+
+.btn-save:hover{
+    background:#157347;
+}
+
+.btn-back{
+    background:#6c757d;
+}
+
+.btn-back:hover{
+    background:#5c636a;
+}
+
+.button-group{
+    margin-top:20px;
+}
+
+.success-msg{
+    color:#198754;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.order-section-title{
+    margin-top:30px;
+    margin-bottom:15px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h2>訂單明細</h2>
+    <div th:if="${param.success}" class="success-msg">更新成功</div>
+    <div th:if="${not #lists.isEmpty(details)}">
+        <form th:action="@{/orders/update_status}" method="post">
+            <input type="hidden"
+                   name="orderId"
+                   th:value="${details[0].ordersVO.orderId}">
+            <div class="card">
+                <div class="info-row">
+                    <span class="info-label">訂單編號：</span>
+                    <span th:text="${details[0].ordersVO.orderId}"></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">會員編號：</span>
+                    <span th:text="${details[0].ordersVO.custId}"></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">付款方式：</span>
+                    <span th:text="${details[0].ordersVO.paymentMethod}"></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">訂單總額：</span>
+                    <span th:text="${details[0].ordersVO.orderTotal}"></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">建立時間：</span>
+                    <span th:text="${details[0].ordersVO.createdAt}"></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">訂單狀態：</span>
+                    <select name="orderStatus">
+                        <option value="處理中"
+                            th:selected="${details[0].ordersVO.orderStatus == '處理中'}">
+                            處理中
+                        </option>
+
+                        <option value="已完成" th:selected="${details[0].ordersVO.orderStatus == '已完成'}">已完成</option>
+                        <option value="已取消" th:selected="${details[0].ordersVO.orderStatus == '已取消'}">已取消</option>
+                    </select>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">付款狀態：</span>
+                    <select name="paymentStatus">
+                        <option value="未付款"th:selected="${details[0].ordersVO.paymentStatus == '未付款'}">未付款</option>
+                        <option value="已付款"th:selected="${details[0].ordersVO.paymentStatus == '已付款'}">已付款</option>
+                        <option value="退款"th:selected="${details[0].ordersVO.paymentStatus == '退款'}">退款</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit"class="btn btn-save">更新狀態</button>
+                    <a th:href="@{/orders}"class="btn btn-back">返回列表</a>
+                </div>
+            </div>
+        </form>
+
+        <h3 class="order-section-title">商品明細</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>明細編號</th>
+                    <th>商品編號</th>
+                    <th>購買數量</th>
+                    <th>小計</th>
+                    <th>備註</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="detail : ${details}">
+                    <td th:text="${detail.orderDetailId}"></td>
+                    <td th:text="${detail.productId}"></td>
+                    <td th:text="${detail.productQuantity}"></td>
+                    <td th:text="${detail.orderDetailSubtotal}"></td>
+                    <td th:text="${detail.orderDetailRemark}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
