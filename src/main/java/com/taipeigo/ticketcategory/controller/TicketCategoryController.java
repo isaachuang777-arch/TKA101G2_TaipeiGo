@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import com.taipeigo.ticketcategory.model.TicketCategoryService;
 import com.taipeigo.ticketcategory.model.TicketCategoryVO;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ public class TicketCategoryController {
     TicketCategoryService ticketCategoryService;
     
     
-    /* 進入票券種類列表 (查全部) */
+    /* 進入票券種類列表頁面 (查全部) */
     @GetMapping("listAllCategory")
     public String listAllCategory(ModelMap model) {
         List<TicketCategoryVO> list = ticketCategoryService.getAll();
@@ -37,7 +38,7 @@ public class TicketCategoryController {
         return "backend/ticketCategory/addTicketCategory";
     }
     
-    /* 處理新增票券種類表單送出 */
+    /* 處理新增門票分類表單送出 */
     @PostMapping("insert")
     public String insert(@Valid TicketCategoryVO ticketCategoryVO, 
                          BindingResult result, ModelMap model) {
@@ -47,6 +48,14 @@ public class TicketCategoryController {
         }
         ticketCategoryService.addTicketCategory(ticketCategoryVO); 
         // 以下是 網頁網址路徑
+        return "redirect:/ticketCategory/listAllCategory";
+    }
+    
+    /* 處理刪除門票分類 */
+    @PostMapping("delete")
+    public String delete(@RequestParam("ticketCategoryId") Integer ticketCategoryId, ModelMap model) {
+        ticketCategoryService.deleteTicketCategory(ticketCategoryId); 
+        // 討論：是否採用非 redirect 作法
         return "redirect:/ticketCategory/listAllCategory";
     }
 
