@@ -39,7 +39,12 @@ public class AdminVO implements Serializable {
     private Date hireDate;
 
     @Column(name = "ADM_STATUS")
-    private Byte admStatus; // 0=Disable 1 = Enable
+    private Byte admStatus; 
+///////////////////////////////////////
+    public static final Byte StatusEnabled = 1;             // 啟用
+    public static final Byte StatusDisabled  = 0;            // 停權
+    public static final Byte StatusForcetoChangePW = 9;     // 強制換密碼
+//////////////////////可以寫成adminVO.setAdmStatus(AdminVO.StatusEnabled);
 
     // ------------------FK
     @OneToMany(mappedBy = "adminVO", fetch = FetchType.EAGER)
