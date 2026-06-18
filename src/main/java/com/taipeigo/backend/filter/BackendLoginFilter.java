@@ -24,12 +24,12 @@ public class BackendLoginFilter extends OncePerRequestFilter {
 		
 		String requestURI = request.getRequestURI();
 // ===================================
-// 開發用 || 要測試Filter請解開
+// 開發用 不用強登 || 要測試請把以line29-32注解=>PS.上線前要刪掉or注解
 // ===================================
-//		if (false) {
-//			filterChain.doFilter(request, response);
-//			return;
-//		}
+		if (true) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 		
 		
 //===================
