@@ -4,16 +4,107 @@
     <meta charset="UTF-8">
     <title>重返密碼</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6; /* 跟其他頁面統一的背景色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #495057; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .btn-submit { width: 100%; padding: 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        .btn-submit:hover { background-color: #c82333; }
-        .msg-error { color: #721c24; background-color: #f8d7da; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-weight: bold; border: 1px solid #f5c6cb; }
-        .logout-link { display: block; margin-top: 25px; color: #6c757d; text-decoration: none; font-size: 14px; }
-        .logout-link:hover { text-decoration: underline; }
+        /* 將原本沒有 class 的 div 直接變成漂亮的白色浮動卡片 */
+        body > div {
+            background: white;
+            border-radius: 16px;
+            padding: 40px !important; /* 加大內距讓畫面呼吸 */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* 柔和陰影 */
+            border: 1px solid #e1e8ed;
+            box-sizing: content-box; 
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50; /* 質感深藍色標題 */
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dcdde1;
+            border-radius: 8px; /* 圓角輸入框 */
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: all 0.3s;
+            background-color: #f8f9fa; /* 微微的灰底，點擊時變白 */
+        }
+
+        /* 點擊輸入框時的發光效果 */
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: #3498db; /* 改為一致的藍色主題 */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px); /* 點擊按鈕的浮起動畫 */
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        /* 錯誤訊息保持醒目但更有質感 */
+        .msg-error {
+            color: #e74c3c;
+            background-color: #fadbd8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-weight: bold;
+            border: 1px solid #f5b7b1;
+            text-align: center;
+        }
+                /* 返回按鈕的樣式 (灰色空心底) */
+        .btn-cancel {
+            width: 100%;
+            padding: 14px;
+            background-color: white; 
+            color: #7f8c8d;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
@@ -39,8 +130,17 @@
             <input type="password" name="confirmPw" placeholder="請再次輸入新密碼" required minlength="8">
         </div>
 
-        <button type="submit" class="btn-submit">重返密碼</button>
+        <button type="submit" class="btn-submit" style="margin-top: 0;">確認修改</button>     
+        
+        <!-- "如果status ==9"只能登出 -->
+        <button th:if="${session.adminVO.admStatus == 9}" type="button" class="btn-cancel" onclick="document.getElementById('logout-form').submit();">放棄並登出</button>
+        
+        <!-- 一般正常人 (非狀態9) 返回上一頁 --> 
+  
+         <button th:if="${session.adminVO.admStatus != 9}" type="button" class="btn-cancel" onclick="history.back()">返回上一頁</button>
+    </div>
     </form>
+    <form id="logout-form" th:action="@{/backend/auth/logout}" method="post" style="display: none;"></form>
 
 </div>
 
