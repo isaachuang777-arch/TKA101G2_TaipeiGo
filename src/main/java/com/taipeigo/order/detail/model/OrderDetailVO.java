@@ -83,4 +83,16 @@ public class OrderDetailVO implements java.io.Serializable {
 		this.orderDetailRemark = orderDetailRemark;
 	}
 
+	public OrdersVO getOrdersVO() {
+		return ordersVO;
+	}
+
+	public void setOrdersVO(OrdersVO ordersVO) {
+		this.ordersVO = ordersVO;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 }

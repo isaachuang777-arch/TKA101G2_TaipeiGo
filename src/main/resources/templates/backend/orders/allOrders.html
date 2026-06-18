@@ -88,56 +88,34 @@ th {
 <body>
 
 	<h2>訂單管理</h2>
-
 	<div class="error-msg" th:if="${errorMessage}"
 		th:utext="${errorMessage}"></div>
-
 	<div class="search-box">
 
 		<!-- 訂單編號查詢 -->
-
 		<form th:action="@{/orders/search_ordersId}" method="post">
-
 			<div class="search-group">
-
-				<label>訂單編號</label> <input type="text" name="ordersId"
-					placeholder="請輸入訂單編號">
-
+				<label>訂單編號</label> <input type="text" name="ordersId" placeholder="請輸入訂單編號">
 				<button type="submit" class="search-btn">查詢</button>
-
 			</div>
-
 		</form>
 
 		<!-- 會員編號查詢 -->
-
 		<form th:action="@{/orders/search_custId}" method="post">
-
 			<div class="search-group">
-
-				<label>會員編號</label> <input type="text" name="custId"
-					placeholder="請輸入會員編號">
-
+				<label>會員編號</label> <input type="text" name="custId"placeholder="請輸入會員編號">
 				<button type="submit" class="search-btn">查詢</button>
-
 			</div>
-
 		</form>
 
 		<div style="margin-top: 15px;">
-
 			<a th:href="@{/orders}" class="search-btn"> 顯示全部 </a>
-
 		</div>
-
 	</div>
-
+	
 	<table>
-
 		<thead>
-
 			<tr>
-
 				<th>訂單編號</th>
 				<th>會員編號</th>
 				<th>訂單總額</th>
@@ -146,37 +124,22 @@ th {
 				<th>付款方式</th>
 				<th>建立時間</th>
 				<th>明細確認</th>
-
 			</tr>
-
 		</thead>
 
 		<tbody>
-
 			<tr th:each="order : ${allOrders}">
-
 				<td th:text="${order.orderId}"></td>
-
 				<td th:text="${order.custId}"></td>
-
 				<td th:text="${order.orderTotal}"></td>
-
 				<td th:text="${order.orderStatus}"></td>
-
 				<td th:text="${order.paymentStatus}"></td>
-
 				<td th:text="${order.paymentMethod}"></td>
-
 				<td th:text="${order.createdAt}"></td>
-
 				<td><a class="btn btn-view"
 					th:href="@{/orderDetail/{id}(id=${order.orderId})}"> 查看明細 </a></td>
-
 			</tr>
-
 		</tbody>
-
 	</table>
-
 </body>
 </html>
