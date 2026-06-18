@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>會員註冊</title>
+</head>
+<body>
+
+<h1>會員註冊</h1>
+
+<form th:action="@{/frontend/auth/register}"
+      th:object="${customerVO}"
+      method="post">
+
+    <div>
+        <label>姓名：</label>
+        <input type="text" th:field="*{custName}">
+    </div>
+
+    <br>
+
+    <div>
+        <label>性別：</label>
+        <select th:field="*{custSex}">
+            <option value="">請選擇</option>
+            <option value="m">男</option>
+            <option value="f">女</option>
+        </select>
+    </div>
+
+    <br>
+
+    <div>
+        <label>電話：</label>
+        <input type="text" th:field="*{custTel}">
+    </div>
+
+    <br>
+
+    <div>
+        <label>Email：</label>
+        <input type="email" th:field="*{custEmail}">
+    </div>
+
+    <br>
+
+    <div>
+        <label>地址：</label>
+        <input type="text" th:field="*{custAddress}">
+    </div>
+
+    <br>
+
+    <div>
+        <label>身分證字號：</label>
+        <input type="text" th:field="*{custIdCard}">
+    </div>
+
+    <br>
+
+    <div>
+        <label>生日：</label>
+        <input type="date" th:field="*{custBirthday}">
+    </div>
+
+    <br>
+
+    <div>
+        <label>帳號：</label>
+        <input type="text" th:field="*{custAccount}">
+    </div>
+
+    <br>
+
+    <div>
+        <label>密碼：</label>
+        <input type="password" th:field="*{custPassword}">
+    </div>
+
+    <br>
+
+    <button type="submit">註冊</button>
+
+</form>
+
+</body>
+</html>

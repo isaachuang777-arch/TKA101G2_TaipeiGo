@@ -8,13 +8,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.redis.core.StringRedisTemplate;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 @Controller
 @RequestMapping("/frontend")
 public class FrontendAuthController {
 
     @Autowired
     private CustomerService customerService;
-
+    
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    
     // 顯示前台會員登入頁
     // 網址：GET /frontend/auth/login
     // 對應：templates/frontend/auth/login.html
@@ -77,17 +84,61 @@ public class FrontendAuthController {
         return "frontend/auth/register";
     }
     
-    // 接收會員註冊資料
-    // 註冊後預設為未啟用帳號，需完成 Email 驗證後才能登入
-    @PostMapping("/auth/register")
-    public String register(CustomerVO customerVO) {
+	// 接收會員註冊資料
+	// 註冊後預設為未啟用帳號，並產生 Email 驗證 token 存入 Redis
+	@PostMapping("/auth/register")
+	public String register(CustomerVO customerVO, Model model) {
 
-    		customerVO.setCustStatus(0); // 0 = 未啟用
+    customerVO.setCustStatus(0); // 0 = 未啟用
 
-    		customerService.addCustomer(customerVO);
+    customerService.addCustomer(customerVO);
 
-    		return "redirect:/frontend/auth/login";
-    }
+    // 產生驗證 token
+    String token = UUID.randomUUID().toString();
+
+    // 存入 Redis：verify:token -> custId，有效 30 分鐘
+    stringRedisTemplate.opsForValue().set(
+             "verify:" + token,
+             customerVO.getCustId().toString(),
+             30,
+             TimeUnit.MINUTES
+    );
+
+    // 先用 Console 模擬 Email 驗證連結
+    System.out.println("驗證連結：http://localhost:8080/frontend/auth/verify?token=" + token);
+
+    model.addAttribute("successMsg", "註冊成功，請至信箱完成驗證");
+    return "frontend/auth/login";
+	}
+	
+	// Email 驗證
+	// 網址：GET /frontend/auth/verify?token=xxxx
+	@GetMapping("/auth/verify")
+	public String verifyEmail(@RequestParam("token") String token, Model model) {
+
+	    String custId = stringRedisTemplate.opsForValue().get("verify:" + token);
+
+	    if (custId == null) {
+	        model.addAttribute("errorMsg", "驗證連結已失效，請重新註冊或重新寄送驗證信");
+	        return "frontend/auth/login";
+	    }
+
+	    CustomerVO customer = customerService.getOneCustomer(Integer.valueOf(custId));
+
+	    if (customer == null) {
+	        model.addAttribute("errorMsg", "查無會員資料");
+	        return "frontend/auth/login";
+	    }
+
+	    customer.setCustStatus(1); // 1 = 啟用
+	    customerService.updateCustomer(customer);
+
+	    stringRedisTemplate.delete("verify:" + token);
+
+	    model.addAttribute("successMsg", "Email 驗證成功，請重新登入");
+	    return "frontend/auth/login";
+	}
+	
 
     // 前台會員登出
     // 網址：GET /frontend/auth/logout
