@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name="TICKET_CATEGORY")
@@ -15,6 +16,8 @@ public class TicketCategoryVO implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private Integer ticketCategoryId;
+	
+	@NotBlank(message = "門票分類名稱不能留白")
 	private String ticketCategoryName;
 	private Integer ticketCategoryStatus;
 	
