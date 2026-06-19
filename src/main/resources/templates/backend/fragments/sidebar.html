@@ -6,7 +6,7 @@
 <style>
 :root {
     --primary: #0d6efd;
-    --sidebar-width: 240px;
+    --sidebar-width: 260px;
     --sidebar-bg: #1a2236;
 }
 
@@ -80,14 +80,65 @@
     border-left-color: var(--primary);
 }
 
-.sidebar-footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 16px 20px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    color: #94a3b8;
-    font-size: 0.75rem;
+.admin-menu {
+    margin: 4px 12px;
+}
+
+.admin-menu summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
+    cursor: pointer;
+    color: #e2e8f0;
+    list-style: none;
+    border-radius: 0 10px 10px 0;
+    font-size: 0.92rem;
+    border-left: 4px solid transparent;
+    transition: all .2s;
+}
+
+.admin-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.admin-menu summary:hover {
+    background: rgba(255,255,255,0.08);
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+.admin-menu summary i {
+    font-size: 1.05rem;
+    width: 20px;
+    text-align: center;
+}
+
+.admin-menu .arrow {
+    margin-left: auto;
+    width: auto;
+    font-size: 0.8rem;
+    transition: transform .2s;
+}
+
+.admin-menu[open] .arrow {
+    transform: rotate(180deg);
+}
+
+.admin-menu .submenu {
+    margin-top: 4px;
+    margin-left: 18px;
+}
+
+.admin-menu .submenu a {
+    font-size: 0.85rem;
+    padding: 10px 14px;
+    margin: 2px 8px;
+    color: #cbd5e1;
+}
+
+.admin-menu .submenu a i {
+    font-size: 0.95rem;
 }
 
 @media (max-width: 768px) {
@@ -111,6 +162,26 @@
         <i class="bi bi-grid-1x2-fill"></i>
         <span>後台首頁</span>
     </a>
+    
+    <details class="admin-menu">
+        <summary>
+		    <i class="bi bi-person-circle"></i>
+		    <span>個人設定</span>
+		    <i class="bi bi-chevron-down arrow"></i>
+		</summary>
+
+        <div class="submenu">
+            <a th:href="@{/backend/admin/profile/index}">
+                <i class="bi bi-person-lines-fill"></i>
+                <span>個人資訊</span>
+            </a>
+
+            <a th:href="@{/backend/admin/profile/resetPw}">
+                <i class="bi bi-key-fill"></i>
+                <span>更改密碼</span>
+            </a>
+        </div>
+    </details>
 
     <div class="menu-title">主要管理</div>
 
@@ -146,19 +217,14 @@
         <i class="bi bi-shield-lock-fill"></i>
         <span>管理員管理</span>
     </a>
-    
-       <!-- 登出是 post 一定要用form-->
+
+
     <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">
         <i class="bi bi-box-arrow-right"></i>
         <span>後台登出</span>
     </a>
 
     <form id="logout-form" th:action="@{/backend/auth/logout}" method="post" style="display: none;"></form>
-
-
-    <div class="sidebar-footer">
-        TaipeiGo Admin System
-    </div>
 
 </aside>
 

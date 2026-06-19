@@ -12,7 +12,7 @@
 <style>
 :root {
     --primary: #0d6efd;
-    --sidebar-width: 240px;
+    --sidebar-width: 260px;
 }
 
 * { box-sizing: border-box; }
@@ -53,6 +53,22 @@ body {
     font-weight: 400;
     font-size: 0.85rem;
     margin-left: 8px;
+}
+
+.admin-top-info {
+    text-align: right;
+}
+
+.admin-top-name {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+}
+
+.admin-top-role {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-top: 2px;
 }
 
 .content-area {
@@ -218,7 +234,22 @@ body {
             後台首頁
             <span>/ Home</span>
         </div>
-        <div class="text-secondary small">
+
+        <div class="admin-top-info" th:if="${session.adminVO != null}">
+            <div>
+                <i class="bi bi-person-circle me-1"></i>
+                <span class="admin-top-name" th:text="${session.adminVO.admName}">管理員名稱</span>
+            </div>
+
+            <div class="admin-top-role">
+                <span th:each="perVO, iterStat : ${session.adminVO.admPerVO}">
+                    <span th:text="${perVO.admfuncVO.funcName}">權限名稱</span>
+                    <span th:if="${!iterStat.last}">、</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="text-secondary small" th:if="${session.adminVO == null}">
             管理員模式
         </div>
     </header>
@@ -237,9 +268,9 @@ body {
                     <div>
                         <div class="stat-label">會員總數</div>
                         <div class="stat-value"
-						     th:text="${customerList != null ? #lists.size(customerList) : 0}">
-						    0
-						</div>
+                             th:text="${customerList != null ? #lists.size(customerList) : 0}">
+                            0
+                        </div>
                     </div>
                 </div>
             </div>
@@ -250,9 +281,9 @@ body {
                     <div>
                         <div class="stat-label">啟用會員</div>
                         <div class="stat-value"
-						     th:text="${customerList != null ? #lists.size(customerList.?[custStatus == 1]) : 0}">
-						    0
-						</div>
+                             th:text="${customerList != null ? #lists.size(customerList.?[custStatus == 1]) : 0}">
+                            0
+                        </div>
                     </div>
                 </div>
             </div>
@@ -263,9 +294,9 @@ body {
                     <div>
                         <div class="stat-label">未啟用會員</div>
                         <div class="stat-value"
-						     th:text="${customerList != null ? #lists.size(customerList.?[custStatus == 0]) : 0}">
-						    0
-						</div>
+                             th:text="${customerList != null ? #lists.size(customerList.?[custStatus == 0]) : 0}">
+                            0
+                        </div>
                     </div>
                 </div>
             </div>
@@ -276,9 +307,9 @@ body {
                     <div>
                         <div class="stat-label">停權會員</div>
                         <div class="stat-value"
-						     th:text="${customerList != null ? #lists.size(customerList.?[custStatus == 2]) : 0}">
-						    0
-						</div>
+                             th:text="${customerList != null ? #lists.size(customerList.?[custStatus == 2]) : 0}">
+                            0
+                        </div>
                     </div>
                 </div>
             </div>
