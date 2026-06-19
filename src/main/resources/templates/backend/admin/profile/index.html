@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理員資料</title>
+        <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6; /* 跟 IT 首頁一樣的質感灰背景 */
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        /* 主卡片容器 */
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid #e1e8ed;
+        }
+        /* 大頭貼 Placeholder (漸層圓圈) */
+        .avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(110, 142, 251, 0.4);
+        }
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .profile-role {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        /* 資料清單區塊 */
+        .info-list {
+            text-align: left;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 15px;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #6c757d;
+            font-weight: 600;
+        }
+        .info-value {
+            color: #2b2b2b;
+            font-weight: bold;
+        }
+        /* 動作按鈕區 */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+        .btn-outline {
+            background: white;
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+        .btn-outline:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            border: 2px solid #3498db;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+            border-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #95a5a6;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .back-link:hover {
+            color: #7f8c8d;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="profile-card">
+<h2>管理員資料</h2>
+  <div class="profile-name" th:text="${adminVO.admName}">管理員姓名</div>
+        <div class="profile-role" th:text="'登入帳號：' + ${adminVO.admAcc}">登入帳號</div>
+        <div class="info-list">
+            <div class="info-item">
+                <span class="info-label">員工編號</span>
+                <span class="info-value" th:text="${adminVO.admId}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">到職日期</span>
+                <span class="info-value" th:text="${adminVO.hireDate}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">擁有權限</span>
+                <span class="info-value" style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end;">
+                    <!-- 用迴圈把所有權限印出來 -->
+                    <span th:each="per : ${adminVO.admPerVO}" 
+                          th:text="${per.admfuncVO.funcName}" 
+                          style="background: #e1f0fa; color: #2980b9; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                    </span>
+                    
+                    <!-- 一個權限都沒有，就顯示這行字 -->
+                    <span th:if="${#lists.isEmpty(adminVO.admPerVO)}" style="color: #95a5a6; font-size: 13px;">無特殊權限</span>
+                </span>
+            </div>
+
+        </div>
+        <div class="action-buttons">
+			
+            <a th:href="@{/backend/admin/profile/updaeAdminprofile}" class="btn btn-primary">更改資料</a>
+            
+
+            <a th:href="@{/backend/admin/profile/resetPw}" class="btn btn-primary">更改密碼</a>
+        </div>
+
+        <a th:href="@{/backend/dashboard/index}" class="back-link"> 返回後台首頁</a>
+    </div>
+</div>
+</body>
+</html>

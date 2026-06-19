@@ -3,9 +3,8 @@ package com.taipeigo.admin.model;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import com.taipeigo.admin.model.AdminVO;
 
 @Repository
 public interface AdminRepository extends JpaRepository<AdminVO, Integer> {
@@ -20,4 +19,14 @@ public interface AdminRepository extends JpaRepository<AdminVO, Integer> {
 
     //模糊search
     List<AdminVO> findByAdmAccContainingOrAdmNameContaining(String keyword1, String keyword2);
+    
+    //找出XXX權限的管理員 [如果用JPA會太長 所以直接HQL語法]
+    @Query("SELECT DISTINCT a FROM AdminVO a JOIN a.admPerVOs p WHERE p.admfuncVO.funcId = ?1")
+    List<AdminVO> findByAdminByFuncId(Integer funcId);
+    
+    // 找沒權限的管理員
+    List<AdminVO> findByAdmPerVOsIsEmpty();
+
+    // 沒權限人數
+    long countByAdmPerVOsIsEmpty();
 }

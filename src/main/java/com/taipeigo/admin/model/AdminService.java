@@ -138,7 +138,6 @@ public class AdminService {
 
 		//save(the dbAdminVO wif changed name/date/status) 
 		adminRepository.save(dbAdmin);
-
 		
 
 	} 
@@ -194,5 +193,39 @@ public class AdminService {
 
 		adminRepository.save(adminVO);
 
+	}
+//============================
+// 權限修改先刪除 後新增
+//============================
+@Transactional
+	public void updateAdminPer(Integer admId, Integer[] funcIds){
+		//刪除
+		admPerRepository.deleteByAdminVO_AdmId(admId);
+		//先把delete跑進db
+	    admPerRepository.flush();
+		//如果回傳的funcIds[]這陣列不是空的 就以做新增
+		if(funcIds !=null && funcIds.length > 0){
+			AdminVO adminVO= new AdminVO();
+			adminVO.setAdmId(admId);
+			//把funcIds[]抽出funcId做for loop
+			for(Integer funcId : funcIds){
+				AdmPerVO admPerVO = new AdmPerVO();
+				//把adminVO[admId]餵給admPerVO
+				admPerVO.setAdminVO(adminVO);
+
+				AdmFuncVO funcVO =new AdmFuncVO();
+				funcVO.setFuncId(funcId);
+				admPerVO.setAdmfuncVO(funcVO);
+				//存好餵給admPerRepo
+				admPerRepository.save(admPerVO);
+
+			}
+		}
+	}
+//============================
+// 列出權限by不同權限 使用 List<AdminVO> findByAdminByFuncId(Integer funcId);
+//============================
+	public List<AdminVO> getAdminByFuncId(Integer funcId){
+		return adminRepository.findByAdminByFuncId(funcId);
 	}
 }

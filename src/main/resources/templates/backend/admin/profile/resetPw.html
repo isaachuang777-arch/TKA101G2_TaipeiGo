@@ -14,7 +14,7 @@
             margin: 0;
         }
 
-        /* 將原本沒有 class 的 div 直接變成漂亮的白色浮動卡片 */
+
         body > div {
             background: white;
             border-radius: 16px;
@@ -33,7 +33,7 @@
             display: block;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #2c3e50; /* 質感深藍色標題 */
+            color: #2c3e50; 
             font-size: 15px;
         }
 
@@ -59,7 +59,7 @@
         .btn-submit {
             width: 100%;
             padding: 14px;
-            background-color: #3498db; /* 改為一致的藍色主題 */
+            background-color: #3498db;
             color: white;
             border: none;
             border-radius: 8px;
@@ -76,7 +76,7 @@
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
 
-        /* 錯誤訊息保持醒目但更有質感 */
+        /* 錯誤訊息*/
         .msg-error {
             color: #e74c3c;
             background-color: #fadbd8;
@@ -87,7 +87,7 @@
             border: 1px solid #f5b7b1;
             text-align: center;
         }
-                /* 返回按鈕的樣式 (灰色空心底) */
+                /* 返回按鈕的樣式  */
         .btn-cancel {
             width: 100%;
             padding: 14px;
@@ -132,10 +132,8 @@
 
         <button type="submit" class="btn-submit" style="margin-top: 0;">確認修改</button>     
         
-        <!-- "如果status ==9"只能登出 -->
         <button th:if="${session.adminVO.admStatus == 9}" type="button" class="btn-cancel" onclick="document.getElementById('logout-form').submit();">放棄並登出</button>
         
-        <!-- 一般正常人 (非狀態9) 返回上一頁 --> 
   
          <button th:if="${session.adminVO.admStatus != 9}" type="button" class="btn-cancel" onclick="history.back()">返回上一頁</button>
     </div>
