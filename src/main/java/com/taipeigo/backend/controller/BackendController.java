@@ -15,15 +15,21 @@ public class BackendController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-
-        model.addAttribute("activePage", "dashboard");
-
-        model.addAttribute("customerList",
-                            customerService.getAllCustomers());
-
-        return "backend/dashboard/index";
-    }
+    @GetMapping({
+        "/",
+        "/dashboard",
+        "/dashboard/",
+        "/dashboard/index"
+	})
+	public String dashboard(Model model) {
+	
+	    model.addAttribute("activePage", "dashboard");
+	
+	    model.addAttribute("customerList",
+	                       customerService.getAllCustomers());
+	
+	    return "backend/dashboard/index";
+	}
+    
 }
 

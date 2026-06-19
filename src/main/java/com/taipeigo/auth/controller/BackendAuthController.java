@@ -75,18 +75,5 @@ public class BackendAuthController {
         session.invalidate();
             return "redirect:/backend/auth/login";
     }
-
-//轉去首頁+沒登入時踢回login
-@GetMapping({"/dashboard/index","/dashboard/","/"})
-   public String showDashboard(HttpSession session) {
-//       if (session.getAttribute("adminVO") == null) {
-//           // 如果是空值，代表沒登入過，直接把它踢回登入頁面
-//           return "redirect:/backend/auth/login";
-//       }
-       
-       // 如果有登入，才放行讓他看 index
-       return "backend/dashboard/index";
-
-   }
 	
 }
