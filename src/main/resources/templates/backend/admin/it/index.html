@@ -18,7 +18,6 @@
             color: #2c3e50;
         }
         
-        /* 網格系統：自動根據螢幕大小排列卡片 */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -26,7 +25,6 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-        /* 卡片本體設計 */
         .card {
             background: white;
             border-radius: 12px;
@@ -43,13 +41,11 @@
             justify-content: center;
             min-height: 150px;
         }
-        /* 👑 滑鼠游標移過去的 Hover 效果 (非常重要，提升質感的關鍵) */
         .card:hover {
             transform: translateY(-8px); /* 向上浮起 */
             box-shadow: 0 12px 20px rgba(0,0,0,0.1);
             border-color: #3498db;
         }
-        /* 各卡片的 Icon 設計 */
 
         .card-title {
             font-size: 20px;
@@ -60,7 +56,7 @@
             font-size: 14px;
             color: #7f8c8d;
         }
-        /* 回大廳的按鈕 */
+
         .back-btn {
             display: inline-block;
             margin-top: 40px;
@@ -84,22 +80,22 @@
     <!-- 4 格卡片區 -->
     <div class="grid-container">
         
-        <!-- 卡片 1：現有的管理員列表 -->
+        <!-- 卡片 1：管理員列表 -->
         <a th:href="@{/backend/admin/it/listAll}" class="card">
             <div class="card-title">系統管理員總覽</div>
             <div class="card-desc">檢視、搜尋與修改所有人員資料</div>
         </a>
-        <!-- 卡片 2：現有的新增管理員 -->
+        <!-- 卡片 2：新增管理員 -->
         <a th:href="@{/backend/admin/it/addAdmin}" class="card">
             <div class="card-title">新增系統管理員</div>
             <div class="card-desc">為新進員工建立帳號與綁定權限</div>
         </a>
-        <!-- 卡片 3：未來的權限管理 -->
-        <a href="#" class="card" onclick="alert('功能即將上線！請期待！'); return false;">
+        <!-- 卡片 3：權限管理 -->
+        <a th:href="@{/backend/admin/it/permission}" class="card">
             <div class="card-title">權限控制中心</div>
-            <div class="card-desc">依權限過濾名單與批量調整 (開發中)</div>
+            <div class="card-desc">依權限過濾名單與修改權限</div>
         </a>
-        <!-- 卡片 4：未來的強制密碼重設 -->
+        <!-- 卡片 4：強制密碼重設 -->
         <a th:href="@{/backend/admin/it/forceResetPw}" class="card" >
             <div class="card-title">強制密碼重設</div>
             <div class="card-desc">登入後將需要重新設定密碼才能正常使用</div>

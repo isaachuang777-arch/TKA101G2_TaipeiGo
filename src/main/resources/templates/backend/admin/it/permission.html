@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理員權限列表</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+            width: 50%; 
+            table-layout: fixed; 
+        }
+	       span.mb-4{
+	        background-color: #7ec0ff; 
+	        padding: 7px 10px; 
+	        border-radius: 10px; 
+	        font-size: 14px; 
+        }
+        	span a{
+        	color: black; 
+
+        	}
+        	span a:hover{
+        	color: rgba(0,0,0,0.7);; 
+        	}
+        	span.mb-4{
+	        background-color: #7ec0ff; 
+	        padding: 7px 10px; 
+	        border-radius: 10px; 
+	        font-size: 14px; 
+        }
+        a{
+          text-decoration: none;
+          color: black; 
+        }
+	.btn_change{
+	   background-color: #007bff; 
+    color: white; 
+    padding: 5px 10px; 
+    border: none; 
+    border-radius: 3px; 
+    cursor: pointer}
+    .btn_change a{
+    color: white; 
+    }
+    </style>
+</head>
+<body>
+    <h2>系統管理員權限列表</h2>
+    <div style="margin-bottom: 20px;">
+    <a th:href="@{/backend/admin/it/index}">
+        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+        返回 系統管理員控制中心
+        </button>
+    </a>
+</div>
+        <div th:if="${successMsg}" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; margin-bottom: 20px; border-radius: 5px; position: relative;">
+        <span th:text="${successMsg}"></span>
+        <!-- 點擊這個叉叉，就會利用簡單的 JS 把這個 div 給隱藏起來 -->
+        <button type="button" onclick="this.parentElement.style.display='none';" style="position: absolute; right: 10px; top: 12px; background: none; border: none; cursor: pointer; font-size: 16px;">✖</button>
+    </div>
+
+<!--  如果selectedfuncId = null-->
+<span class="mb-4">
+    <a th:href="@{/backend/admin/it/permission}" 
+       th:class="${selectedfuncId == null} ">
+       顯示全部
+    </a>
+   </span>
+   &nbsp;&nbsp;
+    <!-- admFuncList用each跑出來-->
+    <th:block th:each="func : ${admFuncList}">
+         <span class="mb-4">
+        <!-- 動態網頁連結-->
+        <a th:href="@{/backend/admin/it/permission(funcId=${func.funcId})}"
+           th:class="${selectedfuncId == func.funcId} ">
+           
+           <!-- 列出admFuncList裡的Name -->
+           <span th:text="${func.funcName}"></span>
+           | 
+           <!-- 列出各權限的人數 -->
+           <span class="badge bg-danger rounded-pill" th:text="${#sets.size(func.admPerVOs)}"></span>
+           
+        </a>
+        </span>
+       &nbsp;&nbsp;
+       
+    </th:block>
+    <span class="mb-4">
+    <!-- 無權限人員 -->
+        <a th:href="@{/backend/admin/it/permission(funcId=0)}" 
+       th:class="${selectedfuncId == 0} ">
+       
+       無權限管理員 | 
+       <span class="badge bg-light text-danger rounded-pill" th:text="${noPeradmin}">
+    </a>
+</span>
+    <div th:if="${errorMsg != null}" style="color: red;">
+        <p th:text="${errorMsg}"></p>
+    </div>
+<hr>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 18%;">管理員編號</th>
+                <th style="width: 20%;">帳號</th>
+                <th style="width: 20%;">姓名</th>
+                <th style="width: 20%;">狀態</th>
+                <th>擁有權限</th>
+                <th style="width: 15%;">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--這裡插入listAlladmin()裡面回傳的adminVOList做回圈  -->
+            <tr th:each="adminVOList : ${adminList}">
+            <td th:text="${adminVOList.admId}">編號</td>
+            <td th:text="${adminVOList.admAcc}">帳號</td>
+            <td th:text="${adminVOList.admName}">姓名</td>
+                
+            <td>
+                <!-- 狀態為 1 -->
+                <span th:if="${adminVOList.admStatus == 1}" style="background-color: #28a745; color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 15px;" >
+                啟用</span>
+                
+                <!-- 狀態為 0 -->
+                <span th:if="${adminVOList.admStatus == 0}" style="background-color: #6c757d; color: white; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 15px ;">
+                	停權</span>
+                
+                <!-- 狀態為 9 -->
+                <span th:if="${adminVOList.admStatus == 9}" style="background-color: #ffc107; color: #212529; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 15px">
+                    強制重設密碼
+                </span>
+            </td>
+                
+			  <!-- 權限顯示 -->
+			    <td>
+			        <!--權限list的admPerVO是空的 -->
+			        <span th:if="${#lists.isEmpty(adminVOList.admPerVO)}" style="color: red;">
+			            -沒有權限-
+			        </span>
+			        
+			        <!-- list有東西 -->
+			        <span th:unless="${#lists.isEmpty(adminVOList.admPerVO)}"
+			              th:each="admPerVO : ${adminVOList.admPerVO}"
+			              th:text="${admPerVO.admfuncVO.funcName} + ' '">
+			        </span>
+    </td>
+                
+                <!-- 修改權限 -->
+                <td>
+
+					<button class="btn_change"><a th:href="@{/backend/admin/it/updatepermission(admId=${adminVOList.admId})}" >	修改權限</a>
+					</button>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

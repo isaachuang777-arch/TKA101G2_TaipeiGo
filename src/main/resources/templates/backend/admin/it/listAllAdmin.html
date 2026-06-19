@@ -30,6 +30,21 @@
     .btn-inactive {
         background-color: #6c757d;
     }
+   button{
+	   background-color: #007bff; 
+    color: white; 
+    padding: 5px 10px; 
+    border: none; 
+    border-radius: 3px; 
+    cursor: pointer}
+    .btn_change a{
+    color: white; 
+    }
+    a{
+        text-decoration: none;
+            color: white; 
+            }
+    
     </style>
 </head>
 <body>
@@ -93,7 +108,7 @@
                         th:onclick="'toggleStatus(' + ${adminVOList.admId} + ', 1, this)'">停權</button>
                 
                 <!-- 狀態為 9：純顯示標籤，不可用按鈕直接切換 (必須等員工自己改密碼解鎖) -->
-                <span th:if="${adminVOList.admStatus == 9}" style="background-color: #ffc107; color: #212529; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <span th:if="${adminVOList.admStatus == 9}" style="background-color: #ffc107; color: #212529; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 15px">
                     強制重設密碼
                 </span>
             </td>
@@ -110,12 +125,10 @@
 			              th:each="admPerVO : ${adminVOList.admPerVO}"
 			              th:text="${admPerVO.admfuncVO.funcName} + ' '">
 			        </span>
-    </td>
-                
-                <!-- 操作按鈕 (修改功能我們下一步再做，先預留位子) -->
-                <td>
-                    <a th:href ="@{/backend/admin/it/updateAdmin(admId=${adminVOList.admId})}">修改資料</a>
-                    <a href="#">修改權限</a>
+    		</td>
+                   <td>
+                   <button> <a th:href ="@{/backend/admin/it/updateAdmin(admId=${adminVOList.admId})}">修改資料</a></button>
+
                 </td>
             </tr>
         </tbody>

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.taipeigo.admin.model.AdmFuncVO;
+import com.taipeigo.admin.model.AdminRepository;
 import com.taipeigo.admin.model.AdminVO;
 import com.taipeigo.admin.model.AdmFuncService;
 import com.taipeigo.admin.model.AdminService;
@@ -22,16 +23,8 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/backend/admin/")
-////////////////////////////////////////
-/// This controller for IT admin
-/// - listAlluser
-/// - update admin permission
-/// - update admin status
-/// - contatining seach for admin
-/// - add new admin
-/// ---->Need filter for IT admin only
-/// ---->Need force login
-////////////////////////////////////////
+
+
 public class AdminController {
     private final IndexController indexController;
 
@@ -40,8 +33,10 @@ public class AdminController {
     
     @Autowired
     private AdmFuncService adminFuncService;
-
-
+    
+    @Autowired
+    private AdminRepository adminRepository;
+   
 
     AdminController(IndexController indexController) {
         this.indexController = indexController;
@@ -175,19 +170,14 @@ public class AdminController {
     }
 
 //==========================================
-//User Profile首頁
+//Admin Profile首頁
 //==========================================
-//轉去首頁+沒登入時踢回login
-@GetMapping("/profile/index")
-  public String showDashboard(HttpSession session) {
-//      if (session.getAttribute("adminVO") == null) {
-//          // 如果是空值，代表沒登入過，直接把它踢回登入頁面
-//          return "redirect:/backend/auth/login";
-//      }
-      
-      // 如果有登入，才放行讓他看 index.html
-      return "backend/admin/profile/index";
 
+@GetMapping("/profile/index")
+  public String showDashboard(Model model, HttpSession session) {
+	    AdminVO loginAdmin = (AdminVO) session.getAttribute("adminVO");
+	    model.addAttribute("adminVO", loginAdmin);
+      return "backend/admin/profile/index";
   }
 // ==========================================
 // IT 管理中心首頁 (4 格卡片入口)
@@ -229,8 +219,8 @@ public String showforceResetPw(Model model , @RequestParam(value = "keyword", re
             // 將表格的 admId 丟給itforceResetPw處理
             adminService.itforceResetPw(admId);
             
-            
-            redirectAttributes.addFlashAttribute("successMsg", "密碼已成功強制重設為預設值！" + adminVO.getAdmName() + " 登入時將被強制重設密碼。");
+            AdminVO adminVO1 = adminService.findByAdmId(admId);
+            redirectAttributes.addFlashAttribute("successMsg", "密碼已成功強制重設為預設值！" + adminVO1.getAdmAcc()  + " 登入時將被強制重設密碼。");
             
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "重設失敗：" + e.getMessage());
@@ -282,9 +272,61 @@ public String showforceResetPw(Model model , @RequestParam(value = "keyword", re
                 redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
                 return "redirect:/backend/admin/profile/resetPw";
             }
-
-
-
+	}
+// ==========================================
+// 權限中心: 
+// ==========================================
+@GetMapping("/it/permission")
+	public String  showPermission(
+	    @RequestParam(required = false) Integer funcId,
+	    Model model
+	){
+	    List<AdminVO> adminList;
+	    //5. 新增無權限判斷 (funcId==0) =>顯示無權限者
+	    if(funcId !=null && funcId==0) {
+	    adminList = adminRepository.findByAdmPerVOsIsEmpty();
+		}else if(funcId != null){ //1. 先判斷是要全list還是以by權限 =>顯示Admin的List
+	       adminList = adminService.getAdminByFuncId( funcId);        
+	    }else{ //沒輸入就代表給他全表
+	       adminList = adminService.getAllAdmin();
+	    }
+	    //2. 顯示各權限 => FuncName
+	    List<AdmFuncVO> admFuncList = adminFuncService.getAlladmFuncs();
+	    
+	    //3. 送去前端
+	    model.addAttribute("admFuncList", admFuncList);
+	    model.addAttribute("adminList", adminList);
+	    
+	    //4.前端有選哪個權限 就回傳是哪個funcId
+	    model.addAttribute("selectedfuncId", funcId);	
+	    
+	    //6.回傳無權限人數
+	    long noPeradmin = adminRepository.countByAdmPerVOsIsEmpty();
+	    model.addAttribute("noPeradmin", noPeradmin);
+	    
+	    return "backend/admin/it/permission";
 }
+//==========================================
+//更改權限1: 
+//==========================================
+@GetMapping("/it/updatepermission")
+public String Showupdatepermission(Model model, @RequestParam("admId") Integer admId) {
+    AdminVO adminVO = adminService.findByAdmId(admId);
+    List<AdmFuncVO>funcList = adminFuncService.getAlladmFuncs();
 
+    model.addAttribute("adminVO", adminVO);
+    model.addAttribute("funcList", funcList);
+	
+	return "backend/admin/it/updatepermission";
+}
+//==========================================
+//更改權限2: 
+//==========================================
+@PostMapping("/it/updatepermission")
+public String updatepermission(@RequestParam("admId") Integer admId, Integer[] funcIds, Model model,RedirectAttributes redirectAttributes) {
+	adminService.updateAdminPer(admId, funcIds);	
+		AdminVO adminVO = adminService.findByAdmId(admId);	
+	redirectAttributes.addFlashAttribute("successMsg", "成功修改 " + adminVO.getAdmName() + " 的權限！");
+	return "redirect:/backend/admin/it/permission";
+}
 }

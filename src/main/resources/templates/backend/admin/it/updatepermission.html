@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>更新管理員權限</title>
+    </head>
+    <body>
+        <h2>更新管理員權限</h2>
+    <div style="margin-bottom: 20px;">
+    <a th:href="@{/backend/admin/it/permission}">
+        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+        返回 系統管理員權限列表
+        </button>
+    </a>
+</div>
+        <div class="profile-name" th:text="${adminVO.admName}">管理員姓名</div>
+        <div class="profile-role" th:text="'登入帳號：' + ${adminVO.admAcc}">登入帳號</div>
+        <div class="info-list">
+            <div class="info-item">
+                <span class="info-label">員工編號</span>
+                <span class="info-value" th:text="${adminVO.admId}"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">更改權限</span>
+                <span class="info-value" style="display: flex; gap: 5px; flex-wrap: wrap; ">
+            </div>
+            <!-- 權限選擇區 -->
+		<form th:action="@{/backend/admin/it/updatepermission}"  method="post">
+		<input type="hidden" name="admId" th:value="${adminVO.admId}">
+		<th:block th:each="func : ${funcList}"> 
+		<input type="checkbox" name="funcIds" th:value="${func.funcId}" th:checked="${#lists.contains(adminVO.admPerVO.![admfuncVO.funcId], func.funcId)}">
+            <span th:text="${func.funcName}"  style="background: #e1f0fa; color: #2980b9; padding: 2px 10px; border-radius: 10px; font-size: 16px; font-weight: bold;"></span><br>
+		</th:block>
+		<br>
+				 <button type="submit" style="background-color: rgb(190, 221, 241); color: black; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;"> 確認修改</button>
+		</from>
+
+    </body>
+    </html>
