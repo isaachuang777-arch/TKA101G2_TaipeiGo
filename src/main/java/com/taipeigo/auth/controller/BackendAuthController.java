@@ -71,7 +71,7 @@ public class BackendAuthController {
 //登出
 @PostMapping("/auth/logout")
     public String logout (HttpSession session) {
-        	session.removeAttribute("adminVo");
+        	session.removeAttribute("adminVO");
         	//session.invalidate();
             return "redirect:/backend/auth/login";
     }
