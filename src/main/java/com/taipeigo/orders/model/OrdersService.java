@@ -37,6 +37,16 @@ public class OrdersService {
 
 	}
 
+	public void updateStatus(Integer ordersId, String orderStatus, String paymentStatus) {
+		/*如果repository去尋找ordersId，沒有找到東西就拋RuntimeException*/
+		OrdersVO orders  = repository.findById(ordersId).orElseThrow(()-> new RuntimeException("找不到訂單"));
+		/*如果repository有找到，就把VO回來的東西給你，再把值塞回去對應欄位*/
+	    orders.setOrderStatus(orderStatus);
+	    orders.setPaymentStatus(paymentStatus);
+	    repository.save(orders);
+
+	}
+
 
 
 	

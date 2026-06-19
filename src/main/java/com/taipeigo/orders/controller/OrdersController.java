@@ -71,6 +71,9 @@ public class OrdersController {
 		return "backend/orders/allOrders";
 	}
 
+	
+	
+	
 	/* order 會員編號查詢  Search CustomerId */
 	@PostMapping("search_custId")
 	public String search_custId(
@@ -95,8 +98,19 @@ public class OrdersController {
 	}
 
 	
-	
-	
+	/**/
+	/* orders 更新訂單狀態, 更新付款狀態 update status */
+	@PostMapping("update_status")
+	public String update_Status(
+	        @RequestParam("orderId") Integer ordersId,
+	        @RequestParam("orderStatus") String orderStatus,
+	        @RequestParam("paymentStatus") String paymentStatus,
+	        ModelMap model) {
+		/* 更新status邏輯 */
+		ordersService.updateStatus(ordersId, orderStatus, paymentStatus);
+				return "redirect:/orderDetail/" + ordersId;
+		
+	}
 	
 	
 	
