@@ -60,6 +60,16 @@ public class CustomerService {
         return repository.findByCustAccount(account) != null;
     }
     
+    // Email 是否存在
+    public boolean isEmailExist(String email) {
+        return repository.findByCustEmail(email) != null;
+    }
+
+    // 身分證是否存在
+    public boolean isIdCardExist(String idCard) {
+        return repository.findByCustIdCard(idCard) != null;
+    }
+    
     // 分頁
     public Page<CustomerVO> getCustomersByPage(int page) {
         Pageable pageable = PageRequest.of(

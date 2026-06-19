@@ -16,7 +16,13 @@ public interface CustomerRepository
 
     // 用帳號查
     CustomerVO findByCustAccount(String custAccount);
+    
+    // 用 Email 查
+    CustomerVO findByCustEmail(String custEmail);
 
+    // 用身分證查
+    CustomerVO findByCustIdCard(String custIdCard);
+    
     // 模糊查姓名（JPQL）
     @Query("from CustomerVO c where c.custName like %?1%")
     List<CustomerVO> findByNameLike(String name);

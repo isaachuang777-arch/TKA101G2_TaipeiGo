@@ -89,26 +89,40 @@ public class FrontendAuthController {
 	@PostMapping("/auth/register")
 	public String register(CustomerVO customerVO, Model model) {
 
-    customerVO.setCustStatus(0); // 0 = 未啟用
+		// 帳號重複檢查
+		if (customerService.isAccountExist(customerVO.getCustAccount())) {
+			model.addAttribute("errorMsg", "此帳號已被使用");
+			return "frontend/auth/register";
+		}
 
-    customerService.addCustomer(customerVO);
+		// Email 重複檢查
+		if (customerService.isEmailExist(customerVO.getCustEmail())) {
+			model.addAttribute("errorMsg", "此 Email 已被註冊");
+			return "frontend/auth/register";
+		}
 
-    // 產生驗證 token
-    String token = UUID.randomUUID().toString();
+		// 身分證重複檢查
+		if (customerService.isIdCardExist(customerVO.getCustIdCard())) {
+			model.addAttribute("errorMsg", "身分證字號無法使用，請確認資料或聯絡客服");
+			return "frontend/auth/register";
+		}
 
-    // 存入 Redis：verify:token -> custId，有效 30 分鐘
-    stringRedisTemplate.opsForValue().set(
-             "verify:" + token,
-             customerVO.getCustId().toString(),
-             30,
-             TimeUnit.MINUTES
-    );
+		customerVO.setCustStatus(0); // 0 = 未啟用
 
-    // 先用 Console 模擬 Email 驗證連結
-    System.out.println("驗證連結：http://localhost:8080/frontend/auth/verify?token=" + token);
+		customerService.addCustomer(customerVO);
 
-    model.addAttribute("successMsg", "註冊成功，請至信箱完成驗證");
-    return "frontend/auth/login";
+		// 產生驗證 token
+		String token = UUID.randomUUID().toString();
+
+		// 存入 Redis：verify:token -> custId，有效 30 分鐘
+		stringRedisTemplate.opsForValue().set("verify:" + token, customerVO.getCustId().toString(), 30,
+				TimeUnit.MINUTES);
+
+		// 先用 Console 模擬 Email 驗證連結
+		System.out.println("驗證連結：http://localhost:8080/frontend/auth/verify?token=" + token);
+
+		model.addAttribute("successMsg", "註冊成功，請至信箱完成驗證");
+		return "frontend/auth/login";
 	}
 	
 	// Email 驗證
