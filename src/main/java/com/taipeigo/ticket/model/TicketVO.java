@@ -203,6 +203,16 @@ public class TicketVO implements java.io.Serializable {
 	public void setTicketCategories(List<TicketCategoryVO> ticketCategories) {
 		this.ticketCategories = ticketCategories;
 	}
+	
+	/* 取得還未被購買的序號張數 */
+	public long getAvailableSerialCount() {
+	    if (this.ticketSerials == null) {
+	        return 0;
+	    }
+	    return this.ticketSerials.stream()
+	            .filter(serial -> serial.getCustomerVO() == null) // 檢查會員物件是不是 null (代表還在)
+	            .count();
+	}
 
 	
 }
