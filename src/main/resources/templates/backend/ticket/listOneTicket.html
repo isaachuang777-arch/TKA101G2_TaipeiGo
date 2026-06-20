@@ -344,7 +344,7 @@
                                 <small class="text-muted fw-normal">(共 <span th:text="${#lists.size(ticketVO.ticketSerials)}">0</span> 筆)</small>
                             </div>
                             
-                            <div class="table-responsive serial-table" style="max-height: 250px; overflow-y: auto;">
+                            <div class="table-responsive serial-table" style="max-height: 275px; overflow-y: auto;">
                                 <table class="table align-middle mb-0 text-center">
                                     <thead>
                                         <tr>
@@ -355,8 +355,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="serial : *{ticketSerials}">
-                                            <td class="text-muted small" th:text="${serial.ticketSerialId}">1</td>
+                                        <tr th:each="serial, serialStat : *{ticketSerials}">
+        
+        									<td class="text-muted small" th:text="${serialStat.count}">1</td>
+                                            
                                             <td>
                                                 <span class="serial-code" th:text="${serial.serialNumber}">TKABC123XYZ</span>
                                             </td>

@@ -266,10 +266,10 @@
             <div>
                 <h2 class="page-title">門票管理系統</h2>
                 <div class="page-subtitle">
-                    <i class="bi bi-ticket-perforated-fill me-1 text-primary"></i> 管理所有門票商品資料與庫存
+                    管理所有門票商品資料與庫存
                 </div>
             </div>
-            <a th:href="@{/backend/ticket/addTicket}" class="btn-add">
+            <a th:href="@{/ticket/addTicket}" class="btn-add">
                 ＋ 新增門票商品
             </a>
         </div>
@@ -312,9 +312,16 @@
                         <td class="text-muted small" th:text="${ticket.ticketAddress}">台北市文山區新光路二段30號</td>
                         
                         <td class="text-center">
-                            <span class="text-muted small">
-                                <span th:text="${ticket.availableSerialCount}">0</span> 張
-                            </span>
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <span class="text-muted small">
+                                    <span th:text="${ticket.availableSerialCount}">0</span> 張
+                                </span>
+                                <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" 
+                                        data-bs-toggle="modal" th:data-bs-target="'#generateSerialsModal' + ${ticket.ticketId}" 
+                                        style="border-radius: 6px; font-size: 11px; height: 20px; line-height: 18px;">
+                                    ＋ 補貨
+                                </button>
+                            </div>
                         </td>
                         
                         <td class="text-end">
@@ -347,34 +354,30 @@
                                 <a th:href="@{/backend/ticket/updateTicket(ticketId=${ticket.ticketId})}" class="btn-edit" title="編輯門票">
                                     修改
                                 </a>
-                                <a th:href="@{/backend/ticket/viewTicketSerials(ticketId=${ticket.ticketId})}" class="btn-serial" title="查看序號庫存">
-                                    序號
-                                </a>
-                                <button type="button" class="btn-gallery" data-bs-toggle="modal" th:data-bs-target="'#imageModal' + ${ticket.ticketId}" title="瀏覽圖片">
-                                    圖片
-                                </button>
                             </div>
 
-                            <div class="modal fade" th:id="'imageModal' + ${ticket.ticketId}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: none;">
-                                        <div class="modal-header" style="background: #f8fafc; border-bottom: 1px solid var(--border);">
-                                            <h5 class="modal-title fw-bold" th:text="${ticket.ticketName} + ' - 所有圖片'">門票圖片</h5>
-                                            <button type="button" class="btn-close" data-bs-shadow="none" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body p-4">
-                                            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                                <div th:each="img : ${ticket.ticketImages}">
-                                                    <img th:src="${img.ticketImageSrc}" style="width: 120px; height: 120px; object-fit: cover;" class="rounded border shadow-sm">
-                                                </div>
-                                                <div th:if="${#lists.isEmpty(ticket.ticketImages)}" class="text-muted py-4">
-                                                    此門票目前沒有任何圖片
-                                                </div>
+                            <div class="modal fade" th:id="'generateSerialsModal' + ${ticket.ticketId}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-sm">
+                                    <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none;">
+                                        <form th:action="@{/ticket/generateSerials}" method="post">
+                                            <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
+                                            <div class="modal-header" style="background: #f8fafc; border-bottom: 1px solid var(--border);">
+                                                <h6 class="modal-title fw-bold">新增門票序號</h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                        </div>
+                                            <div class="modal-body p-3">
+                                                <label class="form-label small fw-bold text-secondary mb-1">新增張數</label>
+                                                <input type="number" name="quantity" class="form-control form-control-sm text-center" value="10" min="1" max="500" required>
+                                            </div>
+                                            <div class="modal-footer p-2 style='background: #f8fafc; border-top: 1px solid var(--border);'">
+                                                <button type="button" class="btn btn-sm btn-link text-muted text-decoration-none small" data-bs-dismiss="modal">取消</button>
+                                                <button type="submit" class="btn btn-sm btn-success px-3" style="border-radius: 6px;">新增</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
+
                         </td>
                     </tr>
                     
