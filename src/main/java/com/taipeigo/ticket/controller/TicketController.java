@@ -60,6 +60,16 @@ public class TicketController {
     }
     */
 
+    @GetMapping("/addTicket")
+    public String addTicket(ModelMap model) {
+        TicketVO ticketVO = new TicketVO();
+        model.addAttribute("ticketVO", ticketVO);
+        // 查出所有啟用中的門票分類， th:each="category : ${categoryList}"
+        model.addAttribute("categoryList", ticketCategoryService.getAllActive()); 
+        // 以下是 html 路徑
+        return "backend/ticket/addTicket"; 
+    }
+
     
     @PostMapping("/generateSerials") // 對應 th:action 網址
     public String generateSerials(
