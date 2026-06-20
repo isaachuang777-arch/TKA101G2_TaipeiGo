@@ -131,6 +131,7 @@
     </style>
 </head>
 <body>
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 <div class="profile-card">
 <h2>管理員資料</h2>
   <div class="profile-name" th:text="${adminVO.admName}">管理員姓名</div>
@@ -153,17 +154,12 @@
                           style="background: #e1f0fa; color: #2980b9; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
                     </span>
                     
-                    <!-- 一個權限都沒有，就顯示這行字 -->
                     <span th:if="${#lists.isEmpty(adminVO.admPerVO)}" style="color: #95a5a6; font-size: 13px;">無特殊權限</span>
                 </span>
             </div>
 
         </div>
         <div class="action-buttons">
-			
-            <a th:href="@{/backend/admin/profile/updaeAdminprofile}" class="btn btn-primary">更改資料</a>
-            
-
             <a th:href="@{/backend/admin/profile/resetPw}" class="btn btn-primary">更改密碼</a>
         </div>
 
