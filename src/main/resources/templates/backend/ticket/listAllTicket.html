@@ -20,6 +20,8 @@
             --warning-hover: #d97706;
             --info-teal: #0d9488;
             --info-hover: #0f766e;
+            --dark-slate: #4b5563;
+            --dark-slate-hover: #374151;
             --danger: #ef4444;
             --bg: #f5f6f8;
             --card: #ffffff;
@@ -115,12 +117,24 @@
             color: white;
         }
 
+        .btn-detail {
+            background: var(--dark-slate);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .btn-detail:hover { background: var(--dark-slate-hover); color: white; }
+
         .btn-edit {
             background: var(--blue);
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 6px 14px;
+            padding: 6px 12px;
             font-weight: 600;
             font-size: 14px;
             text-decoration: none;
@@ -132,7 +146,7 @@
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 6px 14px;
+            padding: 6px 12px;
             font-weight: 600;
             font-size: 14px;
             text-decoration: none;
@@ -144,7 +158,7 @@
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 6px 14px;
+            padding: 6px 12px;
             font-weight: 600;
             font-size: 14px;
         }
@@ -265,12 +279,12 @@
                 <thead>
                     <tr>
                         <th width="7%" class="text-center">編號</th>
-                        <th width="28%">門票名稱</th>
+                        <th width="26%">門票名稱</th>
                         <th width="12%">所屬分類</th>
                         <th width="15%">地址</th>
                         <th width="16%" class="text-end">票種 售價 (原價)</th>
                         <th width="10%" class="text-center">狀態</th>
-                        <th width="12%" class="text-center">操作功能</th>
+                        <th width="14%" class="text-center">操作功能</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -282,7 +296,7 @@
                                      class="me-3 border shadow-sm ticket-cover" alt="門票封面">
                                 <div>
                                     <div class="fw-bold text-dark mb-1" th:text="${ticket.ticketName}">台北市立動物園門票</div>
-                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;" th:text="${ticket.ticketDescription}">描述...</small>
+                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 180px;" th:text="${ticket.ticketDescription}">描述...</small>
                                 </div>
                             </div>
                         </td>
@@ -320,6 +334,9 @@
                         </td>
                         <td>
                             <div class="d-flex justify-content-center gap-1">
+                                <a th:href="@{/ticket/getOne_For_Display(ticketId=${ticket.ticketId})}" class="btn-detail" title="查看門票詳情">
+                                    詳情
+                                </a>
                                 <a th:href="@{/backend/ticket/updateTicket(ticketId=${ticket.ticketId})}" class="btn-edit" title="編輯門票">
                                     修改
                                 </a>

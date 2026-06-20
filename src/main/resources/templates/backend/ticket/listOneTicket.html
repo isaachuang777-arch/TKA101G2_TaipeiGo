@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaipeiGO ｜ 門票詳情</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        @charset "UTF-8";
+
+        :root {
+            --primary: #ff7a1a;
+            --primary-hover: #ea6c0e;
+            --blue: #2563eb;
+            --blue-hover: #1d4ed8;
+            --bg: #f5f6f8;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --text: #111827;
+            --text-light: #6b7280;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: "Microsoft JhengHei", sans-serif;
+            margin: 0;
+        }
+
+        /* ==========================
+           Top Header
+        ========================== */
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        /* ==========================
+           Main Layout
+        ========================== */
+        .page-wrapper {
+            padding: 30px;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+            overflow: hidden;
+        }
+
+        /* ==========================
+           Card Header
+        ========================== */
+        .page-header {
+            padding: 24px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* ==========================
+           Buttons
+        ========================== */
+        .btn-back {
+            background: #f3f4f6;
+            color: var(--text-light);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+            color: var(--text);
+        }
+
+        .btn-edit {
+            background: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-edit:hover { background: var(--blue-hover); color: white; }
+
+        /* ==========================
+           Detail Layout & Styles
+        ========================== */
+        .detail-label {
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .detail-value {
+            color: var(--text);
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #f1f5f9;
+        }
+
+        /* 圖片預覽區 */
+        .main-img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .thumb-img {
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .thumb-img:hover { border-color: var(--primary); }
+
+        /* 票價區塊 */
+        .price-card {
+            background: #fff8f3;
+            border: 1px solid #ffeada;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .ticket-type-label {
+            font-size: 13px;
+            font-weight: 700;
+            background-color: #ffedd5;
+            color: #c2410c;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* 狀態標籤 */
+        .status-active {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-inactive {
+            background: #e5e7eb;
+            color: #6b7280;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .category-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="logo">
+        台北<span>GO</span>了沒
+    </div>
+</div>
+
+<div class="page-wrapper">
+    <div class="page-card" th:object="${ticketVO}"> <div class="page-header">
+            <div>
+                <h2 class="page-title" th:text="*{ticketName}">門票名稱詳情</h2>
+            </div>
+            <a th:href="@{/ticket/listAllTicket}" class="btn-back">
+                <i class="bi bi-arrow-left me-1"></i> 返回門票列表
+            </a>
+        </div>
+
+        <div class="p-4 p-md-5">
+            <div class="row g-4">
+                
+                <div class="col-lg-5">
+                    <div class="mb-3">
+                        <img th:src="${not #lists.isEmpty(ticketVO.ticketImages) ? ticketVO.ticketImages[0].ticketImageSrc : '/images/default-ticket.png'}" 
+                             class="main-img border shadow-sm" id="mainTicketImage" alt="門票主圖">
+                    </div>
+                    <div class="d-flex flex-wrap gap-2" th:if="${not #lists.isEmpty(ticketVO.ticketImages)}">
+                        <img th:each="img : ${ticketVO.ticketImages}" 
+                             th:src="${img.ticketImageSrc}" 
+                             class="thumb-img border shadow-sm"
+                             onclick="document.getElementById('mainTicketImage').src=this.src">
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="row g-3">
+                        
+                        <div class="col-md-6">
+                            <div class="detail-label">門票編號</div>
+                            <div class="detail-value fw-bold text-secondary" th:text="*{ticketId}">1</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-label">上架狀態</div>
+                            <div>
+                                <span th:if="*{ticketStatus == 1}" class="status-active">上架中</span>
+                                <span th:if="*{ticketStatus == 0}" class="status-inactive">已下架</span>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="detail-label">所屬分類</div>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span th:each="category : *{ticketCategories}" 
+                                      class="category-badge" 
+                                      th:text="${category.ticketCategoryName}">景點</span>
+                                <span th:if="${#lists.isEmpty(ticketVO.ticketCategories)}" class="text-muted small py-2">未分類</span>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="detail-label">景點地址</div>
+                            <div class="detail-value" th:text="*{ticketAddress}">台北市某某區某某路</div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="detail-label">門票描述</div>
+                            <div class="detail-value text-muted" style="white-space: pre-line; min-height: 100px;" th:text="*{ticketDescription}">
+                                這裡會帶出詳細的門票介紹與使用說明...
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="detail-label mb-2">票種售價設定</div>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="price-card text-center">
+                                        <span class="ticket-type-label mb-2">成人票</span>
+                                        <div class="text-decoration-line-through text-muted small mt-2" th:text="'原價 $' + *{adultOriginalPrice}">原價 $100</div>
+                                        <div class="fw-bold text-danger fs-5" th:text="'售價 $' + *{adultPrice}">售價 $60</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="price-card text-center">
+                                        <span class="ticket-type-label mb-2">兒童票</span>
+                                        <div class="text-decoration-line-through text-muted small mt-2" th:text="'原價 $' + *{childOriginalPrice}">原價 $80</div>
+                                        <div class="fw-bold text-danger fs-5" th:text="'售價 $' + *{childPrice}">售價 $40</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="price-card text-center">
+                                        <span class="ticket-type-label mb-2">優待票</span>
+                                        <div class="text-decoration-line-through text-muted small mt-2" th:text="'原價 $' + *{concessionOriginalPrice}">原價 $70</div>
+                                        <div class="fw-bold text-danger fs-5" th:text="'售價 $' + *{concessionPrice}">售價 $35</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 text-end mt-4">
+                            <a th:href="@{/backend/ticket/updateTicket(ticketId=*{ticketId})}" class="btn-edit">
+                                <i class="bi bi-pencil-square me-1"></i> 前往修改此門票
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
