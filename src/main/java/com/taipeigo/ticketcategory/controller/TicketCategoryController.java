@@ -51,6 +51,7 @@ public class TicketCategoryController {
         return "redirect:/ticketCategory/listAllTicketCategory";
     }
     
+    // TODO: 討論：是否刪除還是要保留ID => 資料庫增加 is_deleted 欄位
     /* 處理刪除門票分類 (按下刪除)*/
     @PostMapping("delete")
     public String delete(@RequestParam("ticketCategoryId") Integer ticketCategoryId, ModelMap model) {
