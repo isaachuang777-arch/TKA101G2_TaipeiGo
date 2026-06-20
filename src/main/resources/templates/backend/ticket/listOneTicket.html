@@ -209,7 +209,8 @@
 </div>
 
 <div class="page-wrapper">
-    <div class="page-card" th:object="${ticketVO}"> <div class="page-header">
+    <div class="page-card" th:object="${ticketVO}"> 
+        <div class="page-header">
             <div>
                 <h2 class="page-title" th:text="*{ticketName}">門票名稱詳情</h2>
             </div>
@@ -237,11 +238,19 @@
                 <div class="col-lg-7">
                     <div class="row g-3">
                         
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="detail-label">門票編號</div>
                             <div class="detail-value fw-bold text-secondary" th:text="*{ticketId}">1</div>
                         </div>
-                        <div class="col-md-6">
+                        
+                        <div class="col-md-4">
+                            <div class="detail-label">可用庫存</div>
+                            <div class="detail-value">
+                                <span th:text="*{availableSerialCount}">0</span> 張
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
                             <div class="detail-label">上架狀態</div>
                             <div>
                                 <span th:if="*{ticketStatus == 1}" class="status-active">上架中</span>
