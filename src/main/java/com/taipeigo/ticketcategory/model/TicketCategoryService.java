@@ -8,44 +8,46 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TicketCategoryService {
-	
+
 	@Autowired
 	private TicketCategoryRepository repository;
-	
 
 	public void addTicketCategory(TicketCategoryVO ticketCateVO) {
 		repository.save(ticketCateVO);
 	}
-	
-	
+
 	public void updateTicketCategory(TicketCategoryVO ticketCateVO) {
 		repository.save(ticketCateVO);
 		// 後續優化：加上安全檢查確認前端傳來的欄位資料都在
 	}
-	
 
 	public void deleteTicketCategory(Integer ticketCateId) {
-		if (repository.existsById(ticketCateId)) {
-			repository.deleteById(ticketCateId);
+		Optional<TicketCategoryVO> optional = repository.findById(ticketCateId);
+		if (optional.isPresent()) {
+			TicketCategoryVO vo = optional.get();
+			vo.setTicketCategoryStatus(2); // 代表軟刪除
+			repository.save(vo);
 		}
 	}
-	
-	
+
 	public List<TicketCategoryVO> getAll() {
 		return repository.findAll();
 	}
-	
-	
+
 	public TicketCategoryVO getOneTicketCategory(Integer ticketCateId) {
 		Optional<TicketCategoryVO> optional = repository.findById(ticketCateId);
 		return optional.orElse(null);
 	}
-	
+
 	// 找出所有啟用狀態的 category
 	public List<TicketCategoryVO> getAllActive() {
-	    // 1 代表啟用
-	    return repository.findByTicketCategoryStatus(1); 
+		// 1 代表啟用
+		return repository.findByTicketCategoryStatus(1);
 	}
-	
-}
 
+	// 找出所有未被刪除的 category
+	public List<TicketCategoryVO> getAllNotDeleted() {
+		return repository.findAllNotDeleted();
+	}
+
+}

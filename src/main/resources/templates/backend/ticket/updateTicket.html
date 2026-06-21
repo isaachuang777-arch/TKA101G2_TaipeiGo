@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaipeiGO ｜ 新增門票商品</title>
+    <title>TaipeiGO ｜ 修改門票商品</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -179,6 +179,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             cursor: pointer;
             transition: transform 0.1s;
+            z-index: 5;
         }
         .btn-delete-img:hover {
             transform: scale(1.15);
@@ -235,15 +236,19 @@
         
         <div class="page-header">
             <div>
-                <h2 class="page-title">新增門票商品</h2>
+                <h2 class="page-title">修改門票商品</h2>
             </div>
             <a th:href="@{/ticket/listAllTicket}" class="btn-back">
                 <i class="bi bi-arrow-left me-1"></i> 返回門票列表
             </a>
         </div>
 
-        <form id="ticketForm" th:action="@{/ticket/insert}" method="post" th:object="${ticketVO}" enctype="multipart/form-data" class="p-4 p-md-5">
+        <form id="ticketForm" th:action="@{/ticket/update}" method="post" th:object="${ticketVO}" enctype="multipart/form-data" class="p-4 p-md-5">
             
+            <input type="hidden" th:field="*{ticketId}">
+
+            <div id="deleteImageIdsContainer"></div>
+
             <div class="row g-4">
                 
                 <div class="col-md-8">
@@ -335,24 +340,44 @@
                     </div>
                 </div>
 
+                <div class="col-12 mt-4" th:if="${not #lists.isEmpty(ticketVO.ticketImages)}">
+                    <label class="form-label text-secondary mb-2"><i class="bi bi-image me-1"></i> 目前已上傳的圖片 (第一張為封面，點擊紅叉可移除)</label>
+                    <div class="d-flex flex-wrap gap-3 p-3 bg-light rounded-3 border">
+                        <div th:each="img : ${ticketVO.ticketImages}" 
+                             th:id="'old-img-wrapper-' + ${img.ticketImageId}" 
+                             class="preview-img-wrapper shadow-sm">
+                            <img th:src="${img.ticketImageSrc}" alt="現有圖片">
+                            <button type="button" class="btn-delete-img" 
+                                    th:onclick="'markImageForDeletion(' + ${img.ticketImageId} + ')'" 
+                                    title="移除此圖片">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-12 mt-4">
                     <label class="form-label">
-                        <i class="bi bi-images text-primary me-1"></i> 上傳門票商品圖片 
+                        <i class="bi bi-images text-primary me-1"></i> 上傳新圖片 (注意：新圖片將會追加到商品中) 
                         <span id="uploadCountText" class="text-muted small fw-normal">(目前 0/8 張)</span>
                     </label>
                     <div class="image-uploader-box" onclick="document.getElementById('ticketImageFiles').click()">
                         <i class="bi bi-cloud-arrow-up text-muted" style="font-size: 2.5rem;"></i>
-                        <p class="mt-2 mb-1 fw-bold text-dark">點擊此處選擇圖片檔案</p>
-                        <p class="text-muted small mb-0">支援 JPG、PNG 格式，第一張自動為主封面圖，最多限上傳 8 張</p>
+                        <p class="mt-2 mb-1 fw-bold text-dark">點擊此處重新選擇圖片檔案</p>
+                        <p class="text-muted small mb-0">支援 JPG、PNG 格式，最多限上傳 8 張</p>
                         <input type="file" id="ticketImageFiles" class="d-none" multiple accept="image/*" onchange="previewImages(this)">
                     </div>
                     <div class="preview-img-container" id="previewContainer"></div>
                 </div>
 
                 <div class="col-12 text-end mt-5 border-top pt-4">
-                    <button type="button" onclick="resetForm()" class="btn btn-link text-muted me-3 text-decoration-none fw-semibold">重新填寫</button>
+                    <button type="button" 
+                            onclick="document.getElementById('ticketForm').reset(); location.reload();" 
+                            class="btn btn-link text-muted me-3 text-decoration-none fw-semibold">
+                        還原修改
+                    </button>
                     <button type="submit" class="btn-submit">
-                        <i class="bi bi-check-circle me-1"></i> 確認新增門票商品
+                        <i class="bi bi-check-circle me-1"></i> 確認儲存修改
                     </button>
                 </div>
 
@@ -361,8 +386,10 @@
         
     </div>
 </div>
-<script th:src="@{/js/ticket/addTicket.js}"></script>
 
+<script th:src="@{/js/ticket/addTicket.js}"></script>
+<script th:src="@{/js/ticket/updateTicket.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
