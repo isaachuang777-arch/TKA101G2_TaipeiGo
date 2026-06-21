@@ -38,7 +38,7 @@ public class CsService {
 	//-------------------------
 	//findBycustId 以使用找案子
 	public List<CsVO> findBycustId(Integer custId) {
-		return csRepository.findByCustomerVO_CustId();
+		return csRepository.findByCustomerVO_CustId(custId);
 	}
 	
 	@Transactional
