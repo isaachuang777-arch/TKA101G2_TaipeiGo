@@ -46,4 +46,19 @@ public class FrontendCustomerController {
         return "frontend/customer/profile";
     }
     
+    @GetMapping("/tickets")
+    public String tickets(HttpSession session, Model model) {
+
+        CustomerVO loginCustomer =
+                (CustomerVO) session.getAttribute("loginCustomer");
+
+        if (loginCustomer == null) {
+            return "redirect:/frontend/auth/login";
+        }
+
+        model.addAttribute("loginCustomer", loginCustomer);
+
+        return "frontend/customer/tickets";
+    }
+    
 }

@@ -1,14 +1,100 @@
-<h1>個人資料</h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>個人資料</title>
 
-姓名：
-<span th:text="${loginCustomer.custName}"></span>
+<style>
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 30px auto;
+}
 
-<br>
+.sidebar {
+    width: 220px;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+}
 
-Email：
-<span th:text="${loginCustomer.custEmail}"></span>
+.sidebar a {
+    display: block;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #333;
+}
 
-<br>
+.sidebar a:hover {
+    background: #f5f5f5;
+}
 
-電話：
-<span th:text="${loginCustomer.custTel}"></span>
+.content {
+    flex: 1;
+    padding: 30px;
+}
+
+.info-row {
+    margin-bottom: 15px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 左側選單 -->
+    <div class="sidebar">
+
+        <h3>會員中心</h3>
+
+        <a th:href="@{/frontend/customer/center}">
+            會員中心首頁
+        </a>
+
+        <a th:href="@{/frontend/customer/profile}">
+            個人資料
+        </a>
+
+        <a th:href="@{/frontend/customer/tickets}">
+		    我的票券
+		</a>
+
+        <a href="#">
+            修改密碼
+        </a>
+
+    </div>
+
+    <!-- 右側內容 -->
+    <div class="content">
+
+        <h2>個人資料</h2>
+
+        <div class="info-row">
+            姓名：
+            <span th:text="${loginCustomer.custName}"></span>
+        </div>
+
+        <div class="info-row">
+            Email：
+            <span th:text="${loginCustomer.custEmail}"></span>
+        </div>
+
+        <div class="info-row">
+            電話：
+            <span th:text="${loginCustomer.custTel}"></span>
+        </div>
+
+        <div class="info-row">
+            帳號：
+            <span th:text="${loginCustomer.custAccount}"></span>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>我的票券</title>
+</head>
+<body>
+
+<h1>我的票券</h1>
+
+<p>
+歡迎，
+<span th:text="${loginCustomer.custName}"></span>
+</p>
+
+<p>目前尚無票券資料</p>
+
+<a th:href="@{/frontend/customer/center}">回會員中心</a>
+
+</body>
+</html>
