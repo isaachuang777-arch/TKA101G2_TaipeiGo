@@ -3,21 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <title>會員中心</title>
+
+<style>
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.sidebar {
+    width: 220px;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+.sidebar a:hover {
+    background: #f5f5f5;
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+}
+</style>
+
 </head>
 <body>
 
-<h1>會員中心</h1>
+<div class="container">
 
-<p>
-歡迎，
-<span th:text="${loginCustomer.custName}"></span>
-</p>
+    <!-- 左側選單 -->
+    <div class="sidebar">
 
-<ul>
-    <li>個人資料</li>
-    <li>我的票券</li>
-    <li>修改密碼</li>
-</ul>
+        <h3>會員中心</h3>
+
+        <a th:href="@{/frontend/customer/profile}">
+            個人資料
+        </a>
+
+        <a th:href="@{/frontend/customer/tickets}">
+		    我的票券
+		</a>
+
+        <a href="#">
+            修改密碼
+        </a>
+
+    </div>
+
+    <!-- 右側內容 -->
+    <div class="content">
+
+        <h2>
+            歡迎，
+            <span th:text="${loginCustomer.custName}"></span>
+        </h2>
+
+        <p>請從左側選單選擇功能</p>
+
+    </div>
+
+</div>
 
 </body>
 </html>
