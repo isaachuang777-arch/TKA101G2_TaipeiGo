@@ -45,27 +45,7 @@
 <div class="container">
 
     <!-- 左側選單 -->
-    <div class="sidebar">
-
-        <h3>會員中心</h3>
-
-        <a th:href="@{/frontend/customer/center}">
-            會員中心首頁
-        </a>
-
-        <a th:href="@{/frontend/customer/profile}">
-            個人資料
-        </a>
-
-        <a th:href="@{/frontend/customer/tickets}">
-		    我的票券
-		</a>
-
-        <a href="#">
-            修改密碼
-        </a>
-
-    </div>
+    <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
 
     <!-- 右側內容 -->
     <div class="content">
