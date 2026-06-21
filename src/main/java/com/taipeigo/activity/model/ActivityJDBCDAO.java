@@ -95,6 +95,15 @@ public class ActivityJDBCDAO {
 
         }
 
+        // 萬用查詢用ID去查
+
+        if (map.containsKey("activityId") && !map.get("activityId").get(0).trim().isEmpty()) {
+
+            sql.append(" AND a.ACTIVITY_ID = ? ");
+
+            args.add(Integer.valueOf(map.get("activityId").get(0).trim()));
+        }
+
         sql.append(" ORDER BY a.ACTIVITY_ID DESC ");
 
         BeanPropertyRowMapper<ActivityVO> bpr = new BeanPropertyRowMapper<ActivityVO>(ActivityVO.class);
