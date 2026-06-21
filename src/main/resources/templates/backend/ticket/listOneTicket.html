@@ -381,11 +381,15 @@
                             </div>
                         </div>
 
-                        <div class="col-12 text-end mt-4">
-                            <a th:href="@{/backend/ticket/updateTicket(ticketId=*{ticketId})}" class="btn-edit">
+                       <div class="col-12 text-end mt-4">
+                        <form th:action="@{/ticket/getOne_For_Update}" method="post" class="d-inline">
+                            <input type="hidden" name="ticketId" th:value="*{ticketId}">
+                            
+                            <button type="submit" class="btn-edit" style="border: none;">
                                 <i class="bi bi-pencil-square me-1"></i> 前往修改此門票
-                            </a>
-                        </div>
+                            </button>
+                        </form>
+                    </div>
 
                     </div>
                 </div>

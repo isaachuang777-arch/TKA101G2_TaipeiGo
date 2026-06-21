@@ -392,9 +392,12 @@
                                 <a th:href="@{/ticket/getOne_For_Display(ticketId=${ticket.ticketId})}" class="btn-detail" title="查看門票詳情">
                                     詳情
                                 </a>
-                                <a th:href="@{/backend/ticket/updateTicket(ticketId=${ticket.ticketId})}" class="btn-edit" title="編輯門票">
-                                    修改
-                                </a>
+                                <form th:action="@{/ticket/getOne_For_Update}" method="post" class="d-inline">
+						            <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
+						            <button type="submit" class="btn-edit" title="編輯門票" style="border: none;">
+						                修改
+						            </button>
+						        </form>
                             </div>
 
                             <div class="modal fade" th:id="'generateSerialsModal' + ${ticket.ticketId}" tabindex="-1" aria-hidden="true">
