@@ -1,11 +1,15 @@
 package com.taipeigo.ticket.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
 
@@ -19,8 +23,12 @@ public class TicketService {
 	
 	@Autowired
 	private TicketSerialRepository ticketSerialRepository;
+
+	@Autowired
+    private TicketImageRepository ticketImageRepository;
 	
-	
+	@Value("${taipeigo.upload.base-dir}")
+    private String uploadBaseDir;
 	
 	public List<TicketVO> getAll() {
 		return ticketRepository.findAll();
@@ -77,6 +85,68 @@ public class TicketService {
 	    }
 	    return serialNumber;
 	}
+	
+	/**
+     * 新增門票商品 
+     */
+    @Transactional
+    public void addTicketWithImages(TicketVO ticketVO, MultipartFile[] files) {
+        
+        // 寫入建立時間
+    	java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+    	ticketVO.setCreatedAt(now);
+    	ticketVO.setUpdatedAt(now);
+    	
+        // 儲存商品基本欄位，讓資料庫生成該筆 ticketId
+        TicketVO savedTicket = ticketRepository.save(ticketVO);
+
+        if (files == null || files.length == 0) return;
+
+        // 門票圖片資料夾路徑 (對應 C:/taipeiGo_uploads/images/ticket/)
+        String subDir = "ticket/";
+        File targetDir = new File(uploadBaseDir + subDir);
+
+        // 若第一次執行，自動在 images 內部建立 ticket 資料夾
+        if (!targetDir.exists()) {
+            targetDir.mkdirs(); 
+        }
+
+        // 迴圈解開前端排好順序、過濾乾淨的圖片陣列
+        for (MultipartFile file : files) {
+            if (file != null && !file.isEmpty()) {
+                
+                // 切下原始副檔名，利用 UUID 生成全新隨機檔名防重複
+                String originalFilename = file.getOriginalFilename();
+                String ext = "";
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+                } else {
+                    ext = ".jpg"; // 防呆預設副檔名
+                }
+                String savedName = UUID.randomUUID().toString() + ext;
+
+                try {
+                    // TODO: 將圖片實體寫入本機實體ticket 資料夾 (之後改由伺服器或雲端)
+                    File saveFile = new File(targetDir, savedName);
+                    file.transferTo(saveFile);
+
+                    // 產生相對網址，作為網頁前端讀取路徑
+                    // 產出格式："/images/ticket/xxxxx.jpg" => 讓 WebMvcConfig 攔截導航
+                    String dbPath = "/images/" + subDir + savedName; 
+
+                    // 建立你的 TicketImageVO 物件並儲存
+                    TicketImageVO imgVO = new TicketImageVO();
+                    imgVO.setTicketImageSrc(dbPath);       // 寫入資料庫欄位的純相對路徑字串
+                    imgVO.setTicketVO(savedTicket);        // 綁定剛剛save的商品物件做FK
+                    
+                    ticketImageRepository.save(imgVO); 
+
+                } catch (IOException e) {
+                    throw new RuntimeException("實體圖片儲存失敗: " + originalFilename, e);
+                }
+            }
+        }
+    }
 	
 	
 	

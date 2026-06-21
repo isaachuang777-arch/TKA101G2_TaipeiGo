@@ -5,15 +5,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.taipeigo.ticket.model.TicketService;
 import com.taipeigo.ticket.model.TicketVO;
 import com.taipeigo.ticketcategory.model.TicketCategoryService;
+
+import jakarta.validation.Valid;
 
 
 @Controller
@@ -60,6 +64,7 @@ public class TicketController {
     }
     */
 
+    /* 新增門票 */
     @GetMapping("/addTicket")
     public String addTicket(ModelMap model) {
         TicketVO ticketVO = new TicketVO();
@@ -71,6 +76,37 @@ public class TicketController {
     }
 
     
+    /**
+     * 接收表單提交，包含門票基本資料與 0~8 張的實體圖片檔案
+     */
+    @PostMapping("/insert")
+    public String insert(
+            @Valid TicketVO ticketVO, 
+            BindingResult result, 
+            ModelMap model,
+            @RequestParam("ticketImageFiles") MultipartFile[] parts,
+            RedirectAttributes redirectAttributes) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+            return "backend/ticket/addTicket";
+        }
+
+        try {
+            ticketService.addTicketWithImages(ticketVO, parts);
+            redirectAttributes.addFlashAttribute("success", "成功新增門票商品：「" + ticketVO.getTicketName() + "」！");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+            model.addAttribute("errorMessage", "新增商品失敗：" + e.getMessage());
+            return "backend/ticket/addTicket";
+        }
+
+        return "redirect:/ticket/listAllTicket"; 
+    }
+
+    /* 新增序號 */
     @PostMapping("/generateSerials") // 對應 th:action 網址
     public String generateSerials(
             @RequestParam("ticketId") Integer ticketId,   
