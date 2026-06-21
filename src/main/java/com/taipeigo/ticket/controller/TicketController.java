@@ -23,22 +23,22 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/ticket")
 public class TicketController {
-	
-	@Autowired
-	TicketService ticketService;
+    
+    @Autowired
+    TicketService ticketService;
 
     @Autowired
     private TicketCategoryService ticketCategoryService;
-	
-	/* 進入門票頁面 （查全部）*/
-	@GetMapping("listAllTicket")
-	public String listAllTicket(ModelMap model) {
-		List<TicketVO> list = ticketService.getAll();
-		model.addAttribute("ticketListData", list);
-		return "backend/ticket/listAllTicket";
-	}
-	
-	/**
+    
+    /* 進入門票頁面 （查全部）*/
+    @GetMapping("listAllTicket")
+    public String listAllTicket(ModelMap model) {
+        List<TicketVO> list = ticketService.getAll();
+        model.addAttribute("ticketListData", list);
+        return "backend/ticket/listAllTicket";
+    }
+    
+    /**
      * 查詢單筆門票詳細資料 
      * 網址範例：/backend/ticket/getOne_For_Display?ticketId=1
      */
@@ -49,7 +49,7 @@ public class TicketController {
         // 以下是 html 路徑
         return "backend/ticket/listOneTicket"; 
     }
-    
+
     /**
      * RESTful API 查詢單筆門票 (回傳 JSON 格式)
      */
@@ -63,8 +63,8 @@ public class TicketController {
         return ResponseEntity.ok(ticketVO);
     }
     */
-
-    /* 新增門票 */
+    
+     /* 新增門票 */
     @GetMapping("/addTicket")
     public String addTicket(ModelMap model) {
         TicketVO ticketVO = new TicketVO();
@@ -75,7 +75,7 @@ public class TicketController {
         return "backend/ticket/addTicket"; 
     }
 
-    
+
     /**
      * 接收表單提交，包含門票基本資料與 0~8 張的實體圖片檔案
      */
@@ -126,5 +126,63 @@ public class TicketController {
         // 以下是 網頁網址路徑
         return "redirect:/ticket/listAllTicket"; 
     }
+    
+    /* 進入修改門票頁面 */
+    @PostMapping("getOne_For_Update")
+    public String getOne_For_Update(@RequestParam("ticketId") Integer ticketId, ModelMap model) {
+        TicketVO ticketVO = ticketService.getOneTicket(ticketId);
+        model.addAttribute("ticketVO", ticketVO);
+        model.addAttribute("categoryList", ticketCategoryService.getAllActive()); 
+        return "backend/ticket/updateTicket"; 
+    }
+    
+    /**
+     * 送出修改確認
+     * 網址對應：updateTicket.html 的 th:action="@{/ticket/update}"
+     */
+    @PostMapping("/update")
+    public String update(
+            @Valid TicketVO ticketVO, 
+            BindingResult result, 
+            @RequestParam("ticketImageFiles") MultipartFile[] parts,
+            @RequestParam(value = "deleteImageIds", required = false) Integer[] deleteImageIds, 
+            ModelMap model,
+            RedirectAttributes redirectAttributes) {
 
+        // 如果驗證有錯，回原本的修改頁面時，代入原本的資料
+        if (result.hasErrors()) {
+            // 重新撈出門票分類
+            model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+            
+            // 重新撈出該門票原有的舊圖片重新存回 ticketVO
+            TicketVO currentTicket = ticketService.getOneTicket(ticketVO.getTicketId());
+            if (currentTicket != null) {
+                ticketVO.setTicketImages(currentTicket.getTicketImages());
+            }
+            
+            return "backend/ticket/updateTicket";
+        }
+
+        try {
+            ticketService.updateTicketWithImages(ticketVO, parts, deleteImageIds);
+            // 成功訊息
+            redirectAttributes.addFlashAttribute("success", "門票商品 (編號:" + ticketVO.getTicketId() + ") 修改成功！");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 儲存有異常，回原本頁面秀出紅字錯誤，要有原本的資料
+            model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+            
+            TicketVO currentTicket = ticketService.getOneTicket(ticketVO.getTicketId());
+            if (currentTicket != null) {
+                ticketVO.setTicketImages(currentTicket.getTicketImages());
+            }
+            
+            model.addAttribute("errorMessage", "修改商品失敗：" + e.getMessage());
+            return "backend/ticket/updateTicket";
+        }
+
+        // 修改成功，回列表主頁
+        return "redirect:/ticket/listAllTicket"; 
+    }
 }

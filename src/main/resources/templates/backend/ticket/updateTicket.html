@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaipeiGO ｜ 修改門票商品</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        @charset "UTF-8";
+
+        :root {
+            --primary: #ff7a1a;
+            --primary-hover: #ea6c0e;
+            --blue: #2563eb;
+            --blue-hover: #1d4ed8;
+            --bg: #f5f6f8;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --text: #111827;
+            --text-light: #6b7280;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: "Microsoft JhengHei", sans-serif;
+            margin: 0;
+        }
+
+        /* ==========================
+           Top Header
+        ========================== */
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        /* ==========================
+           Main Layout
+        ========================== */
+        .page-wrapper {
+            padding: 30px;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+            overflow: hidden;
+        }
+
+        /* ==========================
+           Card Header
+        ========================== */
+        .page-header {
+            padding: 24px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* ==========================
+           Form Elements
+        ========================== */
+        .form-label {
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.15);
+        }
+
+        /* 票價專用小區塊 */
+        .price-setup-card {
+            background: #fff8f3;
+            border: 1px solid #ffeada;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .price-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #c2410c;
+            border-bottom: 1px solid #ffeada;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* 圖片上傳框 */
+        .image-uploader-box {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .image-uploader-box:hover {
+            border-color: var(--primary);
+            background: #fff8f3;
+        }
+
+        .preview-img-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 15px;
+        }
+
+        /* 圖片預覽框 */
+        .preview-img-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .preview-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        /* 圖片刪除按鈕 */
+        .btn-delete-img {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.1s;
+            z-index: 5;
+        }
+        .btn-delete-img:hover {
+            transform: scale(1.15);
+            background: #dc2626;
+            color: white;
+        }
+
+        /* ==========================
+           Buttons
+        ========================== */
+        .btn-back {
+            background: #f3f4f6;
+            color: var(--text-light);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+            color: var(--text);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="logo">
+        台北<span>GO</span>了沒
+    </div>
+</div>
+
+<div class="page-wrapper">
+    <div class="page-card"> 
+        
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">修改門票商品</h2>
+            </div>
+            <a th:href="@{/ticket/listAllTicket}" class="btn-back">
+                <i class="bi bi-arrow-left me-1"></i> 返回門票列表
+            </a>
+        </div>
+
+        <form id="ticketForm" th:action="@{/ticket/update}" method="post" th:object="${ticketVO}" enctype="multipart/form-data" class="p-4 p-md-5">
+            
+            <input type="hidden" th:field="*{ticketId}">
+
+            <div id="deleteImageIdsContainer"></div>
+
+            <div class="row g-4">
+                
+                <div class="col-md-8">
+                    <label for="ticketName" class="form-label">門票商品名稱</label>
+                    <input type="text" th:field="*{ticketName}" class="form-control" id="ticketName" placeholder="例如：台北市立動物園特展門票" required>
+                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('ticketName')}" th:errors="*{ticketName}"></div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="ticketStatus" class="form-label">上架狀態</label>
+                    <select th:field="*{ticketStatus}" class="form-select" id="ticketStatus">
+                        <option value="1">上架</option>
+                        <option value="0">下架</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label d-block">選擇門票分類 (可多選)</label>
+                    <div class="card p-3" style=" border: 1px solid var(--border); border-radius: 10px;">
+                        <div class="d-flex flex-wrap gap-4">
+                            <div th:each="category : ${categoryList}" class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                       th:value="${category.ticketCategoryId}" 
+                                       th:field="*{ticketCategories}"
+                                       th:id="'cate-' + ${category.ticketCategoryId}">
+                                <label class="form-check-label text-dark" 
+                                       th:for="'cate-' + ${category.ticketCategoryId}" 
+                                       th:text="${category.ticketCategoryName}">景點</label>
+                            </div>
+                            <div th:if="${#lists.isEmpty(categoryList)}" class="text-muted small">
+                                <i class="bi bi-info-circle me-1"></i>請先至門票分類管理建立分類資料。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="ticketAddress" class="form-label">地址</label>
+                    <input type="text" th:field="*{ticketAddress}" class="form-control" id="ticketAddress" placeholder="請輸入完整景點地址" required>
+                </div>
+
+                <div class="col-12">
+                    <label for="ticketDescription" class="form-label">門票詳細描述 / 使用須知</label>
+                    <textarea th:field="*{ticketDescription}" class="form-control" id="ticketDescription" rows="4" placeholder="請填寫門票的詳細介紹、交通方式與後續核銷說明..."></textarea>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label mb-2"><i class="bi bi-currency-dollar text-primary"></i> 票種售價設定</label>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="price-setup-card">
+                                <div class="price-title">成人票設定</div>
+                                <div class="mb-2">
+                                    <label class="small text-muted fw-bold mb-1">原價</label>
+                                    <input type="number" th:field="*{adultOriginalPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
+                                </div>
+                                <div>
+                                    <label class="small text-muted fw-bold mb-1">促銷售價</label>
+                                    <input type="number" th:field="*{adultPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="price-setup-card">
+                                <div class="price-title">兒童票設定</div>
+                                <div class="mb-2">
+                                    <label class="small text-muted fw-bold mb-1">原價</label>
+                                    <input type="number" th:field="*{childOriginalPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
+                                </div>
+                                <div>
+                                    <label class="small text-muted fw-bold mb-1">促銷售價</label>
+                                    <input type="number" th:field="*{childPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="price-setup-card">
+                                <div class="price-title">優待票設定</div>
+                                <div class="mb-2">
+                                    <label class="small text-muted fw-bold mb-1">原價</label>
+                                    <input type="number" th:field="*{concessionOriginalPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
+                                </div>
+                                <div>
+                                    <label class="small text-muted fw-bold mb-1">促銷售價</label>
+                                    <input type="number" th:field="*{concessionPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-4" th:if="${not #lists.isEmpty(ticketVO.ticketImages)}">
+                    <label class="form-label text-secondary mb-2"><i class="bi bi-image me-1"></i> 目前已上傳的圖片 (第一張為封面，點擊紅叉可移除)</label>
+                    <div class="d-flex flex-wrap gap-3 p-3 bg-light rounded-3 border">
+                        <div th:each="img : ${ticketVO.ticketImages}" 
+                             th:id="'old-img-wrapper-' + ${img.ticketImageId}" 
+                             class="preview-img-wrapper shadow-sm">
+                            <img th:src="${img.ticketImageSrc}" alt="現有圖片">
+                            <button type="button" class="btn-delete-img" 
+                                    th:onclick="'markImageForDeletion(' + ${img.ticketImageId} + ')'" 
+                                    title="移除此圖片">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <label class="form-label">
+                        <i class="bi bi-images text-primary me-1"></i> 上傳新圖片 (注意：新圖片將會追加到商品中) 
+                        <span id="uploadCountText" class="text-muted small fw-normal">(目前 0/8 張)</span>
+                    </label>
+                    <div class="image-uploader-box" onclick="document.getElementById('ticketImageFiles').click()">
+                        <i class="bi bi-cloud-arrow-up text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="mt-2 mb-1 fw-bold text-dark">點擊此處重新選擇圖片檔案</p>
+                        <p class="text-muted small mb-0">支援 JPG、PNG 格式，最多限上傳 8 張</p>
+                        <input type="file" id="ticketImageFiles" class="d-none" multiple accept="image/*" onchange="previewImages(this)">
+                    </div>
+                    <div class="preview-img-container" id="previewContainer"></div>
+                </div>
+
+                <div class="col-12 text-end mt-5 border-top pt-4">
+                    <button type="button" 
+                            onclick="document.getElementById('ticketForm').reset(); location.reload();" 
+                            class="btn btn-link text-muted me-3 text-decoration-none fw-semibold">
+                        還原修改
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check-circle me-1"></i> 確認儲存修改
+                    </button>
+                </div>
+
+            </div>
+        </form>
+        
+    </div>
+</div>
+
+<script th:src="@{/js/ticket/addTicket.js}"></script>
+<script th:src="@{/js/ticket/updateTicket.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
