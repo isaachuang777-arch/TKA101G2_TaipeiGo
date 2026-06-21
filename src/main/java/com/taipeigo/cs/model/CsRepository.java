@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CsRepository extends JpaRepository<CsVO, Integer	> {
 
-	List<CsVO> findByCustomerVO_CustId();
+	List<CsVO> findByCustomerVO_CustId(Integer custId);
 
 	
 }
