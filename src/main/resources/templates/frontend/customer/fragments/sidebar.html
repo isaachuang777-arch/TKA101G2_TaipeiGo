@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="customerSidebar">
+
+<style>
+.customer-sidebar {
+    width: 240px;
+    min-height: 500px;
+    background: #fff;
+    border-right: 1px solid #eee;
+    padding: 24px 18px;
+}
+
+.sidebar-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #222;
+}
+
+.customer-sidebar a {
+    display: block;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.customer-sidebar a:hover {
+    background: #fff3e8;
+    color: #ff7a00;
+}
+</style>
+
+<div class="customer-sidebar">
+    <div class="sidebar-title">
+        會員中心
+    </div>
+
+    <a th:href="@{/frontend/customer/center}">
+        🏠 會員首頁
+    </a>
+
+    <a th:href="@{/frontend/customer/profile}">
+        👤 個人資料
+    </a>
+
+    <a href="#">
+        📋 我的訂單
+    </a>
+
+    <a th:href="@{/frontend/customer/tickets}">
+        🎟 我的票券
+    </a>
+
+    <a href="#">
+        🎧 客服紀錄
+    </a>
+
+    <a th:href="@{/frontend/customer/password}">
+        🔒 修改密碼
+    </a>
+
+    <a th:href="@{/frontend/auth/logout}">
+        🚪 登出
+    </a>
+</div>
+
+</th:block>
+</html>
