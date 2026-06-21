@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>會員中心</title>
+</head>
+<body>
+
+<h1>會員中心</h1>
+
+<p>
+歡迎，
+<span th:text="${loginCustomer.custName}"></span>
+</p>
+
+<ul>
+    <li>個人資料</li>
+    <li>我的票券</li>
+    <li>修改密碼</li>
+</ul>
+
+</body>
+</html>
