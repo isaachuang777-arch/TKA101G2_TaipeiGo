@@ -249,6 +249,31 @@
             color: #6b7280;
             background: #fafafa;
         }
+
+        /* 找不到圖顯示「載入圖片失敗」 */
+        img.ticket-cover {
+            position: relative;
+            background-color: #f1f5f9; 
+            display: inline-block;
+            object-fit: cover;
+            text-align: center;
+        }
+
+        /* 當圖片加載失敗找不到圖時顯示「載入圖片失敗」 */
+        img.ticket-cover::before {
+            content: "載入圖片失敗";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #f1f5f9;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
@@ -293,8 +318,24 @@
                         <td class="text-center fw-bold" th:text="${ticket.ticketId}">1</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <img th:src="${not #lists.isEmpty(ticket.ticketImages) ? ticket.ticketImages[0].ticketImageSrc : '/images/default-ticket.png'}" 
-                                     class="me-3 border shadow-sm ticket-cover" alt="門票封面">
+                                <div th:if="${#lists.isEmpty(ticket.ticketImages)}" 
+                                    class="me-3 border shadow-sm bg-light text-secondary d-flex align-items-center justify-content-center fw-bold" 
+                                    style="width: 54px; height: 54px; border-radius: 8px; font-size: 11px; letter-spacing: 0.5px; background-color: #f1f5f9 !important;">
+                                    無圖片
+                                </div>
+                                
+                                <th:block th:if="${not #lists.isEmpty(ticket.ticketImages)}">
+                                    
+                                    <img th:if="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
+                                         th:src="${ticket.ticketImages[0].ticketImageSrc}" 
+                                         class="me-3 border shadow-sm ticket-cover" alt="外部網路封面">
+                                    
+                                    <img th:unless="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
+                                         th:src="@{${ticket.ticketImages[0].ticketImageSrc}}" 
+                                         class="me-3 border shadow-sm ticket-cover" alt="本機上傳封面">
+                                         
+                                </th:block>
+                                
                                 <div>
                                     <div class="fw-bold text-dark mb-1" th:text="${ticket.ticketName}">台北市立動物園門票</div>
                                     <small class="text-muted text-truncate d-inline-block" style="max-width: 180px;" th:text="${ticket.ticketDescription}">描述...</small>
@@ -369,7 +410,7 @@
                                                 <label class="form-label small fw-bold text-secondary mb-1">新增張數</label>
                                                 <input type="number" name="quantity" class="form-control form-control-sm text-center" value="10" min="1" max="500" required>
                                             </div>
-                                            <div class="modal-footer p-2 style='background: #f8fafc; border-top: 1px solid var(--border);'">
+                                            <div class="modal-footer p-2" style="background: #f8fafc; border-top: 1px solid var(--border);">
                                                 <button type="button" class="btn btn-sm btn-link text-muted text-decoration-none small" data-bs-dismiss="modal">取消</button>
                                                 <button type="submit" class="btn btn-sm btn-success px-3" style="border-radius: 6px;">新增</button>
                                             </div>
