@@ -64,7 +64,7 @@ public class CsMsgVO implements Serializable {
     @Column(name = "MSG_IMGSRC")
     private String msgImgsrc;
     
-    @NotNull
+
 	@CreationTimestamp //Hibernate自動
     @Column(name = "CREATED_AT")
     private java.sql.Timestamp createdAt;
