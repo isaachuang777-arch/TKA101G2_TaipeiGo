@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 
 
 @Controller
-@RequestMapping("/ticket")
+@RequestMapping("/backend/ticket")
 public class TicketController {
     
     @Autowired
@@ -31,7 +31,7 @@ public class TicketController {
     private TicketCategoryService ticketCategoryService;
     
     /* 進入門票頁面 （查全部）*/
-    @GetMapping("listAllTicket")
+    @GetMapping("list")
     public String listAllTicket(ModelMap model) {
         List<TicketVO> list = ticketService.getAll();
         model.addAttribute("ticketListData", list);
@@ -103,7 +103,7 @@ public class TicketController {
             return "backend/ticket/addTicket";
         }
 
-        return "redirect:/ticket/listAllTicket"; 
+        return "redirect:/backend/ticket/list"; 
     }
 
     /* 新增序號 */
@@ -124,7 +124,7 @@ public class TicketController {
             redirectAttributes.addFlashAttribute("error", "新增序號失敗：" + e.getMessage());
         }
         // 以下是 網頁網址路徑
-        return "redirect:/ticket/listAllTicket"; 
+        return "redirect:/backend/ticket/list"; 
     }
     
     /* 進入修改門票頁面 */
@@ -183,6 +183,6 @@ public class TicketController {
         }
 
         // 修改成功，回列表主頁
-        return "redirect:/ticket/listAllTicket"; 
+        return "redirect:/backend/ticket/list"; 
     }
 }

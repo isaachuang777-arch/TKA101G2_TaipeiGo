@@ -245,7 +245,7 @@
             <div>
                 <h2 class="page-title" th:text="*{ticketName}">門票名稱詳情</h2>
             </div>
-            <a th:href="@{/ticket/listAllTicket}" class="btn-back">
+            <a th:href="@{/backend/ticket/list}" class="btn-back">
                 <i class="bi bi-arrow-left me-1"></i> 返回門票列表
             </a>
         </div>
@@ -382,7 +382,7 @@
                         </div>
 
                        <div class="col-12 text-end mt-4">
-                        <form th:action="@{/ticket/getOne_For_Update}" method="post" class="d-inline">
+                        <form th:action="@{/backend/ticket/getOne_For_Update}" method="post" class="d-inline">
                             <input type="hidden" name="ticketId" th:value="*{ticketId}">
                             
                             <button type="submit" class="btn-edit" style="border: none;">
