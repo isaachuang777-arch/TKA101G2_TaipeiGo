@@ -1,0 +1,245 @@
+/* ==========================================
+   1. 共用與排版基礎 (Foundation)
+========================================== */
+body {
+    background-color: #f5f7fa;
+    font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+    margin: 0;
+}
+
+/* ==========================================
+   3. 下方：主體內容雙欄排版
+========================================== */
+.activity-container {
+    padding-bottom: 80px;
+}
+
+.content-layout {
+    max-width: 1200px;
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column; /* 上下排列：小卡在上面，網格在下面 */
+    padding: 0 20px;
+}
+
+/* ==========================================
+   3. 分類導航小卡 (Klook Style)
+========================================== */
+.category-section {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+/* 分類標題 (例如：量身專屬活動) */
+.category-section-title {
+    font-size: 28px; /* 字體放大 */
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.category-section-title i {
+    color: #ff5722; /* Klook 經典橘色 */
+    font-size: 30px; /* 圖示也配合稍微放大 */
+}
+
+/* 輪播容器外部 */
+.category-carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.category-scroll-container {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 12px; /* 留出滾動條空間 */
+    /* 隱藏滾動條 (美觀) */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    scroll-behavior: smooth; /* 平滑滾動 */
+    width: 100%;
+    scroll-snap-type: x mandatory; /* 🔥 加入 X 軸磁吸效果 */
+}
+.category-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* 左右滑動按鈕 */
+.scroll-btn {
+    position: absolute;
+    /* 原本是 50%，這會對齊到整張卡片的中間 (包含文字)。
+       因為圖片高度是 160px，所以我們設 80px 讓箭頭完美對齊在圖片的正中間！ */
+    top: 80px;
+    transform: translateY(-50%);
+    width: 44px; /* 稍微放大一點 */
+    height: 44px;
+    background: white;
+    border: 1px solid #f0f0f0;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 16px; /* FontAwesome 建議大小 */
+    color: #666;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 🔥 預設隱藏，加上 Ease-in-out 淡入淡出效果 */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out; 
+}
+
+/* 🔥 只有當滑鼠移入整個輪播區塊，而且按鈕沒有被加上 bound-hidden class 時，才顯示按鈕 */
+.category-carousel-wrapper:hover .scroll-btn:not(.bound-hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.scroll-btn:hover {
+    background: #f8f9fa;
+    color: #333;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    transform: translateY(-50%) scale(1.05); /* 滑鼠移上按鈕時稍微放大 */
+}
+.left-btn { left: -22px; }
+.right-btn { right: -22px; }
+
+.category-card {
+    flex: 0 0 auto; /* 防止被擠壓 */
+    /* 🔥 關鍵：(容器總寬度 100% - 3 個 16px 的間距) 除以 4，絕對精準切齊！ */
+    width: calc((100% - 48px) / 4); 
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border: 1px solid #f0f0f0;
+    scroll-snap-align: start; /* 🔥 每次滑動結束，都會讓卡片完美吸附貼齊左側邊緣 */
+}
+
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.category-img-wrapper {
+    width: 100%;
+    height: 160px; /* 圖片高度也對應拉高 */
+    background-color: #f5f5f5; /* 預設底色 */
+    overflow: hidden;
+}
+
+.category-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.category-info {
+    padding: 12px;
+}
+
+.category-name {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.category-count {
+    margin: 0;
+    font-size: 12px;
+    color: #999;
+}
+
+/* ==========================================
+   4. 右側：活動卡片網格 (Klook 卡片美學)
+========================================== */
+.activity-grid {
+    flex-grow: 1;
+    display: grid;
+    /* 響應式魔法：螢幕夠大就排 3 張，變小就自動排 2 張或 1 張 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.activity-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 互動微動畫：滑鼠移上去會微微上浮並加深陰影 */
+.activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-img-placeholder {
+    height: 180px;
+    background-color: #e2e8f0;
+    background-size: cover;
+    background-position: center;
+}
+
+.card-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    color: #2d3748;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: #718096;
+    margin: 0 0 16px 0;
+    /* 限制只顯示兩行，多的變成 ... */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.card-price {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ff5b00; /* Klook橘 */
+}
+
+.card-discount-tag {
+    background: #fff4ed; /* 淡橘色背景 */
+    color: #ff5b00; /* Klook橘 */
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}

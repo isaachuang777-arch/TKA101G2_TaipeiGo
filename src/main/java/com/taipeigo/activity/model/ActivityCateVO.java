@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "ACTIVITY_CATE")
@@ -37,6 +38,7 @@ public class ActivityCateVO implements Serializable {
     @Column(name = "CATE_ICON", columnDefinition = "LONGBLOB")
     private byte[] cateIcon;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "activityCate", cascade = CascadeType.ALL)
     private Set<ActivityCateInfoVO> activityCateInfos;
 
