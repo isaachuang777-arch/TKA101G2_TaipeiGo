@@ -14,7 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
 @Controller
-@RequestMapping("/customer")
+@RequestMapping("/backend/customer")
 public class CustomerController {
 
     @Autowired
@@ -78,7 +78,7 @@ public class CustomerController {
 
         customerService.addCustomer(customerVO);
 
-        return "redirect:/customer/list";
+        return "redirect:/backend/customer/list";
     }
 
     // =========================
@@ -107,7 +107,7 @@ public class CustomerController {
         customerVO.setCustPassword(db.getCustPassword());
 
         customerService.updateCustomer(customerVO);
-        return "redirect:/customer/list";
+        return "redirect:/backend/customer/list";
     }
 
     // =========================
@@ -117,7 +117,7 @@ public class CustomerController {
     public String delete(@RequestParam("id") Integer id) {
 
         customerService.deleteCustomer(id);
-        return "redirect:/customer/list";
+        return "redirect:/backend/customer/list";
     }
 
     // =========================
