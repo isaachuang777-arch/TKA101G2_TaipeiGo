@@ -237,12 +237,12 @@
             <div>
                 <h2 class="page-title">新增門票商品</h2>
             </div>
-            <a th:href="@{/ticket/listAllTicket}" class="btn-back">
+            <a th:href="@{/backend/ticket/list}" class="btn-back">
                 <i class="bi bi-arrow-left me-1"></i> 返回門票列表
             </a>
         </div>
 
-        <form id="ticketForm" th:action="@{/ticket/insert}" method="post" th:object="${ticketVO}" enctype="multipart/form-data" class="p-4 p-md-5">
+        <form id="ticketForm" th:action="@{/backend/ticket/insert}" method="post" th:object="${ticketVO}" enctype="multipart/form-data" class="p-4 p-md-5">
             
             <div class="row g-4">
                 
