@@ -317,7 +317,7 @@
     <main class="content-area">
 
         <div class="breadcrumb-custom">
-            <a th:href="@{/customer/list}">
+            <a th:href="@{/backend/customer/list}">
                 <i class="bi bi-house-door"></i>
                 會員列表
             </a>
@@ -455,12 +455,12 @@
         </div>
 
         <div class="action-area">
-            <a class="btn-back" th:href="@{/customer/list}">
+            <a class="btn-back" th:href="@{/backend/customer/list}">
                 <i class="bi bi-arrow-left"></i>
                 返回列表
             </a>
 
-            <a class="btn-edit-custom" th:href="@{/customer/edit(id=${customerVO.custId})}">
+            <a class="btn-edit-custom" th:href="@{/backend/customer/edit(id=${customerVO.custId})}">
                 <i class="bi bi-pencil-square"></i>
                 修改會員
             </a>
