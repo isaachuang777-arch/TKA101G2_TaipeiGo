@@ -40,9 +40,9 @@ public class TicketFrontendController {
     @GetMapping("detail")
     public String getOneForDisplay(@RequestParam("ticketId") Integer ticketId, ModelMap model) {
         TicketVO ticketVO = ticketService.getOneTicket(ticketId);
-        model.addAttribute("ticketVO", ticketVO);
+        model.addAttribute("ticket", ticketVO);
         // 以下是 html 路徑
-        return "frontend/ticket/detail"; 
+        return "frontend/ticket/ticketDetail"; 
     }
 
 }
