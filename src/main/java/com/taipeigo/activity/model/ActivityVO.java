@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -54,6 +55,10 @@ public class ActivityVO implements Serializable {
 
 	@OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ActivityImageVO> activityImage;
+
+	// 此欄位不存入資料庫，僅用於傳遞計算好的最終價格給前端
+	@Transient
+	private Integer finalPrice;
 
 	public ActivityVO() {
 	}
@@ -120,6 +125,14 @@ public class ActivityVO implements Serializable {
 
 	public void setActivityImage(List<ActivityImageVO> activityImage) {
 		this.activityImage = activityImage;
+	}
+
+	public Integer getFinalPrice() {
+		return finalPrice;
+	}
+
+	public void setFinalPrice(Integer finalPrice) {
+		this.finalPrice = finalPrice;
 	}
 
 }

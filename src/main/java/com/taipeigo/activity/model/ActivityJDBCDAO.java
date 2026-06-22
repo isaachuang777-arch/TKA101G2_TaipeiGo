@@ -108,7 +108,44 @@ public class ActivityJDBCDAO {
 
         BeanPropertyRowMapper<ActivityVO> bpr = new BeanPropertyRowMapper<ActivityVO>(ActivityVO.class);
 
-        return jdbcTemplate.query(sql.toString(), bpr, args.toArray());
+        // 先把活動暫存在一個 list 裡面
+
+        List<ActivityVO> list = jdbcTemplate.query(sql.toString(), bpr, args.toArray());
+
+        for (ActivityVO act : list) {
+
+            String imgSql = "SELECT ACTIVITY_IMAGE_SRC FROM ACTIVITY_IMAGE WHERE ACTIVITY_ID = ? LIMIT 1";
+
+            // jdbcTemplate 執行這段 SQL，回傳一個img的字串清單
+
+            List<String> imgs = jdbcTemplate.queryForList(imgSql, String.class, act.getActivityId());
+
+            if (!imgs.isEmpty()) {
+
+                List<ActivityImageVO> imgList = new ArrayList<>();
+
+                ActivityImageVO imgVO = new ActivityImageVO();
+
+                imgVO.setActivityImageSrc(imgs.get(0));
+                imgList.add(imgVO);
+
+                act.setActivityImage(imgList);
+            }
+
+            // 計算最終價格：找出這個活動所有綁定的門票成人價加總，再扣掉活動本身的折扣
+            String priceSql = "SELECT COALESCE(SUM(t.ADULT_PRICE), 0) FROM ACTIVITY_DETAIL ad JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID WHERE ad.ACTIVITY_ID = ?";
+            Integer totalOriginalPrice = jdbcTemplate.queryForObject(priceSql, Integer.class, act.getActivityId());
+            
+            // 避免空值錯誤
+            int discount = act.getDiscount() != null ? act.getDiscount() : 0;
+            int finalPrice = totalOriginalPrice - discount;
+            
+            // 確保價格不會變負數，如果沒有綁定門票 (totalOriginalPrice = 0) 就顯示 0 或預設值
+            act.setFinalPrice(finalPrice > 0 ? finalPrice : 0);
+        }
+
+        return list;
+
     }
 
 }

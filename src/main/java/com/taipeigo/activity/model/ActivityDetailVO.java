@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "ACTIVITY_DETAIL")
@@ -24,6 +25,7 @@ public class ActivityDetailVO implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "ACTIVITY_ID", nullable = false)
+    @JsonIgnore // 避免 JSON 序列化產生無限遞迴
     private ActivityVO activity;
 
     @ManyToOne

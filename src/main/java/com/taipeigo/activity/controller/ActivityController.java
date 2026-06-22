@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.taipeigo.activity.model.ActivityCateVO;
 import com.taipeigo.activity.model.ActivityService;
 import com.taipeigo.activity.model.ActivityVO;
 import com.taipeigo.product.dto.CartItemDTO;
@@ -51,6 +52,12 @@ public class ActivityController {
             @PathVariable("Id") Integer id, @RequestParam("ticketType") String ticketType) {
 
         return activityService.getActivityCartItem(id, ticketType);
+    }
+
+    @GetMapping("/categories")
+    public List<ActivityCateVO> getAllCategories() {
+
+        return activityService.getAllActiveCategories();
     }
 
 }

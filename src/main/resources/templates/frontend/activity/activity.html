@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台北GO了沒 - 活動探索</title>
+    <!-- 1. 完美對齊團隊共用的 CSS -->
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+
+    <!-- 引入 FontAwesome CDN (為了更精緻的左右箭頭圖示) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 引入本頁專屬的 CSS -->
+    <link rel="stylesheet" th:href="@{/css/activity/activity-list.css}">
+</head>
+
+<body>
+    <!-- ============================== -->
+    <!-- 完美套用團隊的 Header -->
+    <!-- ============================== -->
+    <div th:replace="~{frontend/index/header :: header}"></div>
+    <!-- 主體內容區塊 -->
+    <main class="activity-container">
+
+
+
+        <!-- 主體活動專區 -->
+        <section class="content-layout">
+
+            <!-- 分類小卡區塊 (動態渲染) -->
+            <div class="category-section">
+                <!-- 帶有 icon 的顯眼標題 -->
+                <h2 class="category-section-title">
+                    <i class="fa-solid fa-map-location-dot"></i> 活動快選
+                </h2>
+                <div class="category-carousel-wrapper">
+                    <!-- 改用 FontAwesome 圖示，並移除 inline style -->
+                    <button class="scroll-btn left-btn" id="scrollLeftBtn"><i
+                            class="fa-solid fa-chevron-left"></i></button>
+                    <div class="category-scroll-container" id="categoryListContainer">
+                        <!-- JavaScript 會在這裡動態塞入小卡 -->
+                        <p class="loading-text">分類載入中...</p>
+                    </div>
+                    <button class="scroll-btn right-btn" id="scrollRightBtn"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- 活動卡片網格 -->
+            <div class="activity-grid" id="activityListContainer">
+                <!-- 未來 JavaScript 會把一張張的卡片塞進這裡 -->
+                <p>資料載入中...</p>
+            </div>
+        </section>
+    </main>
+    <!-- ============================== -->
+    <!-- 完美套用團隊的 Footer -->
+    <!-- ============================== -->
+    <div th:replace="~{frontend/index/footer :: footer}"></div>
+    <!-- 3. 你專屬的神經系統 JS -->
+    <script th:src="@{/js/activity/activity-list.js}"></script>
+</body>
+
+</html>

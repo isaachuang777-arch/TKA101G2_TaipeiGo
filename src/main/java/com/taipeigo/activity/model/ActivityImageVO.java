@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "ACTIVITY_IMAGE")
@@ -26,6 +27,7 @@ public class ActivityImageVO implements Serializable {
     @NotNull(message = "所屬一日活動不能為空")
     @ManyToOne
     @JoinColumn(name = "ACTIVITY_ID", nullable = false)
+    @JsonIgnore // 避免 JSON 序列化產生無限遞迴
     private ActivityVO activity;
 
     @Column(name = "ACTIVITY_IMAGE_SRC", length = 250)
