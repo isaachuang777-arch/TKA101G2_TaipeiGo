@@ -46,6 +46,12 @@ public class ActivityService {
 
         for (ActivityDetailVO detail : activity.getActivityDetails()) {
 
+            if (detail.getTicket().getAvailableSerialCount() < 1) {
+
+                throw new IllegalArgumentException("活動包含的某些門票已售完，無法加入購物車！");
+
+            }
+
             switch (ticketType.toUpperCase()) {
 
                 case "CHILD":
