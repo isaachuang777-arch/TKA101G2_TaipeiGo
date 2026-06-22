@@ -55,7 +55,6 @@ public class CsVO implements Serializable {
 	//////////////////////	///////////////// 可以寫成CsVO.setCaseStatus(CsVO.SsPending);
 	
 
-	@NotNull
 	@CreationTimestamp //Hibernate自動
 	@Column(name = "CREATED_AT", updatable = false) //避免更新是動到 所以不是updatable
 	private java.sql.Timestamp createdAt;
