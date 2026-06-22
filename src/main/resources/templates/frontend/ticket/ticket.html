@@ -5,26 +5,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>台北GO了沒</title>
+    <title>台北GO了沒 - 景點門票</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/ticket/ticket.css}">
 </head>
 
 <body>
-
     <!-- Header -->
     <div th:replace="~{frontend/index/header :: header}"></div>
 
-    <!-- 內容 -->
-    <main>
-		<h1>門票前台首頁</h1>
-       
+    <main class="ticket-container">
+        
+        <section class="category-section">
+        	<div class="category-list">
+	        	<th:block th:each="ticketCategory : ${ticketCategoryListData}" >
+	                <div class="category-item active">
+	                    <span class="category-name" th:text="${ticketCategory.ticketCategoryName}">主題樂園</span>
+	                </div>
+	        	</th:block>
+            </div>
+        </section>
+		
+		<section class="ticket-section">
+            
+            <h2 class="section-title">熱門景點門票</h2>
+            
+            <div class="ticket-grid">
+                
+                <th:block th:each="ticket : ${ticketListData}" th:if="${ticket.ticketStatus == 1}">
+                    
+                    <div class="ticket-card" th:onclick="|location.href='@{/ticket/detail(ticketId=${ticket.ticketId})}'|">
+                        
+                        <div class="ticket-image-box">
+                            <div th:if="${#lists.isEmpty(ticket.ticketImages)}" class="no-image-placeholder">
+                                無圖片
+                            </div>
+                            
+                            <th:block th:if="${not #lists.isEmpty(ticket.ticketImages)}">
+                                <img th:if="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
+                                     th:src="${ticket.ticketImages[0].ticketImageSrc}" alt="門票封面">
+                                
+                                <img th:unless="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
+                                     th:src="@{${ticket.ticketImages[0].ticketImageSrc}}" alt="門票封面">
+                            </th:block>
+                        </div>
+                        
+                        <div class="ticket-info">
+                            <h3 class="ticket-title" th:text="${ticket.ticketName}">門票名稱</h3>
+                            
+                            <div class="ticket-price-box">
+                                <div class="price-wrapper">
+                                    <span class="original-price" 
+                                          th:if="${ticket.adultOriginalPrice != null}" 
+                                          th:text="'NT$ ' + ${ticket.adultOriginalPrice}">NT$ 600</span>
+                                    
+                                    <span class="current-price">
+                                        NT$ <strong th:text="${ticket.adultPrice}">550</strong> 起
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </th:block>
 
+            </div>
+            
+            <div th:if="${#lists.isEmpty(ticketListData)}" class="text-center text-muted py-5">
+                目前沒有任何門票商品。
+            </div>
+        </section>
     </main>
-
-    <!-- Footer -->
+    <!-- Footer -->    
     <div th:replace="~{frontend/index/footer :: footer}"></div>
 
 </body>
