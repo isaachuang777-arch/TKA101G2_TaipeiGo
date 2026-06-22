@@ -2,66 +2,46 @@
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>台北GO了沒</title>
+<title>台北GO了沒</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
+<link rel="stylesheet" th:href="@{/css/header.css}">
+<link rel="stylesheet" th:href="@{/css/heroSearch.css}">
+<link rel="stylesheet" th:href="@{/css/footer.css}">
+<link rel="stylesheet" th:href="@{/css/heroBanner.css}">
 </head>
 
 <body>
 
-    <!-- Header -->
-    <div th:replace="~{frontend/index/header :: header}"></div>
+	<!-- Header -->
+	<div th:replace="~{frontend/index/header :: header}"></div>
 
-    <!-- 首頁內容 -->
-    <main>
+	<!-- Hero Search -->
+	<div th:replace="~{frontend/index/heroSearch :: heroSearch}"></div>
+	
+<!--<div th:replace="~{frontend/index/heroBanner :: heroBanner}"></div> -->
+	
+	<!-- 首頁內容 -->
+	<main>
+		<section class="home-section">
+			<h2>熱門景點</h2>
+			<p>商品相關</p>
+		</section>
 
-        <!-- 商品組區域 -->
-        <section style="max-width:1200px; margin:80px auto;">
+		<section class="home-section">
+			<h2>推薦行程</h2>
+			<p>商品相關</p>
+		</section>
 
-            <h2 style="font-size:36px; margin-bottom:20px;">
-                熱門景點
-            </h2>
+	</main>
 
-            <p style="color:#666;">
-                商品相關
-            </p>
-
-        </section>
-
-        <section style="max-width:1200px; margin:80px auto;">
-
-            <h2 style="font-size:36px; margin-bottom:20px;">
-                熱門行程
-            </h2>
-
-            <p style="color:#666;">
-                商品相關
-            </p>
-
-        </section>
-
-        <section style="max-width:1200px; margin:80px auto;">
-
-            <h2 style="font-size:36px; margin-bottom:20px;">
-                最新優惠
-            </h2>
-
-            <p style="color:#666;">
-                商品相關
-            </p>
-
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <div th:replace="~{frontend/index/footer :: footer}"></div>
-
+	<!-- Footer -->
+	<div th:replace="~{frontend/index/footer :: footer}"></div>
+	
+	<!-- 輪播JS引入 -->
+	<script th:src="@{/js/heroBanner.js}"></script>
 </body>
 
 </html>
