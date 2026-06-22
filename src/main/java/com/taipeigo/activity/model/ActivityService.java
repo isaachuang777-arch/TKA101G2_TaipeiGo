@@ -20,12 +20,16 @@ public class ActivityService {
 
     private final ActivityRepository activityRepo;
     private final ActivityJDBCDAO activityJDBCDAO;
+    private final ActivityCateRepository activityCateRepo;
 
     @Autowired
-    public ActivityService(ActivityRepository activityRepo, ActivityJDBCDAO activityJDBCDAO) {
+    public ActivityService(ActivityRepository activityRepo, ActivityJDBCDAO activityJDBCDAO,
+            ActivityCateRepository activityCateRepo) {
 
         this.activityRepo = activityRepo;
         this.activityJDBCDAO = activityJDBCDAO;
+        this.activityCateRepo = activityCateRepo;
+
     }
 
     // 傳送商品到購物車用的DTO
@@ -353,6 +357,12 @@ public class ActivityService {
 
         activityRepo.save(existActivityVO);
 
+    }
+
+    // ----------------- 前台取得所有啟用中的分類 -----------------
+    public List<ActivityCateVO> getAllActiveCategories() {
+
+        return activityCateRepo.findAllActiveCategories();
     }
 
 }
