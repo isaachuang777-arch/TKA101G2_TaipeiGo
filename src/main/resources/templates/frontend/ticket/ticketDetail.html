@@ -5,28 +5,245 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>台北GO了沒</title>
+    <title th:text="${ticket.ticketName} + ' - 台北GO了沒'">門票詳情 - 台北GO了沒</title>
 
-    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh-tw.js"></script>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/ticket/ticketDetail.css}">
 </head>
 
-<body>
+<body th:data-ticket-id="${ticket.ticketId}">
 
-    <!-- Header -->
     <div th:replace="~{frontend/index/header :: header}"></div>
 
-    <!-- 內容 -->
-    <main>
-		<h1>門票前台單筆資料</h1>
-       
+    <main class="ticket-detail-container">
+        
+        <nav class="breadcrumb">
+            <a th:href="@{/}">首頁</a> &gt; 
+            <a th:href="@{/ticket/all}">景點門票</a> &gt; 
+            <span th:text="${ticket.ticketName}">門票名稱</span>
+        </nav>
+
+        <section class="gallery-section">
+            <div class="main-image" th:classappend="${ticket.ticketImages != null and not #lists.isEmpty(ticket.ticketImages)} ? 'has-img' : ''"
+                 th:onclick="${ticket.ticketImages != null and not #lists.isEmpty(ticket.ticketImages)} ? 'openLightbox(0)' : ''">
+                <th:block th:if="${ticket.ticketImages != null and not #lists.isEmpty(ticket.ticketImages)}">
+                    <img th:if="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
+                         th:src="${ticket.ticketImages[0].ticketImageSrc}" alt="商品主圖">
+                    <img th:unless="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
+                         th:src="@{${ticket.ticketImages[0].ticketImageSrc}}" alt="商品主圖">
+                </th:block>
+                <div class="no-image-placeholder-main" th:if="${ticket.ticketImages == null or #lists.isEmpty(ticket.ticketImages)}">暫無圖片</div>
+            </div>
+
+            <div class="sub-images">
+                <th:block th:each="i : ${#numbers.sequence(1, 4)}">
+                    
+                    <div class="sub-image-box" 
+                         th:classappend="${ticket.ticketImages != null and #lists.size(ticket.ticketImages) > i} ? 'has-img' : 'fallback'"
+                         th:onclick="${ticket.ticketImages != null and #lists.size(ticket.ticketImages) > i} ? 'openLightbox(' + i + ')' : ''">
+                        
+                        <th:block th:if="${ticket.ticketImages != null and #lists.size(ticket.ticketImages) > i}">
+                            <img th:if="${#strings.startsWith(ticket.ticketImages[i].ticketImageSrc, 'http')}" th:src="${ticket.ticketImages[i].ticketImageSrc}" alt="商品副圖">
+                            <img th:unless="${#strings.startsWith(ticket.ticketImages[i].ticketImageSrc, 'http')}" th:src="@{${ticket.ticketImages[i].ticketImageSrc}}" alt="商品副圖">
+                        </th:block>
+
+                        <div class="no-image-placeholder-sub" th:unless="${ticket.ticketImages != null and #lists.size(ticket.ticketImages) > i}">暫無圖片</div>
+                        
+                        <div class="view-photos-btn" 
+                             th:if="${i == 4 and ticket.ticketImages != null and #lists.size(ticket.ticketImages) > 0}" 
+                             onclick="event.stopPropagation(); openLightbox(0)">查看照片</div>
+                    </div>
+                    
+                </th:block>
+            </div>
+        </section>
+
+        <div id="imageLightbox" class="lightbox-modal" onclick="closeLightbox()">
+            <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+            <div class="lightbox-content" onclick="event.stopPropagation()">
+                
+                <div class="lightbox-main">
+                    <th:block th:each="img, iterStat : ${ticket.ticketImages}">
+                        <div class="lightbox-slide">
+                            <img th:if="${#strings.startsWith(img.ticketImageSrc, 'http')}" th:src="${img.ticketImageSrc}">
+                            <img th:unless="${#strings.startsWith(img.ticketImageSrc, 'http')}" th:src="@{${img.ticketImageSrc}}">
+                            <div class="lightbox-counter" th:text="${iterStat.count} + ' / ' + ${#lists.size(ticket.ticketImages)}">1/1</div>
+                        </div>
+                    </th:block>
+                    
+                    <a class="prev-arrow" onclick="changeSlide(-1)">&#10094;</a>
+                    <a class="next-arrow" onclick="changeSlide(1)">&#10095;</a>
+                </div>
+
+                <div class="lightbox-thumbnails">
+                    <div class="thumb-item" th:each="img, iterStat : ${ticket.ticketImages}" th:onclick="'currentSlide(' + ${iterStat.index} + ')'">
+                        <img th:if="${#strings.startsWith(img.ticketImageSrc, 'http')}" th:src="${img.ticketImageSrc}">
+                        <img th:unless="${#strings.startsWith(img.ticketImageSrc, 'http')}" th:src="@{${img.ticketImageSrc}}">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <section class="info-section">
+            <div class="title-favorite-row">
+                <h1 class="ticket-title" th:text="${ticket.ticketName}">門票名稱</h1>
+                <button type="button" class="favorite-btn-klook" onclick="toggleFavorite(event, this)">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>加入我的最愛</span>
+                </button>
+            </div>
+
+            <div class="price-box">
+                <span class="original-price" 
+                      th:if="${ticket.adultOriginalPrice != null}" 
+                      th:text="'NT$ ' + ${ticket.adultOriginalPrice}"
+                      style="text-decoration: line-through; color: #999; font-size: 16px; margin-right: 10px;">NT$ 600</span>
+                <span class="currency">NT$</span>
+                <span class="price" th:text="${ticket.adultPrice}">550</span> <span class="up">起</span>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="options-section">
+            <h2>方案選擇</h2>
+            
+            <div class="date-selector-row">
+                <button type="button" class="date-btn active" onclick="selectQuickDate('tomorrow')">明日</button>
+                <button type="button" class="date-btn" onclick="selectQuickDate('dayAfterTomorrow')">6月24日</button>
+                <button type="button" class="date-btn" onclick="selectQuickDate('threeDaysLater')">6月25日</button>
+                <div class="calendar-wrapper" style="position: relative; display: inline-block;">
+                    <input type="text" id="inlineDatePicker" style="position: absolute; visibility: hidden; width: 0; height: 0;">
+                    <button type="button" class="date-btn " id="openCalendarBtn">所有日期</button>
+                </div>
+            </div>
+
+            <div class="package-list-container">
+                
+                <div class="package-card ticket-option-row">
+                    <div class="package-info">
+                        <h3>成人方案</h3>
+                        <p class="package-desc">適用於滿 18 歲以上之一般成人。</p>
+                    </div>
+                    <div class="package-action-row">
+                        <div class="package-price" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="opt-original-price" 
+                                  th:if="${ticket.adultOriginalPrice != null}" 
+                                  th:text="'NT$ ' + ${ticket.adultOriginalPrice}"
+                                  style="text-decoration: line-through; color: #999; font-size: 14px;">NT$ 600</span>
+                            <span class="currency" style="color: #ff5b00; font-weight: bold;">NT$</span>
+                            <span th:text="${ticket.adultPrice != null ? ticket.adultPrice : 550}" style="color: #ff5b00; font-weight: bold; font-size: 18px;">550</span>
+                        </div>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn minus" onclick="changeQty(this, -1)">-</button>
+                            <input type="number" class="qty-input" value="0" min="0" max="99" readonly 
+                                   th:data-price="${ticket.adultPrice != null ? ticket.adultPrice : 550}">
+                            <button type="button" class="qty-btn plus" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="package-card ticket-option-row">
+                    <div class="package-info">
+                        <h3>兒童方案</h3>
+                        <p class="package-desc">適用於滿 6 歲至未滿 18 歲之孩童與青少年。</p>
+                    </div>
+                    <div class="package-action-row">
+                        <div class="package-price" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="opt-original-price" 
+                                  th:if="${ticket.childOriginalPrice != null}" 
+                                  th:text="'NT$ ' + ${ticket.childOriginalPrice}"
+                                  style="text-decoration: line-through; color: #999; font-size: 14px;">NT$ 400</span>
+                            <span class="currency" style="color: #ff5b00; font-weight: bold;">NT$</span>
+                            <span th:text="${ticket.childPrice != null ? ticket.childPrice : 350}" style="color: #ff5b00; font-weight: bold; font-size: 18px;">350</span>
+                        </div>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn minus" onclick="changeQty(this, -1)">-</button>
+                            <input type="number" class="qty-input" value="0" min="0" max="99" readonly 
+                                   th:data-price="${ticket.childPrice != null ? ticket.childPrice : 350}">
+                            <button type="button" class="qty-btn plus" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="package-card ticket-option-row">
+                    <div class="package-info">
+                        <h3>優待方案</h3>
+                        <p class="package-desc">適用於 65 歲以上長者、身心障礙者及其必要陪同者一人（需出示證件）。</p>
+                    </div>
+                    <div class="package-action-row">
+                        <div class="package-price" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="opt-original-price" 
+                                  th:if="${ticket.concessionOriginalPrice != null}" 
+                                  th:text="'NT$ ' + ${ticket.concessionOriginalPrice}"
+                                  style="text-decoration: line-through; color: #999; font-size: 14px;">NT$ 300</span>
+                            <span class="currency" style="color: #ff5b00; font-weight: bold;">NT$</span>
+                            <span th:text="${ticket.concessionPrice != null ? ticket.concessionPrice : 275}" style="color: #ff5b00; font-weight: bold; font-size: 18px;">275</span>
+                        </div>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn minus" onclick="changeQty(this, -1)">-</button>
+                            <input type="number" class="qty-input" value="0" min="0" max="99" readonly 
+                                   th:data-price="${ticket.concessionPrice != null ? ticket.concessionPrice : 275}">
+                            <button type="button" class="qty-btn plus" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="booking-summary-bar">
+                <div class="summary-text" style="font-size: 16px; font-weight: bold; color: #333;">
+                    已選 <span id="totalTicketsCount" style="color: #ff5b00; font-size: 20px;">0</span> 張，
+                    共 <span style="color: #ff5b00; font-size: 20px;">NT$ <span id="totalPriceAmount">0</span></span> 元
+                </div>
+                <div class="action-buttons-group" style="display: flex; gap: 12px; align-items: center;">
+                    <a th:href="@{/cart/add(ticketId=${ticket.ticketId})}" id="addToCartBtn" class="btn-cart" onclick="return validateBooking(event)" 
+                       style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #fff; color: #ff5b00; border: 1px solid #ff5b00; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box;">加入購物車</a>
+                    <a th:href="@{/ticket/booking(ticketId=${ticket.ticketId})}" id="bookingBtn" class="btn-booking" onclick="return validateBooking(event)" 
+                       style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #ff5b00; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box; border: 1px solid #ff5b00;">立即購買</a>
+                </div>
+            </div>
+            
+        </section>
+
+        <hr>
+
+        <section class="description-section">
+            <h2>活動介紹</h2>
+            <div class="rich-text-content" th:utext="${ticket.ticketDescription}">
+                <p>這裡會顯示豐富的景點介紹文字...</p>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="notes-section">
+            <h2>預訂須知</h2>
+            <div class="note-box">
+                <h3>確認詳情</h3>
+                <p>訂單將於成立後快速確認，確認後電子憑證將記錄於您的「台北GO了沒」會員中心訂單紀錄中。</p>
+            </div>
+            <div class="note-box">
+                <h3>如何使用</h3>
+                <p>當天抵達景點入口處，直接出示手機上的電子憑證（QR Code）供現場工作人員掃描即可入園。</p>
+            </div>
+            <div class="note-box">
+                <h3>退改規則</h3>
+                <p>本商品在指定體驗日前，未使用的憑證可於規定時間內申請取消，詳情請參閱各票種規範。</p>
+            </div>
+        </section>
 
     </main>
 
-    <!-- Footer -->
     <div th:replace="~{frontend/index/footer :: footer}"></div>
 
+    <script th:src="@{/js/ticket/frontend/ticketDetail.js}"></script>
 </body>
 
 </html>
