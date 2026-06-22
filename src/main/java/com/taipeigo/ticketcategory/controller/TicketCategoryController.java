@@ -14,14 +14,14 @@ import com.taipeigo.ticketcategory.model.TicketCategoryVO;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/ticketCategory")
+@RequestMapping("/backend/ticketCategory")
 public class TicketCategoryController {
 
     @Autowired
     TicketCategoryService ticketCategoryService;
 
     /* 進入票券種類列表頁面 (查全部未被刪除) */
-    @GetMapping("listAllTicketCategory")
+    @GetMapping("list")
     public String listAllCategory(ModelMap model) {
         List<TicketCategoryVO> list = ticketCategoryService.getAllNotDeleted();
         model.addAttribute("ticketCategoryListData", list);
@@ -46,7 +46,7 @@ public class TicketCategoryController {
         }
         ticketCategoryService.addTicketCategory(ticketCategoryVO);
         // 以下是 網頁網址路徑
-        return "redirect:/ticketCategory/listAllTicketCategory";
+        return "redirect:/backend/ticketCategory/list";
     }
 
     // TODO: 討論：刪除將門類分類狀態改為2,而不是實際移除
@@ -55,7 +55,7 @@ public class TicketCategoryController {
     public String delete(@RequestParam("ticketCategoryId") Integer ticketCategoryId, ModelMap model) {
         ticketCategoryService.deleteTicketCategory(ticketCategoryId);
         // 討論：是否採用非 redirect 作法
-        return "redirect:/ticketCategory/listAllTicketCategory";
+        return "redirect:/backend/ticketCategory/list";
     }
 
     /* 進入修改門票頁面 （將該id的VO資料導入進修改頁面） */
@@ -76,7 +76,7 @@ public class TicketCategoryController {
         }
         ticketCategoryService.updateTicketCategory(ticketCategoryVO);
         // 討論：是否採用非 redirect 作法
-        return "redirect:/ticketCategory/listAllTicketCategory";
+        return "redirect:/backend/ticketCategory/list";
     }
 
 }
