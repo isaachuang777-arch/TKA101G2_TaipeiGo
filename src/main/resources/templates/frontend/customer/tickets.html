@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>我的票券</title>
+
+<style>
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 左側選單 -->
+    <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
+
+    <!-- 右側內容 -->
+    <div class="content">
+
+        <h2>我的票券</h2>
+
+        <p>
+            歡迎，
+            <span th:text="${loginCustomer.custName}"></span>
+        </p>
+
+        <p>目前尚無票券資料</p>
+
+    </div>
+
+</div>
+
+</body>
+</html>
