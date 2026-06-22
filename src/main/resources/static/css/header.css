@@ -1,172 +1,301 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"Microsoft JhengHei",sans-serif;
 }
 
 /* =========================
    Navbar
 ========================= */
 
-.navbar {
-    height: 72px;
-    background: #fff;
+.navbar{
+    height:72px;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background:#fff;
 
-    padding: 0 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-    box-shadow: 0 1px 8px rgba(0,0,0,.08);
+    padding:0 40px;
 
-    position: relative;
-    z-index: 100;
+    box-shadow:0 1px 8px rgba(0,0,0,.08);
+
+    position:relative;
+    z-index:100;
 }
 
-.nav-left {
-    display: flex;
-    align-items: center;
+.nav-left{
+    display:flex;
+    align-items:center;
 }
 
-.menu-icon {
-    font-size: 26px;
-    cursor: pointer;
-    color: #333;
+.menu-icon{
+    font-size:26px;
+    cursor:pointer;
+    color:#333;
 }
 
-.nav-logo {
-    margin-left: 20px;
+.nav-logo{
+    margin-left:20px;
 
-    font-size: 24px;
-    font-weight: 800;
+    font-size:24px;
+    font-weight:800;
 
-    color: #f05a28;
+    color:#f05a28;
 
-    text-decoration: none;
-    white-space: nowrap;
+    text-decoration:none;
 }
 
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 30px;
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:28px;
 }
 
-.nav-link {
-    text-decoration: none;
-    color: #444;
+/* =========================
+   Navbar Link
+========================= */
 
-    font-size: 16px;
-    font-weight: 600;
+.nav-link,
+.btn-login,
+.btn-register,
+.logout-link{
 
-    transition: .2s;
+    text-decoration:none;
+
+    color:#444;
+
+    font-size:16px;
+    font-weight:600;
+
+    transition:.2s;
 }
 
-.nav-link:hover {
-    color: #f05a28;
+.nav-link:hover,
+.btn-login:hover,
+.btn-register:hover,
+.logout-link:hover{
+
+    color:#f05a28;
 }
 
 /* =========================
    Hero Banner
 ========================= */
 
-.hero {
-    position: relative;
+.hero{
+    position:relative;
 
-    height: 520px;
+    height:520px;
 
-    background-image: url('/images/index/taipei101.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-image:url('/images/index/taipei101.jpg');
+    background-size:cover;
+    background-position:center;
 }
 
-.overlay {
-    position: absolute;
-    inset: 0;
+.overlay{
+    position:absolute;
+    inset:0;
 
-    background: rgba(0,0,0,.22);
+    background:rgba(0,0,0,.22);
 }
 
-.hero-content {
-    position: absolute;
+.hero-content{
+    position:absolute;
 
-    top: 85px;
-    left: 90px;
+    top:85px;
+    left:90px;
 
-    z-index: 2;
+    z-index:2;
 }
 
-.hero-title {
-    font-size: 58px;
-    font-weight: 800;
-    line-height: 1.1;
+.hero-title{
+    font-size:58px;
+    font-weight:800;
 
-    color: white;
+    color:#fff;
 
-    margin-bottom: 20px;
+    line-height:1.1;
 
-    text-shadow: 0 3px 10px rgba(0,0,0,.35);
+    margin-bottom:20px;
 }
 
-.hero-subtitle {
-    font-size: 18px;
-    line-height: 1.7;
+.hero-subtitle{
+    font-size:18px;
 
-    color: white;
+    color:#fff;
 
-    margin-bottom: 30px;
+    line-height:1.8;
 
-    text-shadow: 0 2px 8px rgba(0,0,0,.35);
+    margin-bottom:30px;
 }
 
-.search-box {
-    display: flex;
+.search-box{
+    display:flex;
 
-    width: 620px;
-    height: 60px;
+    width:620px;
+    height:60px;
 
-    background: white;
+    background:#fff;
 
-    border-radius: 16px;
-    overflow: hidden;
+    border-radius:16px;
 
-    box-shadow: 0 10px 25px rgba(0,0,0,.18);
+    overflow:hidden;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.18);
 }
 
-.search-input {
-    flex: 1;
+.search-input{
+    flex:1;
 
-    border: none;
-    outline: none;
+    border:none;
+    outline:none;
 
-    padding: 0 24px;
+    padding:0 24px;
 
-    font-size: 18px;
-    color: #444;
+    font-size:18px;
 }
 
-.search-input::placeholder {
-    color: #888;
+.search-btn{
+    width:200px;
+
+    border:none;
+
+    background:#ff5b00;
+    color:#fff;
+
+    font-size:18px;
+    font-weight:700;
+
+    cursor:pointer;
 }
 
-.search-btn {
-    width: 200px;
-
-    border: none;
-
-    background: #ff5b00;
-    color: white;
-
-    font-size: 18px;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition: .2s;
+.search-btn:hover{
+    background:#e65100;
 }
 
-.search-btn:hover {
-    background: #e65100;
+/* =========================
+   Member Dropdown
+========================= */
+
+.member-dropdown{
+    position:relative;
+}
+
+.member-dropdown::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:100%;
+    right:0;
+
+    width:220px;
+    height:12px;
+}
+
+.member-btn{
+
+    border:none;
+    background:none;
+
+    display:flex;
+    align-items:center;
+
+    gap:8px;
+
+    cursor:pointer;
+}
+
+.member-avatar{
+
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    background:#f3f4f6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.member-name{
+    font-size:15px;
+    font-weight:600;
+}
+
+.arrow{
+    font-size:12px;
+}
+
+.dropdown-menu{
+
+    position:absolute;
+
+    top:100%;
+    right:-10px;
+
+    width:220px;
+
+    margin-top:8px;
+
+    background:#fff;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+
+    display:none;
+}
+
+.member-dropdown:hover .dropdown-menu{
+    display:block;
+}
+
+.dropdown-menu a{
+
+    display:block;
+
+    padding:14px 18px;
+
+    color:#333;
+    text-decoration:none;
+}
+
+.dropdown-menu a:hover{
+    background:#f5f5f5;
+}
+
+/* =========================
+   Home
+========================= */
+
+.home-section{
+
+    max-width:1200px;
+
+    margin:80px auto;
+
+    padding:0 20px;
+}
+
+.home-section h2{
+
+    font-size:36px;
+
+    margin-bottom:20px;
+}
+
+.home-section p{
+    color:#666;
 }

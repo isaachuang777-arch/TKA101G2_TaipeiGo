@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<section th:fragment="heroBanner">
+    <div class="hero-banner">
+        <img th:src="@{/images/index/taipei101.jpg}" class="slide active" alt="Taipei 101">
+        <img th:src="@{/images/index/九份.jpg}" class="slide" alt="九份">
+        <img th:src="@{/images/index/淡水.jpg}" class="slide"alt="淡水">
+        
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+            <h1 class="banner-title">探索台北</h1>
+            <p class="banner-subtitle"> Taipei , Let's GO </p>
+        </div>
+    </div>
+</section>
+</body>
+</html>

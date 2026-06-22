@@ -1,61 +1,103 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
 
 <header th:fragment="header">
 
-    <!-- Navbar -->
     <nav class="navbar">
 
         <div class="nav-left">
+
             <span class="menu-icon">☰</span>
 
             <a th:href="@{/}" class="nav-logo">
                 台北GO了沒
             </a>
+
         </div>
 
         <div class="nav-right">
-            <a th:href="@{/favorite}" class="nav-link"> ❤️ 我的最愛  </a>
-            <a th:href="@{/cart}" class="nav-link"> 🛒 購物車        </a>
-            <a th:href="@{/member}" class="nav-link">  👤 會員中心   </a>
+
+            <a th:href="@{/favorite}" class="nav-link">
+                ❤️ 我的最愛
+            </a>
+
+            <a th:href="@{/cart}" class="nav-link">
+                🛒 購物車
+            </a>
+
+            <!-- 未登入 -->
+            <th:block th:if="${session.loginCustomer == null}">
+
+                <a th:href="@{/front/customer/login}"
+                   class="btn-login">
+                    👤 登入
+                </a>
+
+                <a th:href="@{/front/customer/register}"
+                   class="btn-register">
+                    👥 註冊
+                </a>
+
+            </th:block>
+
+            <!-- 已登入 -->
+            <th:block th:if="${session.loginCustomer != null}">
+
+                <div class="member-dropdown">
+
+                    <button type="button" class="member-btn">
+
+                        <span class="member-avatar">
+                            👤
+                        </span>
+
+                        <span class="member-name"
+                              th:text="${session.loginCustomer.custName}">
+                        </span>
+
+                        <span class="arrow">
+                            ▼
+                        </span>
+
+                    </button>
+
+                    <div class="dropdown-menu">
+
+                        <a href="#">
+                            👤 會員中心
+                        </a>
+
+                        <a href="#">
+                            📋 個人資料
+                        </a>
+
+                        <a href="#">
+                            📄 我的訂單
+                        </a>
+
+                        <a href="#">
+                            🎫 我的票券
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <a href="#"
+                   class="logout-link">
+                    🚪 登出
+                </a>
+
+            </th:block>
+
         </div>
 
     </nav>
 
-    <!-- banner(hero) -->
-    <section class="hero">
-
-        <div class="overlay"></div>
-
-        <div class="hero-content">
-
-            <h1 class="hero-title">
-                探索你的台北
-            </h1>
-
-            <p class="hero-subtitle">
-                訂門票、找行程，一站搞定！深度台北旅行就要從 台北GO了沒 開始！
-            </p>
-
-            <div class="search-box">
-
-                <input
-                    type="text"
-                    class="search-input"
-                    placeholder="臺北市立動物園 TAIPEI ZOO">
-
-                <button class="search-btn">
-                    搜尋
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
 </header>
 
 </body>
+
 </html>
