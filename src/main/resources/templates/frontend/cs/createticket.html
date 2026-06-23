@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+<meta charset="UTF-8">
+<title>台北GO了沒 - 客服中心 - 提出新詢問</title>
+<style >
+textarea {
+resize : none;
+}
+</style>
+<link rel="stylesheet" th:href="@{/css/footer.css}">
+<link rel="stylesheet" th:href="@{/css/cs/cs.css}">
+</head>
+<body>
+<div class="main-box">
+<h2>客服中心 - 提出新詢問</h2>
+
+<br>
+<div>
+    <a th:href="@{/CustomerService/index}">
+        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+        返回 客服中心 首頁
+        </button>
+    </a>
+   </div>
+<hr>
+<span class="info">請填寫以下資料，便於客服人員理解您的狀況。</span>
+<form th:action="@{/CustomerService/createticket}" method="post" enctype="multipart/formdate">
+
+<table>
+	<tr>
+		<td>問題分類</td>
+		<td>
+			<select name="caseCate"> 
+		    <option value="11">操作問題</option>
+		    <option value="12">訂單問題</option>
+			<option value="13">其他問題</option>
+			</select>
+		</td>
+	</tr>
+
+	<tr>
+		<td>詳細問題</td>
+		<td><textarea name="msg" cols="100" rows="10" ></textarea></td>
+	</tr>
+	
+	<tr><!--TODO之後的圖片上傳-->
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+	<button type="submit" style="background-color: #f05a28; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">送出問題</button>
+
+
+    </a>
+</form>
+</div>
+   <!-- Footer -->
+    <div th:replace="~{frontend/index/footer :: footer}"></div>
+</body>
+</html>
