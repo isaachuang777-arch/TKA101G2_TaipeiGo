@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活動詳情 - 台北GO了沒</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh-tw.js"></script>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/activity/activityDetail.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{frontend/index/header :: header}"></div>
+
+    <main class="ticket-detail-container">
+        
+        <nav class="breadcrumb">
+            <a th:href="@{/}">首頁</a> &gt; 
+            <a th:href="@{/activity}">活動清單</a> &gt; 
+            <span id="breadcrumbName">活動名稱載入中...</span>
+        </nav>
+
+        <!-- 圖片畫廊區，由 JS 動態填入 HTML -->
+        <section class="gallery-section" id="gallerySectionContainer">
+            <div style="width: 100%; text-align: center; padding: 100px; color: #999;">圖片載入中...</div>
+        </section>
+
+        <!-- Lightbox 燈箱，由 JS 動態填入 HTML -->
+        <div id="imageLightbox" class="lightbox-modal" onclick="closeLightbox()">
+            <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+            <div class="lightbox-content" onclick="event.stopPropagation()" id="lightboxContainer">
+                <!-- 內容由 JS 產生 -->
+            </div>
+        </div>
+
+        <section class="info-section">
+            <div class="title-favorite-row">
+                <h1 class="ticket-title" id="activityTitle">活動名稱載入中...</h1>
+                <button type="button" class="favorite-btn-klook" onclick="toggleFavorite(event, this)">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>加入我的最愛</span>
+                </button>
+            </div>
+
+            <div class="price-box">
+                <span class="currency">NT$</span>
+                <span class="price" id="mainPriceDisplay">0</span> <span class="up">起</span>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="options-section">
+            <h2>方案選擇</h2>
+            
+            <div class="date-selector-row">
+                <button type="button" class="date-btn active" onclick="selectQuickDate('tomorrow')" id="btnTomorrow">明日</button>
+                <button type="button" class="date-btn" onclick="selectQuickDate('dayAfterTomorrow')" id="btnDayAfter">後天</button>
+                <button type="button" class="date-btn" onclick="selectQuickDate('threeDaysLater')" id="btnThreeDays">大後天</button>
+                <div class="calendar-wrapper" style="position: relative; display: inline-block;">
+                    <input type="text" id="inlineDatePicker" style="position: absolute; visibility: hidden; width: 0; height: 0;">
+                    <button type="button" class="date-btn " id="openCalendarBtn">所有日期</button>
+                </div>
+            </div>
+
+            <div class="package-list-container">
+                
+                <div class="package-card ticket-option-row">
+                    <div class="package-info">
+                        <h3>成人方案</h3>
+                        <p class="package-desc">適用於滿 18 歲以上之一般成人。</p>
+                    </div>
+                    <div class="package-action-row">
+                        <div class="package-price" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="currency" style="color: #ff5b00; font-weight: bold;">NT$</span>
+                            <span id="priceAdult" style="color: #ff5b00; font-weight: bold; font-size: 18px;">0</span>
+                        </div>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn minus" onclick="changeQty(this, -1)">-</button>
+                            <input type="number" class="qty-input" id="qtyAdult" value="0" min="0" max="99" readonly data-price="0">
+                            <button type="button" class="qty-btn plus" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="package-card ticket-option-row">
+                    <div class="package-info">
+                        <h3>兒童方案</h3>
+                        <p class="package-desc">適用於滿 6 歲至未滿 18 歲之孩童與青少年。</p>
+                    </div>
+                    <div class="package-action-row">
+                        <div class="package-price" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="currency" style="color: #ff5b00; font-weight: bold;">NT$</span>
+                            <span id="priceChild" style="color: #ff5b00; font-weight: bold; font-size: 18px;">0</span>
+                        </div>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn minus" onclick="changeQty(this, -1)">-</button>
+                            <input type="number" class="qty-input" id="qtyChild" value="0" min="0" max="99" readonly data-price="0">
+                            <button type="button" class="qty-btn plus" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="package-card ticket-option-row">
+                    <div class="package-info">
+                        <h3>優待方案</h3>
+                        <p class="package-desc">適用於 65 歲以上長者、身心障礙者及其必要陪同者一人（需出示證件）。</p>
+                    </div>
+                    <div class="package-action-row">
+                        <div class="package-price" style="display: flex; align-items: center; gap: 8px;">
+                            <span class="currency" style="color: #ff5b00; font-weight: bold;">NT$</span>
+                            <span id="priceConcession" style="color: #ff5b00; font-weight: bold; font-size: 18px;">0</span>
+                        </div>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn minus" onclick="changeQty(this, -1)">-</button>
+                            <input type="number" class="qty-input" id="qtyConcession" value="0" min="0" max="99" readonly data-price="0">
+                            <button type="button" class="qty-btn plus" onclick="changeQty(this, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="booking-summary-bar">
+                <div class="summary-text" style="font-size: 16px; font-weight: bold; color: #333;">
+                    已選 <span id="totalTicketsCount" style="color: #ff5b00; font-size: 20px;">0</span> 張，
+                    共 <span style="color: #ff5b00; font-size: 20px;">NT$ <span id="totalPriceAmount">0</span></span> 元
+                </div>
+                <div class="action-buttons-group" style="display: flex; gap: 12px; align-items: center;">
+                    <a href="#" id="addToCartBtn" class="btn-cart" onclick="return validateBooking(event)" 
+                       style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #fff; color: #ff5b00; border: 1px solid #ff5b00; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box;">加入購物車</a>
+                    <a href="#" id="bookingBtn" class="btn-booking" onclick="return validateBooking(event)" 
+                       style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #ff5b00; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box; border: 1px solid #ff5b00;">立即購買</a>
+                </div>
+            </div>
+            
+        </section>
+
+        <hr>
+
+        <section class="description-section">
+            <h2>活動介紹</h2>
+            <!-- 純文字內容，保留換行 -->
+            <div class="rich-text-content" id="activityDesc" style="white-space: pre-wrap;">
+                載入中...
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="notes-section">
+            <h2>預訂須知</h2>
+            <div class="note-box">
+                <h3>確認詳情</h3>
+                <p>訂單將於成立後快速確認，確認後電子憑證將記錄於您的「台北GO了沒」會員中心訂單紀錄中。</p>
+            </div>
+            <div class="note-box">
+                <h3>如何使用</h3>
+                <p>當天抵達活動地點，直接出示手機上的電子憑證（QR Code）供現場工作人員掃描即可入場。</p>
+            </div>
+            <div class="note-box">
+                <h3>退改規則</h3>
+                <p>本商品在指定體驗日前，未使用的憑證可於規定時間內申請取消，詳情請參閱各活動規範。</p>
+            </div>
+        </section>
+
+    </main>
+
+    <div th:replace="~{frontend/index/footer :: footer}"></div>
+
+    <script th:src="@{/js/activity/activityDetail.js}"></script>
+</body>
+
+</html>
