@@ -1,0 +1,153 @@
+.main-box {
+    /* 灰色外框 */
+    border: 1px solid #dcdcdc; 
+    
+    /* 圓角 */
+    border-radius: 20px; 
+    
+    /* 內邊距 */
+    padding: 25px; 
+    
+    /*底色： */
+    background-color: #ffffff; 
+    
+    /*  最大寬度*/
+    max-width: 1200px; 
+    
+    /* 外邊距置中 */
+    margin: 20px auto; 
+    
+    /*淡淡的底部陰影 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03); 
+}
+    /* 案件清單 */
+    .case-container {
+        max-width: 800px;
+        margin: 20px 0 20px 20px;
+        display: flex;
+        flex-direction: column; /* 由上往下排列 */
+        gap: 15px; /* 間距 */
+    }
+
+    /* 卡片樣式 */
+    .case-card {
+        background-color: #ffffff;
+        border-left: 6px solid #ff5b00; /* 左側有一條漂亮的顏色裝飾線 */
+        border-radius: 8px; /* 圓角 */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* 陰影 */
+        padding: 20px;
+        display: flex; /* 啟動魔法排版：Flexbox */
+        justify-content: space-between; /* 內容推到最左邊跟最右邊 */
+        transition: transform 0.2s, box-shadow 0.2s; /* 漸變動畫 */
+    }
+
+    /* 滑鼠移上去的浮動特效 */
+    .case-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* 左側區塊：包含標題和狀態 */
+    .card-left h2 {
+        margin: 0 0 8px 0;
+        font-size: 20px;
+        color: #333;
+    }
+    .card-left .status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* 右側區塊：時間 */
+    .card-right .time-text {
+        color: #888;
+        font-size: 14px;
+    }
+
+.msg-box {
+    display: flex;
+    flex-direction: column; /* 讓姓名跟泡泡上下排列 */
+    margin-bottom: 20px;
+}
+
+/* --- 排版對齊設定 --- */
+/* 會員傳*/
+.msg-align-0 {
+    align-items: flex-end; 
+}
+/* 客服傳 */
+.msg-align-1 {
+    align-items: flex-start; 
+}
+/* 系統傳的*/
+.msg-align-3 {
+    align-items: center; 
+}
+
+
+.bubble {
+    max-width: 70%; 
+    padding: 12px 18px; /* 裡面的留白 */
+    border-radius: 20px; 
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* 陰影 */
+    white-space: pre-wrap; /* 文字換行*/
+}
+
+.msg-align-0 .bubble {
+    background: linear-gradient(135deg, #f05a28 0%, #ff7e5f 100%);
+    border: 1px solid #eaeaea;
+    color: #ffffff;
+}
+
+.msg-align-1 .bubble {
+     background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    color: back;
+    border: 1px solid #dcdcdc;
+}
+
+.msg-align-3 .bubble {
+    background: transparent; /* 透明背景 */
+    box-shadow: none; /* 拿掉陰影 */
+    color: #999999;
+    font-size: 13px;
+}
+
+.msg-info {
+    font-size: 12px;
+    color: #888888;
+    margin-bottom: 5px;
+}
+
+/* 回覆空間*/
+.reply-box{
+    /* 灰色外框 */
+    border: 1px solid #dcdcdc; 
+    
+    /* 圓角 */
+    border-radius: 20px; 
+    
+    /* 內邊距 */
+    padding: 30px; 
+    
+    /*底色： */
+    background-color: #ffffff; 
+    
+    /*  最大寬度*/
+    max-width: 1200px; 
+    
+    /* 外邊距置中 */
+    margin: 20px auto; 
+    
+    /*淡淡的底部陰影 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03); 
+
+    display: flex; 
+    justify-content: flex-end; 
+}

@@ -31,7 +31,7 @@ public class CsVO implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // AI
 	@Column(name = "CS_ID", updatable = false)
-	private Integer csID;
+	private Integer csId;
 
 	// ===========CustomerVO.custId 的FK
 	@ManyToOne
@@ -48,10 +48,10 @@ public class CsVO implements Serializable {
 	//0=新增, 1=待處理, 2=已回覆, 3=已結案
 	private Byte caseStatus;
 	///////////////////////////////////////
-	public static final Byte SsCreated = 0;           
-	public static final Byte SsPending  =1;           
-	public static final Byte SsReplied = 2;    
-	public static final Byte SsResovled = 3;    
+	public static final Byte SsCreated = 0;
+	public static final Byte SsPending  =1;
+	public static final Byte SsReplied = 2;
+	public static final Byte SsResovled = 3;
 	//////////////////////	///////////////// 可以寫成CsVO.setCaseStatus(CsVO.SsPending);
 	
 
@@ -66,12 +66,12 @@ public class CsVO implements Serializable {
 	@Column(name = "RESOLVED_AT")
 	private java.sql.Timestamp resolvedAt;
 
-	public Integer getCsID() {
-		return csID;
+	public Integer getCsId() {
+		return csId;
 	}
 
-	public void setCsID(Integer csID) {
-		this.csID = csID;
+	public void setCsId(Integer csId) {
+		this.csId = csId;
 	}
 
 	public CustomerVO getCustomerVO() {

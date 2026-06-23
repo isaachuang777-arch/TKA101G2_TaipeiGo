@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台北GO了沒 - 客服中心 - 追蹤進度</title>
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+<link rel="stylesheet" th:href="@{/css/cs/cs.css}">
+    
+</head>
+<body>
+<div class="main-box">
+<h2>客服中心 - 追蹤進度</h2>
+
+<br>
+<div>
+    <a th:href="@{/CustomerService/index}">
+        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+        返回 客服中心 首頁
+        </button>
+    </a>
+   </div>
+
+<hr>
+
+<div class="case-container">
+    
+    <a class="case-card"   th:each="cs : ${csList}" th:href="@{/CustomerService/viewmsgs(csId=${cs.csId})}" style="text-decoration: none;">
+        <!-- 左邊 -->
+        <div class="card-left">
+            <!-- 分類 -->
+            <h2 >            
+            <span th:if="${cs.caseCate == 11}" >操作問題</span>
+            <span th:if="${cs.caseCate == 12}" >訂單問題</span>
+            <span th:if="${cs.caseCate == 13}" >其他問題</span></h2>
+            <!-- 狀態 -->
+	          <span>	            
+		    <span th:if="${cs.caseStatus == 0}"  style="background-color: #ff8b8b90; color: white; padding: 4px 10px; border: none; border-radius: 12px; ">新增</span>
+            <span th:if="${cs.caseStatus == 1}" style="background-color: #039e3f90; color: white; padding: 4px 10px; border: none; border-radius: 12px;  ">待處理</span>
+            <span th:if="${cs.caseStatus == 2}" style="background-color: #0089b390; color: white; padding: 4px 10px; border: none; border-radius: 12px; ;">已回覆</span>
+            <span th:if="${cs.caseStatus == 3}" style="background-color: #ff5b0095; color: white; padding: 4px 7px; border: none; border-radius: 12px; ;">已結案</span>
+            </span>
+
+        </div>
+     
+        <!-- 右邊 -->
+        <div class="card-right">
+            <!-- 時間 -->
+            <span class="time-text" th:text="|建立於 ${#dates.format(cs.createdAt, 'yyyy-MM-dd HH:mm')}|"></span>
+            <br>
+            <span class="time-text" th:text="|更新於 ${#dates.format(cs.updatedAt, 'yyyy-MM-dd HH:mm')}|"></span>
+        </div>
+        </a>
+    </div>
+</div>
+
+   <!-- Footer -->
+    <div class="footer"th:replace="~{frontend/index/footer :: footer}"></div>
+</body>
+</html>

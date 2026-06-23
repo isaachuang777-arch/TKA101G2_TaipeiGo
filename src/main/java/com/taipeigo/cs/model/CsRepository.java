@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 public interface CsRepository extends JpaRepository<CsVO, Integer	> {
 
 	List<CsVO> findByCustomerVO_CustId(Integer custId);
-
+	//找該用戶的case bycaseStatus [for closed ticket]
+	List<CsVO> findByCustomerVO_CustIdAndCaseStatus(Integer custId, Byte caseStatus);
+	//找該用戶的case bycaseStatus [for still not closed ticket]
+	List<CsVO> findByCustomerVO_CustIdAndCaseStatusNot(Integer custId, Byte caseStatus);
 	
 }
