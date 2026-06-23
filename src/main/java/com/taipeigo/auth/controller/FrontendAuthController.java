@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpSession;
 
 
 @Controller
-@RequestMapping("/frontend")
+@RequestMapping("/auth")
 public class FrontendAuthController {
 
     @Autowired
@@ -45,16 +45,16 @@ public class FrontendAuthController {
     private String mailPassword;
     
     // 顯示前台會員登入頁
-    // 網址：GET /frontend/auth/login
+    // 網址：GET /auth/login
     // 對應：templates/frontend/auth/login.html
-    @GetMapping("/auth/login")
+    @GetMapping("/login")
     public String showLoginPage() {
         return "frontend/auth/login";
     }
 
     // 處理前台會員登入
-    // 網址：POST /frontend/auth/login
-    @PostMapping("/auth/login")
+    // 網址：POST /auth/login
+    @PostMapping("/login")
     public String login(@RequestParam("custAccount") String custAccount,
                         @RequestParam("custPassword") String custPassword,
                         HttpSession session,
@@ -98,7 +98,7 @@ public class FrontendAuthController {
 	// 顯示註冊頁面
 	// 使用 GET 請求進入註冊頁
 	// 並提供 CustomerVO 給表單綁定
-    @GetMapping("/auth/register")
+    @GetMapping("/register")
     public String showRegisterPage(Model model) {
 
         model.addAttribute("customerVO", new CustomerVO());
@@ -108,7 +108,7 @@ public class FrontendAuthController {
     
 	// 接收會員註冊資料
 	// 註冊後預設為未啟用帳號，並產生 Email 驗證 token 存入 Redis
-	@PostMapping("/auth/register")
+	@PostMapping("/register")
 	public String register(CustomerVO customerVO, Model model) {
 
 		// 帳號重複檢查
@@ -140,7 +140,7 @@ public class FrontendAuthController {
 		stringRedisTemplate.opsForValue().set("verify:" + token, customerVO.getCustId().toString(), 30,
 				TimeUnit.MINUTES);
 
-		String verifyUrl = "http://localhost:8080/frontend/auth/verify?token=" + token;
+		String verifyUrl = "http://localhost:8080/auth/verify?token=" + token;
 
 		sendVerifyEmail(customerVO.getCustEmail(), verifyUrl);
 
@@ -151,8 +151,8 @@ public class FrontendAuthController {
 	}
 	
 	// Email 驗證
-	// 網址：GET /frontend/auth/verify?token=xxxx
-	@GetMapping("/auth/verify")
+	// 網址：GET /auth/verify?token=xxxx
+	@GetMapping("/verify")
 	public String verifyEmail(@RequestParam("token") String token, Model model) {
 
 	    String custId = stringRedisTemplate.opsForValue().get("verify:" + token);
@@ -180,8 +180,8 @@ public class FrontendAuthController {
 	
 
     // 前台會員登出
-    // 網址：GET /frontend/auth/logout
-    @GetMapping("/auth/logout")
+    // 網址：GET /auth/logout
+    @GetMapping("/logout")
     public String logout(HttpSession session) {
 
         // 移除登入狀態
