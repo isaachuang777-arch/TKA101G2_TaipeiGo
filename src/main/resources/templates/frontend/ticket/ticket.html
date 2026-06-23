@@ -9,22 +9,37 @@
 
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/ticket/ticket.css}">
 </head>
 
 <body>
     <!-- Header -->
-    <div th:replace="~{frontend/index/header :: header}"></div>
+	<div th:replace="~{frontend/index/header :: header}"></div>
+
+	<!-- Hero Search -->
+	<div th:replace="~{frontend/index/heroSearch :: heroSearch}"></div>
 
     <main class="ticket-container">
         
         <section class="category-section">
-        	<div class="category-list">
-	        	<th:block th:each="ticketCategory : ${ticketCategoryListData}" >
-	                <div class="category-item active">
-	                    <span class="category-name" th:text="${ticketCategory.ticketCategoryName}">主題樂園</span>
-	                </div>
-	        	</th:block>
+            <h2 class="category-section-title">
+                <i class="fa-solid fa-ticket"></i> 門票快選
+            </h2>
+            <div class="category-carousel-wrapper">
+                <button class="scroll-btn left-btn" id="scrollLeftBtn">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <div class="category-scroll-container" id="categoryListContainer">
+                    <th:block th:each="ticketCategory : ${ticketCategoryListData}">
+                        <div class="category-item active">
+                            <span class="category-name" th:text="${ticketCategory.ticketCategoryName}">主題樂園</span>
+                        </div>
+                    </th:block>
+                </div>
+                <button class="scroll-btn right-btn" id="scrollRightBtn">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
         </section>
 		
@@ -55,15 +70,20 @@
                         <div class="ticket-info">
                             <h3 class="ticket-title" th:text="${ticket.ticketName}">門票名稱</h3>
                             
-                            <div class="ticket-price-box">
-                                <div class="price-wrapper">
-                                    <span class="original-price" 
-                                          th:if="${ticket.adultOriginalPrice != null}" 
-                                          th:text="'NT$ ' + ${ticket.adultOriginalPrice}">NT$ 600</span>
-                                    
-                                    <span class="current-price">
-                                        NT$ <strong th:text="${ticket.adultPrice}">550</strong> 起
-                                    </span>
+                            <p class="ticket-desc" th:text="${ticket.ticketDescription != null ? ticket.ticketDescription : '這是一個超讚的景點體驗！'}">門票簡介</p>
+                        
+                            <div class="ticket-footer">
+                                <div><span class="ticket-tag">查看詳情</span></div>
+                                <div class="ticket-price-box">
+                                    <div class="price-wrapper">
+                                        <span class="original-price" 
+                                              th:if="${ticket.adultOriginalPrice != null}" 
+                                              th:text="'NT$ ' + ${ticket.adultOriginalPrice}">NT$ 600</span>
+                                        
+                                        <span class="current-price">
+                                            NT$ <strong th:text="${ticket.adultPrice}">550</strong> 起
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -81,7 +101,7 @@
     </main>
     <!-- Footer -->    
     <div th:replace="~{frontend/index/footer :: footer}"></div>
-
+    <script th:src="@{/js/ticket/frontend/ticket.js}"></script>
 </body>
 
 </html>
