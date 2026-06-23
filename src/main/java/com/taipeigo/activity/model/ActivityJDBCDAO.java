@@ -132,16 +132,29 @@ public class ActivityJDBCDAO {
                 act.setActivityImage(imgList);
             }
 
-            // 計算最終價格：找出這個活動所有綁定的門票成人價加總，再扣掉活動本身的折扣
-            String priceSql = "SELECT COALESCE(SUM(t.ADULT_PRICE), 0) FROM ACTIVITY_DETAIL ad JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID WHERE ad.ACTIVITY_ID = ?";
-            Integer totalOriginalPrice = jdbcTemplate.queryForObject(priceSql, Integer.class, act.getActivityId());
-            
-            // 避免空值錯誤
-            int discount = act.getDiscount() != null ? act.getDiscount() : 0;
-            int finalPrice = totalOriginalPrice - discount;
-            
-            // 確保價格不會變負數，如果沒有綁定門票 (totalOriginalPrice = 0) 就顯示 0 或預設值
-            act.setFinalPrice(finalPrice > 0 ? finalPrice : 0);
+            // 計算三種票價：找出這個活動所有綁定的門票，分別加總，再扣掉活動本身的折扣
+
+            String priceSql = "SELECT " +
+                    "COALESCE(SUM(t.ADULT_PRICE),0) AS ADULT_TOTAL, " +
+                    "COALESCE(SUM(t.CHILD_PRICE), 0) AS CHILD_TOTAL, " +
+                    "COALESCE(SUM(t.CONCESSION_PRICE), 0) AS CONCESSION_TOTAL " +
+                    "FROM ACTIVITY_DETAIL ad " +
+                    "JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID " +
+                    "WHERE ad.ACTIVITY_ID = ?";
+
+            jdbcTemplate.query(priceSql, rs -> {
+                int discount = act.getDiscount() != null ? act.getDiscount() : 0;
+
+                int adultFinal = rs.getInt("ADULT_TOTAL") - discount;
+                int childFinal = rs.getInt("CHILD_TOTAL") - discount;
+                int concessionFinal = rs.getInt("CONCESSION_TOTAL") - discount;
+
+                // 確保價格不會變負數
+                act.setAdultPrice(Math.max(adultFinal, 0));
+                act.setChildPrice(Math.max(childFinal, 0));
+                act.setConcessionPrice(Math.max(concessionFinal, 0));
+
+            }, act.getActivityId());
         }
 
         return list;
