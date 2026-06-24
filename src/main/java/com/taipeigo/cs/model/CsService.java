@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.taipeigo.admin.model.AdminVO;
 import com.taipeigo.customer.model.CustomerVO;
 
 import jakarta.transaction.Transactional;
@@ -139,5 +140,49 @@ public class CsService {
 
 		csRepository.save(csVO);
 	}
+	//後台管理員的reply 跟cust相同 只是增加senderType判斷
+	@Transactional
+	public void adminorworknotereply(CsMsgVO newcsmsgVO, Integer csId , Byte senderType) {
+		//用findById(csId去)拿出一個csVO
+		CsVO csVO = csRepository.findById(csId).orElseThrow();
+		//先拿現在的CaseStatus
+		Byte currentStatus = csVO.getCaseStatus();
+		//資安防呆 不要相信前端 如果已結案 不準存回覆
+		if(currentStatus == (byte) 3){
+        throw new RuntimeException("此案件已結案，無法新增回覆！");
+    	}
+    
+		//newcsmsgVO要有csId 這樣才會關聯到(因為csId 是FK)
+		newcsmsgVO.setCsVO(csVO);
+		//如果senderType是admin=>setSenderType + csVO.setCaseStatus
+		if(senderType == CsMsgVO.Sradmin){
+		newcsmsgVO.setSenderType(CsMsgVO.Sradmin);
+		csVO.setCaseStatus(csVO.SsReplied);
+		}else if(senderType == CsMsgVO.Srworknote){
+		//如果senderType是worknote=>只要做setSenderType 不用動CsVO的caseStatus 因為那是後台內部訊息 => 沒動到CsVO 就自動不會動到updatedAt
+			newcsmsgVO.setSenderType(CsMsgVO.Srworknote);
+		}
+		csmsgRepository.save(newcsmsgVO);
+		//要把case/CsVO存回去~
+		csRepository.save(csVO);
+	}
+	//TODO管理員結案button
+	@Transactional
+	public void backendclose(Integer csId, AdminVO adminVO){
+		//用findById(csId去)拿出一個csVO
+		CsVO csVO = csRepository.findById(csId).orElseThrow();
+		//newcsmsgVO要有csId 這樣才會關聯到(因為csId 是FK)
+		CsMsgVO newcsmsgVO = new CsMsgVO();
+		newcsmsgVO.setAdminVO(adminVO);
+		newcsmsgVO.setCsVO(csVO);
+		newcsmsgVO.setMsgContent("【系統提示】此案件已由 客服專員 標記為結案。");
+		newcsmsgVO.setSenderType(CsMsgVO.Srsystem);
+		csmsgRepository.save(newcsmsgVO);
+		
+		//update csVO status+resolvedtime
+		csVO.setCaseStatus(CsVO.SsResovled);
+		csVO.setResolvedAt(new java.sql.Timestamp(System.currentTimeMillis()));
 
+		csRepository.save(csVO);
+	}
 }
