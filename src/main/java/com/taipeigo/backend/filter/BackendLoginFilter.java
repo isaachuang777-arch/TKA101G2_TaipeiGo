@@ -85,14 +85,58 @@ if (adminVO.getAdmStatus() == AdminVO.StatusForcetoChangePW) {
 //===================
 // IT funcId = 24 = 只能看IT能看的東西
 //===================    
-  if (requestURI.contains("/backend/admin/it/")) { 
+  if (requestURI.contains("/backend/admin/it")) { 
   boolean isIT= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==24);
   if(!isIT) {
       response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
       return;
   }
 }  
+//===================
+//訂單部 funcId = 22 = 只能看訂能看的東西
+//===================    
+ if (requestURI.contains("/backend/order")) { 
+ boolean isOrder= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==22);
+ if(!isOrder) {
+     response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+     return;
+ }
+}  
+ if (requestURI.contains("/backend/ticket")) { 
+ boolean isOrder= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==22);
+ if(!isOrder) {
+     response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+     return;
+ }
+}  
+ if (requestURI.contains("/backend/ticketCategory")) { 
+	 boolean isOrder= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==22);
+	 if(!isOrder) {
+		 response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+		 return;
+	 }
+ }  
+//===================
+//客服中心 funcId = 23 = 只能看訂能看的東西
+//===================    
+	 if (requestURI.contains("/backend/cs")) { 
+		 boolean isCs= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==232);
+		 if(!isCs) {
+			 response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+			 return;
+		 }
+	 }   
+	 if (requestURI.contains("/backend/customer")) { 
+		 boolean isCs= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==232);
+		 if(!isCs) {
+			 response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+			 return;
+		 }
+	 }   
   //通過上面的boolean值就能進入
   filterChain.doFilter(request, response);
 	}
+
+	 
+
 }
