@@ -90,10 +90,17 @@ public class FrontendAuthController {
         }
 
         // 登入成功，把會員資料存進 Session
-        // 之後訂單、票券、收藏都可以用 loginCustomer 取得目前登入會員
         session.setAttribute("loginCustomer", customer);
 
-        // 登入成功後回前台首頁
+        // 如果原本是被 Filter 擋下來的頁面，登入後導回原頁
+        String frontendReUrl = (String) session.getAttribute("frontendReUrl");
+
+        if (frontendReUrl != null) {
+            session.removeAttribute("frontendReUrl");
+            return "redirect:" + frontendReUrl;
+        }
+
+        // 沒有原頁就回前台首頁
         return "redirect:/";
     }
     
