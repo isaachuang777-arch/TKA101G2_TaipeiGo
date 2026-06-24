@@ -234,24 +234,7 @@ body {
             後台首頁
             <span>/ Home</span>
         </div>
-
-        <div class="admin-top-info" th:if="${session.adminVO != null}">
-            <div>
-                <i class="bi bi-person-circle me-1"></i>
-                <span class="admin-top-name" th:text="${session.adminVO.admName}">管理員名稱</span>
-            </div>
-
-            <div class="admin-top-role">
-                <span th:each="perVO, iterStat : ${session.adminVO.admPerVO}">
-                    <span th:text="${perVO.admfuncVO.funcName}">權限名稱</span>
-                    <span th:if="${!iterStat.last}">、</span>
-                </span>
-            </div>
-        </div>
-
-        <div class="text-secondary small" th:if="${session.adminVO == null}">
-            管理員模式
-        </div>
+  
     </header>
 
     <main class="content-area">
