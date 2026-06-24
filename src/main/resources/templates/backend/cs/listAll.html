@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>案件總覽列表 | TaipeiGO 後台</title>
+    <!-- 使用 Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6; /* 使用者指定的背景色 */
+            --card-bg: #ffffff;
+            --primary: #4318ff;
+            --text-main: #2b3674;
+            --text-muted: #a3aed1;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .btn-back:hover { color: var(--primary); }
+
+        /* 篩選按鈕區塊 */
+        .filter-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(112, 144, 176, 0.03);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .filter-group:last-child { margin-bottom: 0; }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            width: 80px;
+        }
+
+        .filter-btn {
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:hover {
+            background-color: #e0e7ff;
+            color: var(--primary);
+            border-color: #c7d2fe;
+            transform: translateY(-2px);
+        }
+        
+        /* 啟用狀態 (Active) */
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(67, 24, 255, 0.2);
+        }
+
+        /* 緊急專用按鈕 */
+        .filter-btn.urgent {
+            color: #ef4444;
+            background-color: #fef2f2;
+            border-color: #fca5a5;
+        }
+        .filter-btn.urgent:hover {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        .filter-btn.urgent.active {
+            background-color: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+        }
+
+        /* 資料表卡片 */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 10px rgba(112, 144, 176, 0.03);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            color: var(--text-muted);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px;
+            font-size: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            color: var(--text-main);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #f8fafc; }
+
+        /* 標籤徽章 */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+        }
+        /* 狀態 */
+        .status-0 { background: #fef2f2; color: #ef4444; }
+        .status-1 { background: #fffbeb; color: #f59e0b; }
+        .status-2 { background: #eff6ff; color: #3b82f6; }
+        .status-3 { background: #ecfdf5; color: #10b981; }
+        /* 類別 */
+        .cate-11 { background: #e0e7ff; color: #4338ca; }
+        .cate-12 { background: #ffedd5; color: #c2410c; }
+        .cate-13 { background: #f3f4f6; color: #4b5563; }
+
+        /* 操作按鈕 */
+        .btn-action {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .btn-action:hover {
+            background-color: #3311db !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(67, 24, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* 查無資料 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #cbd5e1;
+        }
+        .empty-state h3 {
+            margin: 0 0 8px 0;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+<!--side bar-->
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fa-solid fa-list-check"></i> 客服案件列表</h1>
+        <a href="/backend/cs/index" class="btn-back"><i class="fa-solid fa-arrow-left"></i> 回儀表板</a>
+    </div>
+
+    <!-- 篩選按鈕區塊 -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <span class="filter-label"><i class="fa-solid fa-filter"></i> 綜合</span>
+            <a href="/backend/cs/listAll" class="filter-btn" th:classappend="${param.caseStatus == null and param.caseCate == null and param.urgent == null and param.unclosed == null} ? 'active' : ''"><i class="fa-solid fa-bars"></i> 所有案件</a>
+            <a href="/backend/cs/listAll?unclosed=true" class="filter-btn" th:classappend="${param.unclosed != null} ? 'active' : ''"><i class="fa-solid fa-envelope-open-text"></i> 未結案</a>
+            <a href="/backend/cs/listAll?urgent=true" class="filter-btn urgent" th:classappend="${param.urgent != null} ? 'active' : ''"><i class="fa-solid fa-fire"></i> 1天內沒回覆</a>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label"><i class="fa-solid fa-bars-progress"></i> 狀態</span>
+            <a href="/backend/cs/listAll?caseStatus=0" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '0'} ? 'active' : ''"><i class="fa-solid fa-asterisk"></i> 新增</a>
+            <a href="/backend/cs/listAll?caseStatus=1" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '1'} ? 'active' : ''"><i class="fa-solid fa-hourglass-half"></i> 待處理</a>
+            <a href="/backend/cs/listAll?caseStatus=2" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '2'} ? 'active' : ''"><i class="fa-solid fa-comment-dots"></i> 已回覆</a>
+            <a href="/backend/cs/listAll?caseStatus=3" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '3'} ? 'active' : ''"><i class="fa-solid fa-check-circle"></i> 已結案</a>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label"><i class="fa-solid fa-folder-open"></i> 分類</span>
+            <a href="/backend/cs/listAll?caseCate=11" class="filter-btn" th:classappend="${param.caseCate != null and param.caseCate[0] == '11'} ? 'active' : ''"><i class="fa-solid fa-laptop"></i> 操作問題</a>
+            <a href="/backend/cs/listAll?caseCate=12" class="filter-btn" th:classappend="${param.caseCate != null and param.caseCate[0] == '12'} ? 'active' : ''"><i class="fa-solid fa-box"></i> 訂單問題</a>
+            <a href="/backend/cs/listAll?caseCate=13" class="filter-btn" th:classappend="${param.caseCate != null and param.caseCate[0] == '13'} ? 'active' : ''"><i class="fa-solid fa-circle-question"></i> 其他</a>
+        </div>
+        
+        <!-- 搜尋列 -->
+        <div class="filter-group" style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <span class="filter-label"><i class="fa-solid fa-magnifying-glass"></i> 搜尋</span>
+            <form action="/backend/cs/listAll" method="get" style="display: flex; gap: 8px; width: 100%; max-width: 400px;">
+                <input type="text" name="keyword" th:value="${param.keyword}" placeholder="請輸入會員姓名或帳號..." 
+                       style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; font-size: 14px; font-family: 'Inter', sans-serif;">
+                <button type="submit" class="btn-action" style="border: none; cursor: pointer; padding: 8px 20px;">搜尋</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 資料表區塊 -->
+    <div class="table-card">
+        <table th:if="${csList != null and !csList.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>單號</th>
+                    <th>會員名稱</th>
+                    <th>建立時間</th>
+                    <th>更新時間</th>
+                    <th>問題分類</th>
+                    <th>目前狀態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cs : ${csList}">
+                    <td style="font-weight: 700;" th:text="'#' + ${cs.csId}">案件編號</td>
+                    <td th:text="${cs.customerVO != null ? cs.customerVO.custName : '未知'}">會員名稱</td>
+                    <td th:text="${#dates.format(cs.createdAt, 'yyyy-MM-dd HH:mm')}">建立時間</td>
+                    <td th:text="${cs.updatedAt != null ? #dates.format(cs.updatedAt, 'yyyy-MM-dd HH:mm') : '-'}">更新時間</td>
+                    
+                    <!-- 分類標籤 -->
+                    <td>
+                        <span class="badge cate-11" th:if="${cs.caseCate == 11}">操作問題</span>
+                        <span class="badge cate-12" th:if="${cs.caseCate == 12}">訂單問題</span>
+                        <span class="badge cate-13" th:if="${cs.caseCate == 13}">其他</span>
+                    </td>
+                    
+                    <!-- 狀態標籤 -->
+                    <td>
+                        <span class="badge status-0" th:if="${cs.caseStatus == 0}"><i class="fa-solid fa-asterisk"></i> 新增</span>
+                        <span class="badge status-1" th:if="${cs.caseStatus == 1}"><i class="fa-solid fa-hourglass-half"></i> 待處理</span>
+                        <span class="badge status-2" th:if="${cs.caseStatus == 2}"><i class="fa-solid fa-comment-dots"></i> 已回覆</span>
+                        <span class="badge status-3" th:if="${cs.caseStatus == 3}"><i class="fa-solid fa-check-circle"></i> 已結案</span>
+                    </td>
+                    
+                    <td>
+                        <a th:href="@{/backend/cs/view(csId=${cs.csId})}" class="btn-action"><i class="fa-solid fa-eye"></i> 查看詳情</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 查無資料空狀態 -->
+        <div class="empty-state" th:if="${csList == null or csList.isEmpty()}">
+            <i class="fa-solid fa-box-open"></i>
+            <h3>查無案件資料</h3>
+            <p>目前此篩選條件下，沒有符合的案件記錄。</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
