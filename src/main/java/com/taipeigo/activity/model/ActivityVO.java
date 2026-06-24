@@ -56,6 +56,9 @@ public class ActivityVO implements Serializable {
 	@OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ActivityImageVO> activityImage;
 
+	@OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ActivityCateInfoVO> activityCateInfoVO;
+
 	// 此欄位不存入資料庫，僅用於傳遞計算好的最終價格給前端
 	@Transient
 	private Integer adultPrice;
@@ -155,5 +158,13 @@ public class ActivityVO implements Serializable {
 
 	public void setConcessionPrice(Integer concessionPrice) {
 		this.concessionPrice = concessionPrice;
+	}
+
+	public List<ActivityCateInfoVO> getActivityCateInfoVO() {
+		return activityCateInfoVO;
+	}
+
+	public void setActivityCateInfoVO(List<ActivityCateInfoVO> activityCateInfoVO) {
+		this.activityCateInfoVO = activityCateInfoVO;
 	}
 }

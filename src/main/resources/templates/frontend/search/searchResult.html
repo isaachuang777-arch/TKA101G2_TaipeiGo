@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台北GO了沒 - 搜尋結果</title>
+
+    <!-- 載入全站共通樣式 (維持風格一致) -->
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+
+    <!-- 載入專屬搜尋頁面的樣式 -->
+    <link rel="stylesheet" th:href="@{/css/product/searchResult.css}">
+    
+    <!-- 載入 Activity 團隊的卡片樣式以保持一致 -->
+    <link rel="stylesheet" th:href="@{/css/activity/activity-list.css}">
+
+    <!-- 載入組員的 Hero Banner 樣式 -->
+    <link rel="stylesheet" th:href="@{/css/heroBanner.css}">
+
+    <!-- FontAwesome icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 載入 noUiSlider (價格雙拉桿套件) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+</head>
+
+<body>
+
+    <!-- 1. 鑲嵌：Header 頂部導覽列 -->
+    <div th:replace="~{frontend/index/header :: header}"></div>
+
+    <!-- 🌟 新增：Hero Banner 輪播圖 (從首頁組員那借過來) -->
+    <div th:replace="~{frontend/index/heroBanner :: heroBanner}"></div>
+
+    <!-- 搜尋頁面主要內容區塊 -->
+    <main class="search-page-container">
+
+        <!-- 頂部：關鍵字提示與數量統計 -->
+        <div class="search-header">
+            <h2>搜尋結果</h2>
+            <p id="searchSummary">正在為您尋找相關商品...</p>
+        </div>
+
+        <!-- 這裡準備用 CSS Grid 切成左右兩塊 -->
+        <div class="search-content-grid">
+
+            <!-- 2. 鑲嵌洞：左側篩選面板 (Sidebar) -->
+            <div th:replace="~{frontend/search/sidebar :: sidebar}"></div>
+
+            <!-- 3. 鑲嵌洞：右側商品小卡列表 (Result Grid) -->
+            <div th:replace="~{frontend/search/resultGrid :: resultGrid}"></div>
+
+        </div>
+
+    </main>
+
+    <!-- 4. 鑲嵌：Footer 底部 -->
+    <div th:replace="~{frontend/index/footer :: footer}"></div>
+
+    <!-- 載入 noUiSlider JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+
+    <!-- 載入專屬的搜尋邏輯 JS (負責打 API 畫畫面) -->
+    <script th:src="@{/js/product/searchResult.js}"></script>
+
+    <!-- 載入組員的 Hero Banner JS (負責輪播圖效果) -->
+    <script th:src="@{/js/heroBanner.js}"></script>
+
+</body>
+
+</html>
