@@ -13,10 +13,21 @@ import java.util.List;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
+
 @Controller
 @RequestMapping("/backend/customer")
 public class CustomerController {
 
+	@Value("${taipeigo.upload.base-dir}")
+	private String uploadBaseDir;
+	
     @Autowired
     private CustomerService customerService;
 
@@ -71,8 +82,24 @@ public class CustomerController {
             BindingResult result,
             Model model) {
 
-        if(result.hasErrors()) {
-        	model.addAttribute("customerVO", customerVO);
+        model.addAttribute("activePage", "customer");
+
+        if (result.hasErrors()) {
+            return "backend/customer/addCustomer";
+        }
+
+        if (customerService.isAccountExist(customerVO.getCustAccount())) {
+            model.addAttribute("accountDuplicateError", "此帳號已被使用");
+            return "backend/customer/addCustomer";
+        }
+
+        if (customerService.isEmailExist(customerVO.getCustEmail())) {
+            model.addAttribute("emailDuplicateError", "此 Email 已被註冊");
+            return "backend/customer/addCustomer";
+        }
+
+        if (customerService.isIdCardExist(customerVO.getCustIdCard())) {
+            model.addAttribute("idCardDuplicateError", "此身分證字號已存在");
             return "backend/customer/addCustomer";
         }
 
@@ -80,7 +107,7 @@ public class CustomerController {
 
         return "redirect:/backend/customer/list";
     }
-
+    
     // =========================
     // 4️⃣ 去修改頁（先查資料）
     // =========================
@@ -101,13 +128,68 @@ public class CustomerController {
     // 5️⃣ 修改資料
     // =========================
     @PostMapping("/update")
-    public String update(CustomerVO customerVO) {
-
+    public String update(
+            @Valid CustomerVO customerVO,
+            BindingResult result,
+            @RequestParam("imgFile") MultipartFile imgFile,
+            Model model) {
+    		
+    		// 先從資料庫抓原本資料
         CustomerVO db = customerService.getOneCustomer(customerVO.getCustId());
+        
+        // 修改頁密碼欄位如果沒開放修改，就保留原密碼
         customerVO.setCustPassword(db.getCustPassword());
+        
+        // 保留原本頭像
+        customerVO.setCustImg(db.getCustImg());
+        
+        // 如果驗證錯誤，回到修改頁，不要 update
+        if (result.hasErrors()) {
+            model.addAttribute("activePage", "customer");
+            model.addAttribute("customerVO", customerVO);
+            return "backend/customer/updateCustomer";
+        }
+        
+        try {
+            if (imgFile != null && !imgFile.isEmpty()) {
 
-        customerService.updateCustomer(customerVO);
-        return "redirect:/backend/customer/list";
+                String originalFileName = imgFile.getOriginalFilename();
+                String extension = "";
+
+                if (originalFileName != null && originalFileName.contains(".")) {
+                    extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                }
+
+                String fileName = "customer_" + customerVO.getCustId() + extension;
+
+                Path uploadPath = Paths.get(uploadBaseDir, "customer");
+
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                Path filePath = uploadPath.resolve(fileName);
+
+                Files.copy(
+                        imgFile.getInputStream(),
+                        filePath,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+
+                customerVO.setCustImg("customer/" + fileName);
+            }
+
+            customerService.updateCustomer(customerVO);
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            model.addAttribute("activePage", "customer");
+	            model.addAttribute("customerVO", customerVO);
+	            model.addAttribute("uploadError", "圖片上傳失敗，請重新選擇圖片");
+	            return "backend/customer/updateCustomer";
+	        }
+
+        		return "redirect:/backend/customer/list";
     }
 
     // =========================
