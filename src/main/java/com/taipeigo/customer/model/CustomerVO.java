@@ -108,7 +108,6 @@ public class CustomerVO implements Serializable {
     @Column(name = "CUST_IMG")
     private String custImg;
 
-    @NotNull(message = "請選擇會員狀態")
     @Column(name = "CUST_STATUS", nullable = false)
     private Integer custStatus;
 

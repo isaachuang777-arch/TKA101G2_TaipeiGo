@@ -27,6 +27,8 @@ import com.taipeigo.customer.model.CustomerVO;
 
 import jakarta.servlet.http.HttpSession;
 
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 @Controller
 @RequestMapping("/auth")
@@ -100,7 +102,7 @@ public class FrontendAuthController {
 	// 並提供 CustomerVO 給表單綁定
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
-
+    	
         model.addAttribute("customerVO", new CustomerVO());
 
         return "frontend/auth/register";
@@ -109,8 +111,15 @@ public class FrontendAuthController {
 	// 接收會員註冊資料
 	// 註冊後預設為未啟用帳號，並產生 Email 驗證 token 存入 Redis
 	@PostMapping("/register")
-	public String register(CustomerVO customerVO, Model model) {
-
+	public String register(@Valid CustomerVO customerVO, BindingResult result, Model model) {
+		
+		System.out.println("custStatus = " + customerVO.getCustStatus());
+		
+		// 先檢查 VO 驗證
+		if(result.hasErrors()) {
+	        return "frontend/auth/register";
+	    }
+		
 		// 帳號重複檢查
 		if (customerService.isAccountExist(customerVO.getCustAccount())) {
 			model.addAttribute("errorMsg", "此帳號已被使用");

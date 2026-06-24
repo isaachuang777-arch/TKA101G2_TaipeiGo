@@ -292,19 +292,18 @@
 
             <div class="form-card-body">
 
-                <!-- Error Summary (Thymeleaf) -->
-                <div class="error-summary"
-     				 th:if="${not #lists.isEmpty(#fields.errors())}">
-                    <div class="error-title">
-                        <i class="bi bi-exclamation-circle-fill"></i> 請修正以下錯誤：
-                    </div>
-                    <ul>
-                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
-                    </ul>
-                </div>
-
                 <form th:action="@{/backend/customer/insert}" method="post" th:object="${customerVO}"
                       id="addForm" novalidate>
+
+                    <!-- Error Summary (Thymeleaf) -->
+                    <div class="error-summary" th:if="${#fields.hasAnyErrors()}">
+                        <div class="error-title">
+                            <i class="bi bi-exclamation-circle-fill"></i> 請修正以下錯誤：
+                        </div>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                        </ul>
+                    </div>
 
                     <!-- Section: 基本資料 -->
                     <div class="section-title"><i class="bi bi-person-circle"></i> 基本資料</div>
@@ -320,7 +319,8 @@
                                        th:classappend="${#fields.hasErrors('custName')} ? 'is-invalid'"
                                        placeholder="請輸入真實姓名" id="custName" maxlength="20">
                             </div>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custName')}">
+                            <div class="invalid-feedback-custom server-error-custName"
+                                 th:if="${#fields.hasErrors('custName')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custName}"></span>
                             </div>
@@ -338,7 +338,7 @@
                                 <option value="m">男 (Male)</option>
                                 <option value="f">女 (Female)</option>
                             </select>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custSex')}">
+                            <div class="invalid-feedback-custom server-error-custSex" th:if="${#fields.hasErrors('custSex')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custSex}"></span>
                             </div>
@@ -353,7 +353,7 @@
                                        th:classappend="${#fields.hasErrors('custBirthday')} ? 'is-invalid'"
                                        id="custBirthday">
                             </div>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custBirthday')}">
+                            <div class="invalid-feedback-custom server-error-custBirthday" th:if="${#fields.hasErrors('custBirthday')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custBirthday}"></span>
                             </div>
@@ -372,10 +372,18 @@
                                        placeholder="A123456789" id="custIdCard"
                                        maxlength="10" style="text-transform:uppercase;">
                             </div>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custIdCard')}">
+                            <div class="invalid-feedback-custom server-error-custIdCard" th:if="${#fields.hasErrors('custIdCard')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custIdCard}"></span>
                             </div>
+                            
+                            <div class="invalid-feedback-custom server-error-custIdCard"
+							     th:if="${idCardDuplicateError}">
+							    <i class="bi bi-exclamation-circle"></i>
+							    <span th:text="${idCardDuplicateError}"></span>
+							</div>
+                            
+                            
                             <div class="invalid-feedback-custom" id="idCardError" style="display:none;">
                                 <i class="bi bi-exclamation-circle"></i> 身分證格式錯誤（格式：英文大寫 + 9 碼數字）
                             </div>
@@ -400,7 +408,7 @@
                                        th:classappend="${#fields.hasErrors('custTel')} ? 'is-invalid'"
                                        placeholder="09xxxxxxxx" id="custTel" maxlength="10">
                             </div>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custTel')}">
+                            <div class="invalid-feedback-custom server-error-custTel" th:if="${#fields.hasErrors('custTel')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custTel}"></span>
                             </div>
@@ -410,22 +418,30 @@
                         </div>
 
                         <!-- Email -->
-                        <div class="col-md-6">
-                            <label class="form-label">Email <span class="required-mark">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control" th:field="*{custEmail}"
-                                       th:classappend="${#fields.hasErrors('custEmail')} ? 'is-invalid'"
-                                       placeholder="example@email.com" id="custEmail">
-                            </div>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custEmail')}">
-                                <i class="bi bi-exclamation-circle"></i>
-                                <span th:errors="*{custEmail}"></span>
-                            </div>
-                            <div class="invalid-feedback-custom" id="emailError" style="display:none;">
-                                <i class="bi bi-exclamation-circle"></i> Email 格式錯誤，必須包含 @ 符號
-                            </div>
-                        </div>
+						<div class="col-md-6">
+						    <label class="form-label">Email <span class="required-mark">*</span></label>
+						    <div class="input-group">
+						        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+						        <input type="email" class="form-control" th:field="*{custEmail}"
+						               th:classappend="${#fields.hasErrors('custEmail')} ? 'is-invalid'"
+						               placeholder="example@email.com" id="custEmail">
+						    </div>
+						
+						    <div class="invalid-feedback-custom server-error-custEmail" th:if="${#fields.hasErrors('custEmail')}">
+						        <i class="bi bi-exclamation-circle"></i>
+						        <span th:errors="*{custEmail}"></span>
+						    </div>
+						
+						    <div class="invalid-feedback-custom server-error-custEmail"
+							     th:if="${emailDuplicateError}">
+							    <i class="bi bi-exclamation-circle"></i>
+							    <span th:text="${emailDuplicateError}"></span>
+							</div>
+						
+						    <div class="invalid-feedback-custom" id="emailFormatError" style="display:none;">
+						        <i class="bi bi-exclamation-circle"></i> Email 格式錯誤
+						    </div>
+						</div>
 
                         <!-- 地址 -->
                         <div class="col-12">
@@ -454,10 +470,17 @@
                                        placeholder="6~20 個英文或數字" id="custAccount" maxlength="20">
                             </div>
                             <div class="password-hint">只能包含英文字母與數字，長度 6~20</div>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custAccount')}">
+                            <div class="invalid-feedback-custom server-error-custAccount" th:if="${#fields.hasErrors('custAccount')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custAccount}"></span>
                             </div>
+                            
+                            <div class="invalid-feedback-custom server-error-custAccount"
+							     th:if="${accountDuplicateError}">
+							    <i class="bi bi-exclamation-circle"></i>
+							    <span th:text="${accountDuplicateError}"></span>
+							</div>
+                            
                             <div class="invalid-feedback-custom" id="accountError" style="display:none;">
                                 <i class="bi bi-exclamation-circle"></i> 帳號只能使用英文字母與數字，長度 6~20
                             </div>
@@ -479,7 +502,7 @@
                             <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
                             <div class="strength-text" id="strengthText" style="color:#94a3b8;"></div>
                             <div class="password-hint">需包含大寫、小寫英文字母及數字；長度 8~20；不可含特殊字元</div>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custPassword')}">
+                            <div class="invalid-feedback-custom server-error-custPassword" th:if="${#fields.hasErrors('custPassword')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custPassword}"></span>
                             </div>
@@ -519,7 +542,7 @@
 								<option value="1">啟用</option>
 								<option value="2">停權</option>
                             </select>
-                            <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('custStatus')}">
+                            <div class="invalid-feedback-custom server-error-custStatus" th:if="${#fields.hasErrors('custStatus')}">
                                 <i class="bi bi-exclamation-circle"></i>
                                 <span th:errors="*{custStatus}"></span>
                             </div>
@@ -545,6 +568,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ---- 使用者重新輸入時，清除該欄位上一次由後端回傳的錯誤 ----
+    document.querySelectorAll('input[name], select[name], textarea[name]').forEach(function (el) {
+        function clearServerError() {
+            document.querySelectorAll('.server-error-' + el.name)
+                .forEach(function (msg) {
+                    msg.style.display = 'none';
+                });
+        }
+
+        el.addEventListener('input', clearServerError);
+        el.addEventListener('change', clearServerError);
+    });
+
     // ---- 密碼顯示/隱藏 ----
     document.getElementById('togglePw').addEventListener('click', function () {
         const input = document.getElementById('custPassword');
@@ -642,9 +678,17 @@
 
     // ---- Email 格式 ----
     document.getElementById('custEmail').addEventListener('input', function () {
-        const err = document.getElementById('emailError');
-        if (this.value.length === 0) { err.style.display='none'; return; }
-        err.style.display = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value) ? 'none' : 'flex';
+        const err = document.getElementById('emailFormatError');
+
+        if (this.value.length === 0) {
+            err.style.display = 'none';
+            return;
+        }
+
+        err.style.display =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value)
+            ? 'none'
+            : 'flex';
     });
 
     // ---- 帳號格式 ----
@@ -661,22 +705,15 @@
         err.style.display = this.value >= today ? 'flex' : 'none';
     });
 
-    // ---- 表單送出前再次驗證 ----
+    // ---- 表單送出前確認密碼一致性 ----
+    // 欄位格式仍交給後端 @Valid 最終驗證；這裡只處理「確認密碼」這個不送後端的欄位。
     document.getElementById('addForm').addEventListener('submit', function (e) {
-        const pw  = document.getElementById('custPassword').value;
+        const pw = document.getElementById('custPassword').value;
         const cpw = document.getElementById('confirmPassword').value;
-        const pwRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z0-9]{8,20}$/;
 
-        if (!pwRegex.test(pw)) {
-            document.getElementById('pwError').style.display = 'flex';
-            e.preventDefault();
-            return;
-        }
-
-        if (pw !== cpw) {
+        if (pw.length > 0 && cpw.length > 0 && pw !== cpw) {
             document.getElementById('confirmPwError').style.display = 'flex';
             e.preventDefault();
-            return;
         }
     });
 </script>
