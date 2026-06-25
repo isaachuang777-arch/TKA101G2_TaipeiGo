@@ -1,77 +1,139 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaipeiGO ｜ 修改門票分類</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/ticketCategory.css}">
+    <title>修改門票分類 - TaipeiGo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/ticketCategory/addTicketCategory.css}">
     <style>
-        .form { padding: 24px 30px; }
-        .form-label { font-weight: 600; color: #495057; margin-bottom: 8px; }
-        .form-control, .form-select { border-radius: 8px; padding: 10px 14px; border: 1px solid #ced4da; }
-        .form-control:focus, .form-select:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); }
-        .error-feedback { color: #dc3545; font-size: 0.875em; margin-top: 6px; font-weight: 500; }
-        .btn-cancel { background-color: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; padding: 10px 24px; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
-        .btn-cancel:hover { background-color: #e9ecef; color: #495057; }
+        .id-badge { display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; border-radius: 8px; padding: 5px 12px; font-size: 0.82rem; font-weight: 700; }
+        .form-control[readonly] { background: #f8fafc; color: #64748b; cursor: not-allowed; }
     </style>
 </head>
 <body>
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 
-<div class="topbar">
-    <div class="logo">
-        台北<span>GO</span>了沒
-    </div>
-</div>
+<!-- Main -->
+<div class="main-wrap">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="bi bi-pencil-square me-2" style="color:#f97316;"></i>
+            修改門票分類
+            <span th:text="${'/ ' + ticketCategoryVO.ticketCategoryName}">/ 編輯</span>
+        </div>
+        <span class="id-badge">
+            <i class="bi bi-hash"></i>
+            <span th:text="${'ID: ' + ticketCategoryVO.ticketCategoryId}">ID</span>
+        </span>
+    </header>
 
-<div class="page-wrapper">
-    <div class="page-card" style="max-width: 700px; margin: 0 auto;">
-        
-        <div class="page-header border-bottom pb-3">
-            <div>
-                <h2 class="page-title">修改門票分類</h2>
-                <div class="page-subtitle">變更門票分類的名稱或啟用狀態</div>
+    <div class="content-area">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-custom">
+            <a th:href="@{/backend/ticketCategory/list}"><i class="bi bi-house-door"></i> 門票分類列表</a>
+            <i class="bi bi-chevron-right" style="font-size:0.7rem;"></i>
+            <span th:text="${ticketCategoryVO.ticketCategoryName}">修改</span>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-header">
+                <h5><i class="bi bi-pencil-square me-2" style="color:#f97316;"></i>修改門票分類資料</h5>
+                <p>修改完成後請點選「儲存變更」。</p>
+            </div>
+
+            <div class="form-card-body">
+
+                <form th:action="@{/backend/ticketCategory/update}" method="post" th:object="${ticketCategoryVO}"
+                      id="editForm" novalidate>
+                    
+                    <input type="hidden" th:field="*{ticketCategoryId}">
+
+                    <!-- Error Summary (Thymeleaf) -->
+                    <div class="error-summary" th:if="${not #lists.isEmpty(#fields.errors())}">
+                        <div class="error-title">
+                            <i class="bi bi-exclamation-circle-fill"></i> 請修正以下錯誤：
+                        </div>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                        </ul>
+                    </div>
+
+                    <!-- Fields -->
+                    <!-- 分類編號 (Readonly) -->
+                    <div class="mb-4">
+                        <label class="form-label">門票分類編號</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                            <input type="text" class="form-control" th:field="*{ticketCategoryId}" readonly>
+                        </div>
+                    </div>
+
+                    <!-- 分類名稱 -->
+                    <div class="mb-4">
+                        <label class="form-label">門票分類名稱 <span class="required-mark">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                            <input type="text" class="form-control" th:field="*{ticketCategoryName}"
+                                   th:classappend="${#fields.hasErrors('ticketCategoryName')} ? 'is-invalid'"
+                                   placeholder="例如：歷史建築、藝文館所" id="ticketCategoryName" maxlength="50" required>
+                        </div>
+                        <div class="invalid-feedback-custom server-error-ticketCategoryName"
+                             th:if="${#fields.hasErrors('ticketCategoryName')}">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span th:errors="*{ticketCategoryName}"></span>
+                        </div>
+                    </div>
+
+                    <!-- 啟用狀態 -->
+                    <div class="mb-4">
+                        <label class="form-label">啟用狀態 <span class="required-mark">*</span></label>
+                        <select class="form-select" th:field="*{ticketCategoryStatus}"
+                                th:classappend="${#fields.hasErrors('ticketCategoryStatus')} ? 'is-invalid'"
+                                id="ticketCategoryStatus" required>
+                            <option value="1">啟用</option>
+                            <option value="0">未啟用</option>
+                        </select>
+                        <div class="invalid-feedback-custom server-error-ticketCategoryStatus"
+                             th:if="${#fields.hasErrors('ticketCategoryStatus')}">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span th:errors="*{ticketCategoryStatus}"></span>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div style="display:flex; gap:12px; padding-top:16px; border-top:1px solid #f1f5f9; margin-top:24px;">
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-check-lg"></i> 儲存變更
+                        </button>
+                        <a th:href="@{/backend/ticketCategory/list}" class="btn-cancel">
+                            <i class="bi bi-arrow-left"></i> 取消返回
+                        </a>
+                    </div>
+
+                </form>
             </div>
         </div>
 
-        <form class="form" th:action="@{/backend/ticketCategory/update}" th:object="${ticketCategoryVO}" method="post">
-          
-            
-             <div class="mb-4">
-			    <label class="form-label">門票分類編號</label>
-			    <input type="text" class="form-control bg-light text-secondary fw-bold" 
-			           th:field="*{ticketCategoryId}" readonly style="cursor: not-allowed;" />
-			</div>
-
-            <div class="mb-4">
-                <label for="ticketCategoryName" class="form-label">門票分類名稱 <span class="text-danger">*</span></label>
-                <input type="text" th:field="*{ticketCategoryName}" id="ticketCategoryName" 
-                       class="form-control" th:classappend="${#fields.hasErrors('ticketCategoryName')} ? 'is-invalid'" />
-                <div class="error-feedback" th:if="${#fields.hasErrors('ticketCategoryName')}" th:errors="*{ticketCategoryName}"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="ticketCategoryStatus" class="form-label">啟用狀態 <span class="text-danger">*</span></label>
-                <select th:field="*{ticketCategoryStatus}" id="ticketCategoryStatus" class="form-select">
-                    <option value="1">啟用</option>
-                    <option value="0">未啟用</option>
-                </select>
-            </div>
-
-            <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
-                <a th:href="@{/backend/ticketCategory/list}" class="btn-cancel d-inline-flex align-items-center">
-                    取消返回
-                </a>
-                <button type="submit" class="btn btn-primary px-4 py-2" style="border-radius: 8px;">
-                    確認修改
-                </button>
-            </div>
-
-        </form>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('input[name], select[name], textarea[name]').forEach(function (el) {
+        function clearServerError() {
+            document.querySelectorAll('.server-error-' + el.name)
+                .forEach(function (msg) {
+                    msg.style.display = 'none';
+                });
+        }
+
+        el.addEventListener('input', clearServerError);
+        el.addEventListener('change', clearServerError);
+    });
+</script>
 </body>
 </html>

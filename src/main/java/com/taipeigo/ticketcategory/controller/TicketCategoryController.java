@@ -24,6 +24,7 @@ public class TicketCategoryController {
     @GetMapping("list")
     public String listAllCategory(ModelMap model) {
         List<TicketCategoryVO> list = ticketCategoryService.getAllNotDeleted();
+        model.addAttribute("activePage", "ticketCategory");
         model.addAttribute("ticketCategoryListData", list);
         return "backend/ticketCategory/listAllTicketCategory";
     }

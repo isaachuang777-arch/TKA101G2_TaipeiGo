@@ -277,7 +277,8 @@
                     <span>活動管理</span>
                 </a>
 
-                <a href="#">
+                <a th:href="@{/backend/ticketCategory/list}"
+                    th:classappend="${activePage == 'ticketCategory'} ? ' active'">
                     <i class="bi bi-tags"></i>
                     <span>門票分類管理</span>
                 </a>
