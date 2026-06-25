@@ -3,6 +3,7 @@ package com.taipeigo.ticket.model;
 import java.sql.Timestamp;
 
 import com.taipeigo.customer.model.CustomerVO;
+import com.taipeigo.orders.model.OrdersVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +41,10 @@ public class TicketSerialVO {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUST_ID")
 	private CustomerVO customerVO;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ORDER_ID")
+	private OrdersVO ordersVO;
 
 	public Integer getTicketSerialId() {
 		return ticketSerialId;
@@ -87,6 +92,14 @@ public class TicketSerialVO {
 
 	public void setCustomerVO(CustomerVO customerVO) {
 		this.customerVO = customerVO;
+	}
+
+	public OrdersVO getOrdersVO() {
+		return ordersVO;
+	}
+
+	public void setOrdersVO(OrdersVO ordersVO) {
+		this.ordersVO = ordersVO;
 	}
 
 }

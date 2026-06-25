@@ -4,72 +4,41 @@
 <body>
 
 <header th:fragment="header">
-
     <nav class="navbar">
-
         <div class="nav-left">
-
             <span class="menu-icon">☰</span>
-
-            <a th:href="@{/}" class="nav-logo">
-                台北GO了沒
-            </a>
-
+            <a th:href="@{/}" class="nav-logo"> 台北GO了沒 </a>
         </div>
 
         <div class="nav-right">
-
-            <a th:href="@{/favorite}" class="nav-link">
-                ❤️ 我的最愛
-            </a>
-
-            <a th:href="@{/cart}" class="nav-link">
-                🛒 購物車
-            </a>
-
+            <a th:href="@{/favorite}" class="nav-link">❤️ 我的最愛 </a>
+			<a th:href="@{/frontend/cart/shoppingCart}" class="nav-link cart-link">
+		    <span class="cart-icon">🛒</span>
+		    <span class="cart-text">購物車</span>
+			<span id="cartCount" class="cart-badge"></span>		
+				
             <!-- 未登入 -->
             <th:block th:if="${session.loginCustomer == null}">
-
-                <a th:href="@{/front/customer/login}"
-                   class="btn-login">
-                    👤 登入
-                </a>
-
-                <a th:href="@{/front/customer/register}"
-                   class="btn-register">
-                    👥 註冊
-                </a>
-
+                <a th:href="@{/front/customer/login}" class="btn-login"> 👤 登入 </a>
+                <a th:href="@{/front/customer/register}"   class="btn-register">  👥 註冊  </a>
             </th:block>
 
             <!-- 已登入 -->
             <th:block th:if="${session.loginCustomer != null}">
-
                 <div class="member-dropdown">
-
                     <button type="button" class="member-btn">
-
-                        <span class="member-avatar">
-                            👤
-                        </span>
-
-                        <span class="member-name"
-                              th:text="${session.loginCustomer.custName}">
-                        </span>
-
-                        <span class="arrow">
-                            ▼
-                        </span>
-
+                        <span class="member-avatar">  👤 </span>
+                        <span class="member-name" th:text="${session.loginCustomer.custName}"> </span>
+                        <span class="arrow"> ▼ </span>
                     </button>
 
                     <div class="dropdown-menu">
 
-                        <a href="#">
+                        <a th:href="@{/customer/center}">
                             👤 會員中心
                         </a>
 
-                        <a href="#">
+                        <a th:href="@{/customer/profile}">
                             📋 個人資料
                         </a>
 
@@ -77,27 +46,37 @@
                             📄 我的訂單
                         </a>
 
-                        <a href="#">
+                        <a th:href="@{/customer/tickets}">
                             🎫 我的票券
                         </a>
 
                     </div>
-
                 </div>
 
-                <a href="#"
+                <a th:href="@{/auth/logout}"
                    class="logout-link">
                     🚪 登出
                 </a>
 
             </th:block>
-
         </div>
-
     </nav>
-
 </header>
-
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+    try {
+        const response = await fetch("/frontend/cart/count");
+        const count = await response.json();
+        const badge = document.getElementById("cartCount");
+        if (count > 0) {
+            badge.textContent = count;
+        } else {
+            badge.style.display = "none";
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+</script>
 </body>
-
 </html>

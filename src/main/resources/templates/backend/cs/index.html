@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服中心 | 台北GO了沒 後台</title>
+    <!-- 使用 Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6; /* 使用者指定的背景色 */
+            --card-bg: #ffffff;
+            --primary: #4318ff;
+            --primary-hover: #3311db;
+            --text-main: #2b3674;
+            --text-muted: #a3aed1;
+            
+            /* Status Colors */
+            --danger: #ef4444;    /* Status 0: New */
+            --warning: #f59e0b;   /* Status 1: Pending */
+            --info: #3b82f6;      /* Status 2: Replied */
+            --success: #10b981;   /* Status 3: Closed */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            padding-left: 260px; /* 避開左側 260px 的 Sidebar */
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            body { padding-left: 0; }
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #4318ff, #868cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-size: 16px;
+        }
+
+        /* 網格系統 - 卡片排版 */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* 卡片共用樣式 */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 20px rgba(112, 144, 176, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none; /* 如果變成超連結才不會有底線 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(112, 144, 176, 0.15);
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* 狀態顏色微調 */
+        .text-danger { color: var(--danger); }
+        .text-warning { color: var(--warning); }
+        .text-info { color: var(--info); }
+        .text-success { color: var(--success); }
+
+        /* 緊急清單區塊 */
+        .urgent-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 20px rgba(112, 144, 176, 0.08);
+        }
+
+        .urgent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .urgent-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .urgent-header h2::before {
+            content: '';
+            display: block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.2); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* 表格樣式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 15px;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* 按鈕樣式 */
+        .btn-view {
+            background-color: var(--bg-color);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .btn-view:hover {
+            background-color: var(--primary) !important;
+            color: white !important;
+        }
+
+        /* 標籤徽章 */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-cate11 { background-color: #e0e7ff; color: #4338ca; }
+        .badge-cate12 { background-color: #ffedd5; color: #c2410c; }
+        .badge-cate13 { background-color: #f3f4f6; color: #4b5563; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<!--side bar-->
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+<div class="dashboard-container">
+    <div class="header">
+        <h1>客服中心儀表版</h1>
+        <p>掌握即時案件狀態，提供最優質的客戶體驗</p>
+    </div>
+
+    <!-- 狀態 -->
+    <div class="grid-cards">
+
+        <a href="/backend/cs/listAll?caseStatus=0" class="card">
+            <span class="card-title"><i class="fa-solid fa-fire text-danger"></i> 新建案件</span>
+            <span class="card-value text-danger" th:text="${caseStatus0 != null ? caseStatus0 : 0}">0</span>
+        </a>
+        
+        <a href="/backend/cs/listAll?caseStatus=1" class="card">
+            <span class="card-title"><i class="fa-solid fa-hourglass-half text-warning"></i> 待處理案件</span>
+            <span class="card-value text-warning" th:text="${caseStatus1 != null ? caseStatus1 : 0}">0</span>
+        </a>
+
+        <a href="/backend/cs/listAll?caseStatus=2" class="card">
+            <span class="card-title"><i class="fa-solid fa-comment-dots text-info"></i> 客服已回覆</span>
+            <span class="card-value text-info" th:text="${caseStatus2 != null ? caseStatus2 : 0}">0</span>
+        </a>
+
+        <a href="/backend/cs/listAll?caseStatus=3" class="card">
+            <span class="card-title"><i class="fa-solid fa-check-circle text-success"></i> 累積已結案</span>
+            <span class="card-value text-success" th:text="${caseStatus3 != null ? caseStatus3 : 0}">0</span>
+        </a>
+    </div>
+
+    <!-- 類別 -->
+    <h3 style="color: var(--text-muted); margin-bottom: 15px; font-size: 16px;"><i class="fa-solid fa-folder-open"></i> 案件分類統計</h3>
+    <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="card">
+            <span class="card-title"><i class="fa-solid fa-laptop"></i> 操作問題</span>
+            <span class="card-value" style="font-size: 24px;" th:text="${caseCate11 != null ? caseCate11 : 0}">0</span>
+        </div>
+        <div class="card">
+            <span class="card-title"><i class="fa-solid fa-box"></i> 訂單問題</span>
+            <span class="card-value" style="font-size: 24px;" th:text="${caseCate12 != null ? caseCate12 : 0}">0</span>
+        </div>
+        <div class="card">
+            <span class="card-title"><i class="fa-solid fa-circle-question"></i> 其他問題</span>
+            <span class="card-value" style="font-size: 24px;" th:text="${caseCate13 != null ? caseCate13 : 0}">0</span>
+        </div>
+    </div>
+
+    <!-- 緊急案件清單-->
+    <div class="urgent-section">
+        <div class="urgent-header">
+            <h2>壓線緊急案件 (24小時內未處理)</h2>
+        </div>
+        
+        <!-- 當有緊急案件時顯示表格 -->
+        <table th:if="${urgentCases != null and !urgentCases.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>案件編號</th>
+                    <th>建立時間</th>
+                    <th>會員名稱</th>
+                    <th>分類</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cs : ${urgentCases}">
+                    <td style="font-weight: 600;" th:text="'#' + ${cs.csId}">#1</td>
+                    <td th:text="${#dates.format(cs.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-06-24 10:00:00</td>
+                    <td th:text="${cs.customerVO != null ? cs.customerVO.custName : '未知會員'}"></td>
+                    <td>
+                        <span class="badge badge-cate11" th:if="${cs.caseCate == 11}">操作問題</span>
+                        <span class="badge badge-cate12" th:if="${cs.caseCate == 12}">訂單問題</span>
+                        <span class="badge badge-cate13" th:if="${cs.caseCate == 13}">其他問題</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/backend/cs/view(csId=${cs.csId})}" class="btn-view">前往處理</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 當沒有緊急案件時顯示空狀態 -->
+        <div class="empty-state" th:if="${urgentCases == null or urgentCases.isEmpty()}">
+            <h3 style="margin-bottom: 5px; color: var(--success);"><i class="fa-solid fa-award"></i> 太棒了！</h3>
+            <p>目前沒有任何 24 小時內的緊急案件，繼續保持！</p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.taipeigo.cart.model.CartService;
 import com.taipeigo.customer.model.CustomerService;
 import com.taipeigo.customer.model.CustomerVO;
 
@@ -36,6 +37,9 @@ public class FrontendAuthController {
 
     @Autowired
     private CustomerService customerService;
+    
+    @Autowired
+    private CartService cartService;
     
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -91,6 +95,9 @@ public class FrontendAuthController {
 
         // 登入成功，把會員資料存進 Session
         session.setAttribute("loginCustomer", customer);
+        
+     // 同步未登入購物車到 Redis
+        cartService.mergeTempCart(session);
 
         // 如果原本是被 Filter 擋下來的頁面，登入後導回原頁
         String frontendReUrl = (String) session.getAttribute("frontendReUrl");

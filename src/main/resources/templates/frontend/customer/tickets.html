@@ -5,28 +5,41 @@
 <title>我的票券</title>
 
 <style>
-.container {
+.customer-page {
     display: flex;
     max-width: 1200px;
     margin: 30px auto;
+    align-items: flex-start;
 }
 
-.content {
+.customer-content {
     flex: 1;
     padding: 30px;
+}
+
+.ticket-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+.ticket-card h3 {
+    margin-top: 0;
 }
 </style>
 
 </head>
 <body>
 
-<div class="container">
+<div class="customer-page">
 
-    <!-- 左側選單 -->
+    <!-- 左側會員中心 Sidebar -->
     <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
 
     <!-- 右側內容 -->
-    <div class="content">
+    <div class="customer-content">
 
         <h2>我的票券</h2>
 
@@ -35,7 +48,55 @@
             <span th:text="${loginCustomer.custName}"></span>
         </p>
 
-        <p>目前尚無票券資料</p>
+        <div th:if="${#lists.isEmpty(myTickets)}">
+            <p>目前尚無票券資料</p>
+        </div>
+
+        <div th:each="ticket : ${myTickets}" class="ticket-card">
+
+            <h3 th:text="${ticket.ticketVO.ticketName}">
+                票券名稱
+            </h3>
+
+            <p>
+                序號：
+                <span th:text="${ticket.serialNumber}">
+                    TK123456789
+                </span>
+            </p>
+
+            <p>
+                有效期限：
+                <span th:text="${ticket.expiryDate}">
+                    2026-12-31
+                </span>
+            </p>
+
+            <p>
+                狀態：
+
+                <span th:if="${ticket.status == 2}">
+                    未使用
+                </span>
+
+                <span th:if="${ticket.status == 3}">
+                    已使用
+                </span>
+
+                <span th:if="${ticket.status == 4}">
+                    已過期
+                </span>
+
+                <span th:if="${ticket.status == 6}">
+                    已退款
+                </span>
+            </p>
+
+            <div>
+                [ QR Code 展示區 ]
+            </div>
+
+        </div>
 
     </div>
 

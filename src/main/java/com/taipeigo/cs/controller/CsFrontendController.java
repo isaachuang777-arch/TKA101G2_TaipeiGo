@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/CustomerService")
 
-public class FrontendcsController {
+public class CsFrontendController {
 	
 	@Autowired
 	private CsService csService;
@@ -104,15 +104,15 @@ public class FrontendcsController {
 				) {
 			//防止偷看
 			//現在登人的人
-			CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
-			Integer currentCustId = loginCustomer.getCustId();
-			//查這單子
-			CsVO csVO =csService.findByCsId(csId);
-			//如果他想偷看
-			if (!csVO.getCustomerVO().getCustId().equals(currentCustId)){
-				redirectAttributes.addFlashAttribute("errorMsg",  "查無資料。");
-				return "redirect:/CustomerService/index";
-			}
+			// CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
+			// Integer currentCustId = loginCustomer.getCustId();
+			// //查這單子
+			// CsVO csVO =csService.findByCsId(csId);
+			// //如果他想偷看
+			// if (!csVO.getCustomerVO().getCustId().equals(currentCustId)){
+			// 	redirectAttributes.addFlashAttribute("errorMsg",  "查無資料。");
+			// 	return "redirect:/CustomerService/index";
+			// }
 			
 			CsVO csVO1 = csService.findByCsId(csId);
 			

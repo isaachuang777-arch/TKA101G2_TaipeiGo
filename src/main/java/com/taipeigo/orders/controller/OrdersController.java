@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -15,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.taipeigo.customer.model.CustomerVO;
 import com.taipeigo.order.detail.model.OrderDetailService;
 import com.taipeigo.orders.model.OrdersService;
 import com.taipeigo.orders.model.OrdersVO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -26,8 +30,8 @@ import jakarta.validation.constraints.NotEmpty;
 
 @Controller
 /* 凡是網址開頭是 /orders 的請求，都交給這個 Controller 處理 */
-@RequestMapping("/orders")
-
+@RequestMapping("/backend/orders")
+//http://localhost:8080/backend/orders
 public class OrdersController {
 	@Autowired
 	OrdersService ordersService;
@@ -37,13 +41,27 @@ public class OrdersController {
 
 	/* orders首頁--查全部 */
 	@GetMapping
-	public String getAllOrders(ModelMap model) {
+	public String getAllOrders(@RequestParam(defaultValue = "0") int page,
+	        Model model) {
 
-		List<OrdersVO> allOrders = ordersService.getAll();
-		model.addAttribute("allOrders", allOrders);
-		return "backend/orders/allOrders";
+
+		Page<OrdersVO> orderPage =ordersService.findAll(PageRequest.of(page, 10));	    
+		model.addAttribute("allOrders", orderPage.getContent());
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages",orderPage.getTotalPages());
+	    model.addAttribute("totalItems",orderPage.getTotalElements());
+	    model.addAttribute("activePage", "orders");
+	    return "backend/orders/allOrders";
 
 	}
+	
+	@GetMapping("/allOrders")
+	public String redirectAllOrders() {
+	    return "redirect:/backend/orders";
+	}
+	
+	
+	
 	
 
 	/* order 訂單編號查詢 Search OrderId */
@@ -112,9 +130,7 @@ public class OrdersController {
 		
 	}
 	
-	
-	
-	
+
 	
 	
 	

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台北GO了沒 | FAQ</title>
+<link rel="stylesheet" th:href="@{/css/header.css}">
+<link rel="stylesheet" th:href="@{/css/heroSearch.css}">
+<link rel="stylesheet" th:href="@{/css/footer.css}">
+<link rel="stylesheet" th:href="@{/css/heroBanner.css}">
+</head>
+<body>
+	<!-- Header 	-->
+<div th:replace="~{frontend/index/header :: header}"></div>
+
+	<!-- Hero Search 	-->
+	<div th:replace="~{frontend/index/heroBanner :: heroBanner}"></div>
+
+	<!-- body-->
+<div th:replace="~{frontend/faq/faq}"></div>
+
+	<!-- Footer 	 -->
+<div th:replace="~{frontend/index/footer :: footer}"></div>
+</body>
+</html>

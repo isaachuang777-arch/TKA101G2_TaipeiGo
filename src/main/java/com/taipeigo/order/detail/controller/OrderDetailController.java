@@ -14,8 +14,8 @@ import com.taipeigo.order.detail.model.OrderDetailVO;
 import com.taipeigo.orders.model.OrdersService;
 
 @Controller
-/* 凡是網址開頭是 /orderDetail 的請求，都交給這個 Controller 處理 */
-@RequestMapping("/orderDetail")
+/* 凡是網址開頭是 /backend/orderDetail 的請求，都交給這個 Controller 處理 */
+@RequestMapping("/backend/orderDetail")
 public class OrderDetailController {
 
 	@Autowired
@@ -30,7 +30,7 @@ public class OrderDetailController {
 
 		List<OrderDetailVO> details = orderDetailService.findByOrderId(orderId);
 		model.addAttribute("details", details);
-		return "backend/orders/orderDetail";
+		return "/backend/orders/orderDetail";
 
 	}
 
