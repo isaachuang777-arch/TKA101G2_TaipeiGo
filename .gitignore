@@ -46,6 +46,7 @@ out/
 .project
 .classpath
 .settings/
+.factorypath
 bin/
 # VS Code
 .vscode/
