@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>台北GO了沒 | FAQ</title>
+<style>
+summary {
+    background-color: #f05a28; 
+    color: white; 
+    padding: 10px 15px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    margin-bottom: 10px; 
+}
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+</style>
+</head>
+<body>
+<br>
+
+<br>
+<H1 ><center>常見問題</center></H1>
+<div th:fragment="faqContent" >
+<div class="container">
+<div th:if="${faqVO.status!=0}" th:each="faqVO : ${faqVO}">
+<details>
+<summary> <span th:text="${faqVO.title}">主題</span></summary> 
+<span th:text="${faqVO.content}">內容</span>
+
+</details>
+</div>
+</div>
+</div>
+
+
+</body>
+</html>
