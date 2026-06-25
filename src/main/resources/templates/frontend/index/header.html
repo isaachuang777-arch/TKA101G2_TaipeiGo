@@ -19,8 +19,8 @@
 				
             <!-- 未登入 -->
             <th:block th:if="${session.loginCustomer == null}">
-                <a th:href="@{/front/customer/login}" class="btn-login"> 👤 登入 </a>
-                <a th:href="@{/front/customer/register}"   class="btn-register">  👥 註冊  </a>
+                <a th:href="@{/customer/login}" class="btn-login"> 👤 登入 </a>
+                <a th:href="@{/customer/register}"   class="btn-register">  👥 註冊  </a>
             </th:block>
 
             <!-- 已登入 -->
