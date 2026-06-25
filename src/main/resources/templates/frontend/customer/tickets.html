@@ -4,96 +4,218 @@
 <meta charset="UTF-8">
 <title>我的票券</title>
 
+<link rel="stylesheet" th:href="@{/css/index/header.css}">
+<link rel="stylesheet" th:href="@{/css/index/footer.css}">
+
 <style>
-.customer-page {
+.container {
     display: flex;
     max-width: 1200px;
-    margin: 30px auto;
-    align-items: flex-start;
+    margin: 30px 0 30px 60px;
+    gap: 24px;
 }
 
-.customer-content {
+.content {
     flex: 1;
     padding: 30px;
 }
 
-.ticket-card {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    background: #fff;
+.ticket-page-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 24px;
 }
 
-.ticket-card h3 {
-    margin-top: 0;
+.ticket-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    max-width: 900px;
+    margin-bottom: 20px;
+}
+
+.ticket-card-layout {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.ticket-img {
+    width: 220px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.ticket-main {
+    flex: 1;
+}
+
+.ticket-main h3 {
+    margin: 0 0 16px 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.ticket-info {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.ticket-label {
+    font-weight: 600;
+    color: #444;
+}
+
+.status-unused {
+    color: #198754;
+    font-weight: 700;
+}
+
+.status-used,
+.status-expired,
+.status-refund {
+    color: #dc3545;
+    font-weight: 700;
+}
+
+.qrcode-area {
+    width: 170px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.qrcode {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+.qrcode-hint {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #666;
+}
+
+.no-qrcode {
+    width: 170px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.empty-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 28px 32px;
+    max-width: 760px;
+    color: #666;
 }
 </style>
 
 </head>
 <body>
 
-<div class="customer-page">
+<!-- Header -->
+<div th:replace="~{frontend/index/header :: header}"></div>
 
-    <!-- 左側會員中心 Sidebar -->
-    <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
+<div class="container">
 
-    <!-- 右側內容 -->
-    <div class="customer-content">
+    <!-- Sidebar -->
+    <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}">
+    </div>
 
-        <h2>我的票券</h2>
+    <!-- Content -->
+    <div class="content">
 
-        <p>
+        <div class="ticket-page-title">
+            我的票券
+        </div>
+
+        <p style="margin-bottom:25px;">
             歡迎，
             <span th:text="${loginCustomer.custName}"></span>
         </p>
 
-        <div th:if="${#lists.isEmpty(myTickets)}">
-            <p>目前尚無票券資料</p>
+        <div th:if="${#lists.isEmpty(myTickets)}" class="empty-card">
+            目前尚無票券資料
         </div>
 
         <div th:each="ticket : ${myTickets}" class="ticket-card">
 
-            <h3 th:text="${ticket.ticketVO.ticketName}">
-                票券名稱
-            </h3>
+            <div class="ticket-card-layout">
 
-            <p>
-                序號：
-                <span th:text="${ticket.serialNumber}">
-                    TK123456789
-                </span>
-            </p>
+                <!-- 左側圖片 -->
+                <img th:if="${ticket.ticketVO.ticketImages != null
+                             and !#lists.isEmpty(ticket.ticketVO.ticketImages)}"
+                     th:src="${ticket.ticketVO.ticketImages[0].ticketImageSrc}"
+                     class="ticket-img"
+                     alt="票券圖片">
 
-            <p>
-                有效期限：
-                <span th:text="${ticket.expiryDate}">
-                    2026-12-31
-                </span>
-            </p>
+                <!-- 中間票券資訊 -->
+                <div class="ticket-main">
 
-            <p>
-                狀態：
+                    <h3 th:text="${ticket.ticketVO.ticketName}">
+                        票券名稱
+                    </h3>
 
-                <span th:if="${ticket.status == 2}">
-                    未使用
-                </span>
+                    <div class="ticket-info">
+                        <span class="ticket-label">序號：</span>
+                        <span th:text="${ticket.serialNumber}"></span>
+                    </div>
 
-                <span th:if="${ticket.status == 3}">
-                    已使用
-                </span>
+                    <div class="ticket-info">
+                        <span class="ticket-label">有效期限：</span>
+                        <span th:text="${ticket.expiryDate}"></span>
+                    </div>
 
-                <span th:if="${ticket.status == 4}">
-                    已過期
-                </span>
+                    <div class="ticket-info">
+                        <span class="ticket-label">狀態：</span>
 
-                <span th:if="${ticket.status == 6}">
-                    已退款
-                </span>
-            </p>
+                        <span th:if="${ticket.status == 2}" class="status-unused">
+                            未使用
+                        </span>
 
-            <div>
-                [ QR Code 展示區 ]
+                        <span th:if="${ticket.status == 3}" class="status-used">
+                            已使用
+                        </span>
+
+                        <span th:if="${ticket.status == 4}" class="status-expired">
+                            已過期
+                        </span>
+
+                        <span th:if="${ticket.status == 6}" class="status-refund">
+                            已退款
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- 右側 QR Code -->
+                <div class="qrcode-area"
+                     th:if="${ticket.status == 2}">
+
+                    <div class="qrcode"
+                         th:id="'qrcode-' + ${ticket.ticketSerialId}"
+                         th:attr="data-serial=${ticket.serialNumber}">
+                    </div>
+
+                    <div class="qrcode-hint">
+                        請於入口掃描使用
+                    </div>
+
+                </div>
+
+                <div class="no-qrcode"
+                     th:if="${ticket.status != 2}">
+                    無法使用
+                </div>
+
             </div>
 
         </div>
@@ -101,6 +223,26 @@
     </div>
 
 </div>
+
+<div th:replace="~{frontend/index/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
+<script th:inline="javascript">
+document.querySelectorAll(".qrcode").forEach(function(item) {
+
+    const serial = item.dataset.serial;
+    const baseUrl = /*[[${baseUrl}]]*/ "";
+    const verifyUrl = baseUrl + "/ticket/verify/" + serial;
+
+    new QRCode(item, {
+        text: verifyUrl,
+        width: 150,
+        height: 150
+    });
+
+});
+</script>
 
 </body>
 </html>
