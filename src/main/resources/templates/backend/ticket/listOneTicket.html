@@ -350,8 +350,8 @@
                                         <tr>
                                             <th width="15%">編號</th>
                                             <th width="35%">門票序號</th>
-                                            <th width="25%">銷售狀態</th>
-                                            <th width="25%">使用狀態</th>
+                                            <th width="25%">狀態</th>
+                                            <th width="25%">會員</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -363,12 +363,19 @@
                                                 <span class="serial-code" th:text="${serial.serialNumber}">TKABC123XYZ</span>
                                             </td>
                                             <td>
-                                                <span th:if="${serial.customerVO == null}" class="text-muted small">在庫</span>
-                                                <span th:if="${serial.customerVO != null}" class="text-muted small" th:text="'已售出 (會員ID: ' + ${serial.customerVO.custId} + ')'">已售出</span>
+                                                
+                                                <span th:if="${serial.status == 1}" class="text-muted small">可販售 (上架) </span>
+                                                <span th:if="${serial.status == 2}" class="text-muted small">已賣出 (未使用) </span>
+                                                <span th:if="${serial.status == 3}" class="text-muted small">已使用</span>
+                                                <span th:if="${serial.status == 4}" class="text-muted small">已過期</span>
+                                                <span th:if="${serial.status == 5}" class="text-muted small">下架 (未賣出才可下架）</span>
+                                                <span th:if="${serial.status == 6}" class="text-muted small">已退票作廢</span>
                                             </td>
                                             <td>
-                                                <span th:if="${serial.status == 0}" class="text-muted small">未使用</span>
-                                                <span th:if="${serial.status == 1}" class="text-muted small">已使用</span>
+                                               <span class="text-muted small" 
+                                                    th:text="${serial.customerVO != null} ? '會員ID: ' + ${serial.customerVO.custId} : '-'">
+                                                </span>
+                                                
                                             </td>
                                         </tr>
                                         <tr th:if="${#lists.isEmpty(ticketVO.ticketSerials)}">

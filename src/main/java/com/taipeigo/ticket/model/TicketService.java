@@ -2,16 +2,19 @@ package com.taipeigo.ticket.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.taipeigo.customer.model.CustomerVO;
+import com.taipeigo.orders.model.OrdersVO;
 
 import jakarta.transaction.Transactional;
 
@@ -26,6 +29,9 @@ public class TicketService {
 
 	@Autowired
 	private TicketImageRepository ticketImageRepository;
+
+	@Autowired
+    private EntityManager entityManager;
 	
 	@Value("${taipeigo.upload.base-dir}")
 	private String uploadBaseDir;
@@ -60,9 +66,10 @@ public class TicketService {
 		String uniqueCode = generateUniqueSerialNumber();
 		serial.setSerialNumber(uniqueCode);
 		serial.setCustomerVO(null);  
-		serial.setStatus(0); 
+		serial.setStatus(1); 
 		// 購買此門票序號時才會將使用日期代入，故用null
 		serial.setExpiryDate(null);
+		serial.setOrdersVO(null);
 		return serial;
 	}
 
@@ -226,4 +233,80 @@ public class TicketService {
 			}
 		}
 	}
+
+	/* 檢查該門票的庫存是否有所需張數 */
+	public boolean checkStock(int ticketId, int requiredQty){
+		return ticketSerialRepository.hasEnoughStock(ticketId, requiredQty);
+	}
+
+
+
+	/* 購買門票序號  
+	更新：
+		1.序號狀態 
+		2.門票使用日期/期限 
+		3.會員編號 
+		4.訂單編號
+	*/
+    @Transactional
+    public void buyTicketSerial(int ticketId, Timestamp expiryDate,int custId, int orderId ) {
+        // 取得該序號目前狀態為可販售中，ID 最小的那張票
+        TicketSerialVO serial = ticketSerialRepository
+                .findOldestTicketSerialVO(ticketId, 1)
+                .orElseThrow(() -> new RuntimeException("該門票商品庫存不足！"));
+
+        // 綁定會員、訂單，並將狀態改為「已售出/未使用」status = 2
+        serial.setStatus(2);                 
+        serial.setExpiryDate(expiryDate);   
+        serial.setCustomerVO(entityManager.getReference(CustomerVO.class, custId));           
+        serial.setOrdersVO(entityManager.getReference(OrdersVO.class, orderId));        
+        ticketSerialRepository.save(serial);
+    }
+
+	/** TODO:購買門票序號（討論 */
+	// @Transactional
+    // public void buyTicketSerial2(int ticketId, Timestamp expiryDate, CustomerVO customerVO, OrdersVO ordersVO ) {
+    //     // 取得該序號目前狀態為可販售中，ID 最小的那張票
+    //     TicketSerialVO serial = ticketSerialRepository
+    //             .findOldestTicketSerialVO(ticketId, 1)
+    //             .orElseThrow(() -> new RuntimeException("該門票商品庫存不足！"));
+
+    //     // 綁定會員、訂單，並將狀態改為「已售出/未使用」status = 2
+    //     serial.setStatus(2);                 
+    //     serial.setExpiryDate(expiryDate);   
+    //     serial.setCustomerVO(customerVO);           
+    //     serial.setOrdersVO(ordersVO);        
+    //     ticketSerialRepository.save(serial);
+    // }
+    
+    /* 下架序號 */
+    @Transactional
+    public void offMarketTicketSerial(Integer ticketSerialId) {
+        TicketSerialVO serial = ticketSerialRepository.findById(ticketSerialId)
+                .orElseThrow(() -> new IllegalArgumentException("找不到該序號：" + ticketSerialId));
+        
+        if (serial.getCustomerVO() != null) {
+            throw new IllegalStateException("該序號已被會員購買，無法進行下架！");
+        }
+        
+        // 未售出則將狀態改為下架
+        serial.setStatus(5);
+        ticketSerialRepository.save(serial);
+    }
+    
+    /* 取消訂單，status 改為作廢，保留 cust_id */
+    @Transactional
+    public void cancelTicketSerial(Integer ordersId) {
+       ticketSerialRepository.updateStatusByOrderId(ordersId, 6);
+    }
+    
+
+
+	/* 檢查當下是否過期並更新 db 
+	 * 1. 當會員開啟票券時
+	 * 2. 搜尋該序號時 
+	*/
+	
+
+	
 }

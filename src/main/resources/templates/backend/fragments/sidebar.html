@@ -21,6 +21,12 @@
     overflow-y: auto;
     z-index: 100;
     box-shadow: 4px 0 18px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-content {
+    flex: 1;
 }
 
 .sidebar-title {
@@ -141,6 +147,51 @@
     font-size: 0.95rem;
 }
 
+/* 左下角登入管理員資訊卡 */
+.sidebar-admin-info {
+    margin: 12px;
+    padding: 14px 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    color: #e2e8f0;
+}
+
+.admin-info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-info-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e1;
+    flex-shrink: 0;
+}
+
+.admin-info-icon i {
+    font-size: 1.2rem;
+}
+
+.sidebar-admin-name {
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1.2;
+}
+
+.sidebar-admin-role {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    line-height: 1.3;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         display: none;
@@ -150,82 +201,158 @@
 
 <aside class="sidebar">
 
-    <div class="sidebar-title">
-        <div class="brand">台北GO了沒</div>
-        <div class="sub">Backend Management</div>
-    </div>
+    <div class="sidebar-content">
 
-    <div class="menu-title">後台總覽</div>
-
-    <a th:href="@{/backend/dashboard}"
-       th:classappend="${activePage == 'dashboard'} ? ' active'">
-        <i class="bi bi-grid-1x2-fill"></i>
-        <span>後台首頁</span>
-    </a>
-    
-    <details class="admin-menu">
-        <summary>
-		    <i class="bi bi-person-circle"></i>
-		    <span>個人設定</span>
-		    <i class="bi bi-chevron-down arrow"></i>
-		</summary>
-
-        <div class="submenu">
-            <a th:href="@{/backend/admin/profile/index}">
-                <i class="bi bi-person-lines-fill"></i>
-                <span>個人資訊</span>
-            </a>
-
-            <a th:href="@{/backend/admin/profile/resetPw}">
-                <i class="bi bi-key-fill"></i>
-                <span>更改密碼</span>
-            </a>
+        <div class="sidebar-title">
+            <div class="brand">台北GO了沒</div>
+            <div class="sub">Backend Management</div>
         </div>
-    </details>
 
-    <div class="menu-title">主要管理</div>
+        <div class="menu-title">後台總覽</div>
 
-    <a th:href="@{/backend/customer/list}"
-       th:classappend="${activePage == 'customer'} ? ' active'">
-        <i class="bi bi-people-fill"></i>
-        <span>會員管理</span>
-    </a>
+        <a th:href="@{/backend/dashboard}"
+           th:classappend="${activePage == 'dashboard'} ? ' active'">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>後台首頁</span>
+        </a>
 
-    <a href="#">
-        <i class="bi bi-window-sidebar"></i>
-        <span>網站管理</span>
-    </a>
+        <details class="admin-menu">
+            <summary>
+                <i class="bi bi-person-circle"></i>
+                <span>個人設定</span>
+                <i class="bi bi-chevron-down arrow"></i>
+            </summary>
 
-    <a href="#">
-        <i class="bi bi-ticket-perforated-fill"></i>
-        <span>商品管理</span>
-    </a>
+            <div class="submenu">
+                <a th:href="@{/backend/admin/profile/index}">
+                    <i class="bi bi-person-lines-fill"></i>
+                    <span>個人資訊</span>
+                </a>
+
+                <a th:href="@{/backend/admin/profile/resetPw}">
+                    <i class="bi bi-key-fill"></i>
+                    <span>更改密碼</span>
+                </a>
+            </div>
+        </details>
+
+        <div class="menu-title">主要管理</div>
+
+        <a th:href="@{/backend/customer/list}"
+           th:classappend="${activePage == 'customer'} ? ' active'">
+            <i class="bi bi-people-fill"></i>
+            <span>會員管理</span>
+        </a>
+
+        <details class="admin-menu">
+            <summary>
+                <i class="bi bi-window-sidebar"></i>
+                <span>網站管理</span>
+                <i class="bi bi-chevron-down arrow"></i>
+            </summary>
+
+            <div class="submenu">
+                <a href="#">
+                    <i class="bi bi-question-circle"></i>
+                    <span>FAQ管理</span>
+                </a>
+            </div>
+        </details>
+
+        <details class="admin-menu">
+            <summary>
+                <i class="bi bi-ticket-perforated-fill"></i>
+                <span>商品管理</span>
+                <i class="bi bi-chevron-down arrow"></i>
+            </summary>
+
+            <div class="submenu">
+                <a href="#">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <span>門票管理</span>
+                </a>
+
+                <a href="#">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>活動管理</span>
+                </a>
+
+                <a href="#">
+                    <i class="bi bi-tags"></i>
+                    <span>門票分類管理</span>
+                </a>
+
+                <a href="#">
+                    <i class="bi bi-upc-scan"></i>
+                    <span>門票序號</span>
+                </a>
+            </div>
+        </details>
+
+        <a href="#">
+            <i class="bi bi-receipt-cutoff"></i>
+            <span>訂單管理</span>
+        </a>
+
+        <a href="#">
+            <i class="bi bi-headset"></i>
+            <span>客服管理</span>
+        </a>
+
+        <div class="menu-title">系統管理</div>
+
+        <a th:href="@{/backend/admin/it/index}">
+            <i class="bi bi-shield-lock-fill"></i>
+            <span>管理員管理</span>
+        </a>
+
+        <a href="#"
+           onclick="document.getElementById('logout-form').submit(); return false;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>後台登出</span>
+        </a>
+
+        <form id="logout-form"
+              th:action="@{/backend/auth/logout}"
+              method="post"
+              style="display: none;">
+        </form>
+
+    </div>
 
     <a th:href="@{/backend/orders}"
       th:classappend="${activePage == 'orders'} ? ' active'">
         <i class="bi bi-receipt-cutoff"></i>
         <span>訂單管理</span>
     </a>
+    <div class="sidebar-admin-info"
+         th:if="${session.adminVO != null}">
 
-    <a href="#">
-        <i class="bi bi-headset"></i>
-        <span>客服管理</span>
-    </a>
+        <div class="admin-info-row">
 
-    <div class="menu-title">系統管理</div>
+            <div class="admin-info-icon">
+                <i class="bi bi-person-circle"></i>
+            </div>
 
-    <a th:href="@{/backend/admin/it/index}">
-        <i class="bi bi-shield-lock-fill"></i>
-        <span>管理員管理</span>
-    </a>
+            <div>
+                <div class="sidebar-admin-name"
+                     th:text="${session.adminVO.admName}">
+                    管理員名稱
+                </div>
 
+                <div class="sidebar-admin-role">
+                    <span th:each="perVO, iterStat : ${session.adminVO.admPerVO}">
+                        <span th:text="${perVO.admfuncVO.funcName}">
+                            權限名稱
+                        </span>
+                        <span th:if="${!iterStat.last}">、</span>
+                    </span>
+                </div>
+            </div>
 
-    <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">
-        <i class="bi bi-box-arrow-right"></i>
-        <span>後台登出</span>
-    </a>
+        </div>
 
-    <form id="logout-form" th:action="@{/backend/auth/logout}" method="post" style="display: none;"></form>
+    </div>
 
 </aside>
 

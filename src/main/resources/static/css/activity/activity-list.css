@@ -194,6 +194,12 @@ body {
     background-color: #e2e8f0;
     background-size: cover;
     background-position: center;
+    transition: transform 0.5s ease; /* 🔥 加入平滑縮放過渡 */
+}
+
+/* 🔥 滑鼠移入卡片時，裡面的圖片容器會微微放大 (配合 overflow: hidden 完美呈現) */
+.activity-card:hover .card-img-placeholder {
+    transform: scale(1.05);
 }
 
 .card-content {
@@ -242,4 +248,25 @@ body {
     border-radius: 4px;
     font-size: 12px;
     font-weight: bold;
+}
+
+/* ==========================================
+   5. 主題區塊模式 (首頁三列: 最佳優惠 / 懶得規劃)
+========================================== */
+.theme-section .activity-grid {
+    /* 🔥 強制一排只顯示 3 張卡片 */
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* 響應式處理：平板變 2 張，手機變 1 張 */
+@media (max-width: 1024px) {
+    .theme-section .activity-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+@media (max-width: 768px) {
+    .theme-section .activity-grid { 
+        grid-template-columns: repeat(1, 1fr); 
+    }
 }

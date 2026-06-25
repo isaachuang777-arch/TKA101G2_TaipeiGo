@@ -28,9 +28,11 @@ import com.taipeigo.customer.model.CustomerVO;
 
 import jakarta.servlet.http.HttpSession;
 
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 @Controller
-@RequestMapping("/frontend")
+@RequestMapping("/auth")
 public class FrontendAuthController {
 
     @Autowired
@@ -49,16 +51,16 @@ public class FrontendAuthController {
     private String mailPassword;
     
     // 顯示前台會員登入頁
-    // 網址：GET /frontend/auth/login
+    // 網址：GET /auth/login
     // 對應：templates/frontend/auth/login.html
-    @GetMapping("/auth/login")
+    @GetMapping("/login")
     public String showLoginPage() {
         return "frontend/auth/login";
     }
 
     // 處理前台會員登入
-    // 網址：POST /frontend/auth/login
-    @PostMapping("/auth/login")
+    // 網址：POST /auth/login
+    @PostMapping("/login")
     public String login(@RequestParam("custAccount") String custAccount,
                         @RequestParam("custPassword") String custPassword,
                         HttpSession session,
@@ -92,22 +94,29 @@ public class FrontendAuthController {
         }
 
         // 登入成功，把會員資料存進 Session
-        // 之後訂單、票券、收藏都可以用 loginCustomer 取得目前登入會員
         session.setAttribute("loginCustomer", customer);
         
      // 同步未登入購物車到 Redis
         cartService.mergeTempCart(session);
 
-        // 登入成功後回前台首頁
+        // 如果原本是被 Filter 擋下來的頁面，登入後導回原頁
+        String frontendReUrl = (String) session.getAttribute("frontendReUrl");
+
+        if (frontendReUrl != null) {
+            session.removeAttribute("frontendReUrl");
+            return "redirect:" + frontendReUrl;
+        }
+
+        // 沒有原頁就回前台首頁
         return "redirect:/";
     }
     
 	// 顯示註冊頁面
 	// 使用 GET 請求進入註冊頁
 	// 並提供 CustomerVO 給表單綁定
-    @GetMapping("/auth/register")
+    @GetMapping("/register")
     public String showRegisterPage(Model model) {
-
+    	
         model.addAttribute("customerVO", new CustomerVO());
 
         return "frontend/auth/register";
@@ -115,9 +124,16 @@ public class FrontendAuthController {
     
 	// 接收會員註冊資料
 	// 註冊後預設為未啟用帳號，並產生 Email 驗證 token 存入 Redis
-	@PostMapping("/auth/register")
-	public String register(CustomerVO customerVO, Model model) {
-
+	@PostMapping("/register")
+	public String register(@Valid CustomerVO customerVO, BindingResult result, Model model) {
+		
+		System.out.println("custStatus = " + customerVO.getCustStatus());
+		
+		// 先檢查 VO 驗證
+		if(result.hasErrors()) {
+	        return "frontend/auth/register";
+	    }
+		
 		// 帳號重複檢查
 		if (customerService.isAccountExist(customerVO.getCustAccount())) {
 			model.addAttribute("errorMsg", "此帳號已被使用");
@@ -147,7 +163,7 @@ public class FrontendAuthController {
 		stringRedisTemplate.opsForValue().set("verify:" + token, customerVO.getCustId().toString(), 30,
 				TimeUnit.MINUTES);
 
-		String verifyUrl = "http://localhost:8080/frontend/auth/verify?token=" + token;
+		String verifyUrl = "http://localhost:8080/auth/verify?token=" + token;
 
 		sendVerifyEmail(customerVO.getCustEmail(), verifyUrl);
 
@@ -158,8 +174,8 @@ public class FrontendAuthController {
 	}
 	
 	// Email 驗證
-	// 網址：GET /frontend/auth/verify?token=xxxx
-	@GetMapping("/auth/verify")
+	// 網址：GET /auth/verify?token=xxxx
+	@GetMapping("/verify")
 	public String verifyEmail(@RequestParam("token") String token, Model model) {
 
 	    String custId = stringRedisTemplate.opsForValue().get("verify:" + token);
@@ -187,8 +203,8 @@ public class FrontendAuthController {
 	
 
     // 前台會員登出
-    // 網址：GET /frontend/auth/logout
-    @GetMapping("/auth/logout")
+    // 網址：GET /auth/logout
+    @GetMapping("/logout")
     public String logout(HttpSession session) {
 
         // 移除登入狀態

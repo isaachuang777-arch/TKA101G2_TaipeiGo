@@ -3,15 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <title>會員註冊</title>
-<p th:if="${errorMsg}" th:text="${errorMsg}" style="color:red;"></p>
 </head>
 <body>
 
 <h1>會員註冊</h1>
 
-<form th:action="@{/frontend/auth/register}"
+<p th:if="${errorMsg}" th:text="${errorMsg}" style="color:red;"></p>
+
+<form th:action="@{/auth/register}"
       th:object="${customerVO}"
       method="post">
+      
+    <div th:if="${#fields.hasAnyErrors()}" style="color:red">
+	    <ul>
+	        <li th:each="err : ${#fields.errors('*')}"
+	            th:text="${err}">
+	        </li>
+	    </ul>
+	</div>
 
     <div>
         <label>姓名：</label>

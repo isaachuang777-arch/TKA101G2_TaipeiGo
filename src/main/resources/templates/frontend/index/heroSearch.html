@@ -3,40 +3,37 @@
 
 <body>
 
-<section th:fragment="heroSearch">
+    <section th:fragment="heroSearch">
 
-    <section class="hero">
+        <section class="hero">
 
-        <div class="overlay"></div>
+            <div class="overlay"></div>
 
-        <div class="hero-content">
+            <div class="hero-content">
 
-            <h1 class="hero-title">
-                探索你的台北
-            </h1>
+                <h1 class="hero-title">
+                    探索你的台北
+                </h1>
 
-            <p class="hero-subtitle">
-                訂門票、找行程，一站搞定！深度台北旅行就要從 台北GO了沒 開始！
-            </p>
+                <p class="hero-subtitle">
+                    訂門票、找行程，一站搞定！深度台北旅行就要從 台北GO了沒 開始！
+                </p>
 
-            <div class="search-box">
+                <form class="search-box" th:action="@{/search}" method="GET">
 
-                <input
-                    type="text"
-                    class="search-input"
-                    placeholder="臺北市立動物園 TAIPEI ZOO">
+                    <input type="text" name="keyword" class="search-input" placeholder="臺北市立動物園 TAIPEI ZOO">
 
-                <button class="search-btn">
-                    搜尋
-                </button>
+                    <button type="submit" class="search-btn">
+                        搜尋
+                    </button>
 
             </div>
 
-        </div>
+            </div>
+
+        </section>
 
     </section>
-
-</section>
 
 </body>
 

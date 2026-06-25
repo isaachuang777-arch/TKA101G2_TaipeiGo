@@ -1,79 +1,220 @@
 package com.taipeigo.customer.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.taipeigo.customer.model.CustomerVO;
+import com.taipeigo.myticket.model.MyTicketService;
+import com.taipeigo.ticket.model.TicketSerialVO;
 
 import jakarta.servlet.http.HttpSession;
-import org.springframework.ui.Model;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.taipeigo.customer.model.CustomerService;
+import java.time.LocalDate;
+
 
 @Controller
-@RequestMapping("/frontend/customer")
+@RequestMapping("/customer")
 public class FrontendCustomerController {
 
-    @GetMapping("/center")
-    public String center(HttpSession session, Model model) {
-
-        CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
-        
-	    // 目前先在 Controller 驗證是否登入
-	    // 避免使用者直接輸入網址進入會員中心
-	    // 後續若改由 FrontendLoginFilter 統一驗證，可移除此段
-        if (loginCustomer == null) {
-            return "redirect:/frontend/auth/login";
-        }
-        
-        // 將登入會員資料傳給 HTML
-        model.addAttribute("loginCustomer", loginCustomer);
-
-        return "frontend/customer/center";
-    }
+    @Autowired
+    private MyTicketService myTicketService;
     
-    @GetMapping("/profile")
-    public String profile(HttpSession session, Model model) {
+    @Autowired
+    private CustomerService customerService;
 
+    @Value("${taipeigo.upload.base-dir}")
+    private String uploadBaseDir;
+
+    @ModelAttribute
+    public void addLoginCustomer(HttpSession session, Model model) {
         CustomerVO loginCustomer =
                 (CustomerVO) session.getAttribute("loginCustomer");
 
-        if (loginCustomer == null) {
-            return "redirect:/frontend/auth/login";
-        }
-
         model.addAttribute("loginCustomer", loginCustomer);
+    }
 
+    @GetMapping("/center")
+    public String center() {
+        return "frontend/customer/center";
+    }
+
+    @GetMapping("/profile")
+    public String profile() {
         return "frontend/customer/profile";
     }
-    
+
     @GetMapping("/tickets")
     public String tickets(HttpSession session, Model model) {
 
         CustomerVO loginCustomer =
                 (CustomerVO) session.getAttribute("loginCustomer");
 
-        if (loginCustomer == null) {
-            return "redirect:/frontend/auth/login";
-        }
+        System.out.println("目前登入會員ID = " + loginCustomer.getCustId());
 
-        model.addAttribute("loginCustomer", loginCustomer);
+        List<TicketSerialVO> myTickets =
+                myTicketService.getMyTickets(loginCustomer.getCustId());
+
+        System.out.println("查到票券數量 = " + myTickets.size());
+
+        model.addAttribute("myTickets", myTickets);
+        model.addAttribute("activePage", "tickets");
 
         return "frontend/customer/tickets";
     }
-    
+
     @GetMapping("/password")
-    public String password(HttpSession session, Model model) {
+    public String password() {
+        return "frontend/customer/password";
+    }
+    
+    @PostMapping("/updateAvatar")
+    public String updateAvatar(
+            @RequestParam("avatarFile") MultipartFile avatarFile,
+            HttpSession session) {
 
         CustomerVO loginCustomer =
                 (CustomerVO) session.getAttribute("loginCustomer");
 
         if (loginCustomer == null) {
-            return "redirect:/frontend/auth/login";
+            return "redirect:/auth/login";
         }
 
-        model.addAttribute("loginCustomer", loginCustomer);
+        if (avatarFile == null || avatarFile.isEmpty()) {
+            return "redirect:/customer/profile";
+        }
 
-        return "frontend/customer/password";
+        try {
+            CustomerVO db =
+                    customerService.getOneCustomer(loginCustomer.getCustId());
+
+            String originalFileName = avatarFile.getOriginalFilename();
+            String extension = "";
+
+            if (originalFileName != null && originalFileName.contains(".")) {
+                extension = originalFileName
+                        .substring(originalFileName.lastIndexOf("."))
+                        .toLowerCase();
+            }
+
+            // 簡單限制圖片格式
+            if (!extension.equals(".jpg")
+                    && !extension.equals(".jpeg")
+                    && !extension.equals(".png")
+                    && !extension.equals(".webp")) {
+                return "redirect:/customer/profile";
+            }
+
+            String fileName = "customer_" + db.getCustId() + extension;
+
+            Path uploadPath = Paths.get(uploadBaseDir, "customer");
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(fileName);
+
+            Files.copy(
+                    avatarFile.getInputStream(),
+                    filePath,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
+            db.setCustImg("customer/" + fileName);
+
+            customerService.updateCustomer(db);
+
+            session.setAttribute("loginCustomer", db);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/customer/profile";
+        }
+
+        return "redirect:/customer/profile";
     }
     
+    @PostMapping("/updateProfile")
+    public String updateProfile(
+            @RequestParam String custName,
+            @RequestParam String custTel,
+            @RequestParam String custSex,
+            @RequestParam String custBirthday,
+            @RequestParam(required = false) String custAddress,
+            HttpSession session,
+            Model model) {
+
+        CustomerVO loginCustomer =
+                (CustomerVO) session.getAttribute("loginCustomer");
+
+        if (loginCustomer == null) {
+            return "redirect:/auth/login";
+        }
+        
+        if (custName == null || custName.trim().isEmpty()) {
+            model.addAttribute("errorMessage", "姓名不可空白");
+            return "frontend/customer/profile";
+        }
+
+        if (custTel == null || !custTel.matches("^09[0-9]{8}$")) {
+            model.addAttribute("errorMessage", "手機號碼需為 09 開頭的 10 碼數字");
+            return "frontend/customer/profile";
+        }
+
+        if (custSex == null || !custSex.matches("^[mMfF]$")) {
+            model.addAttribute("errorMessage", "性別資料格式錯誤");
+            return "frontend/customer/profile";
+        }
+
+        try {
+
+            // 從資料庫抓最新資料
+            CustomerVO db =
+                    customerService.getOneCustomer(loginCustomer.getCustId());
+
+            // 更新允許修改欄位
+            db.setCustName(custName);
+            db.setCustTel(custTel);
+            db.setCustSex(custSex);
+            db.setCustAddress(custAddress);
+
+            if (custBirthday != null && !custBirthday.isBlank()) {
+            		db.setCustBirthday(LocalDate.parse(custBirthday));
+            }
+
+            customerService.updateCustomer(db);
+
+            // 更新 Session
+            session.setAttribute("loginCustomer", db);
+
+            model.addAttribute("successMessage", "個人資料更新成功");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            model.addAttribute(
+                    "errorMessage",
+                    "個人資料更新失敗");
+        }
+
+        return "frontend/customer/profile";
+    }
 }

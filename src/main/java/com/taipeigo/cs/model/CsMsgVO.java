@@ -25,7 +25,7 @@ public class CsMsgVO implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // AI
 	@Column(name = "MSG_ID", updatable = false)
-	private Integer msgID;
+	private Integer msgId;
 	
 	// ===========CsVO.csId 的FK
 	@ManyToOne
@@ -70,11 +70,11 @@ public class CsMsgVO implements Serializable {
     private java.sql.Timestamp createdAt;
 
 	public Integer getMsgID() {
-		return msgID;
+		return msgId;
 	}
 
 	public void setMsgID(Integer msgID) {
-		this.msgID = msgID;
+		this.msgId = msgID;
 	}
 
 	public CsVO getCsVO() {

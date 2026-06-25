@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.taipeigo.activity.model.ActivityCateService;
 import com.taipeigo.activity.model.ActivityCateVO;
+import com.taipeigo.activity.model.ActivitySectionDTO;
 import com.taipeigo.activity.model.ActivityService;
 import com.taipeigo.activity.model.ActivityVO;
 import com.taipeigo.product.dto.CartItemDTO;
@@ -19,11 +21,13 @@ import com.taipeigo.product.dto.CartItemDTO;
 public class ActivityController {
 
     private final ActivityService activityService;
+    private final ActivityCateService activityCateService;
 
     @Autowired
-    public ActivityController(ActivityService activityService) {
+    public ActivityController(ActivityService activityService, ActivityCateService activityCateService) {
 
         this.activityService = activityService;
+        this.activityCateService = activityCateService;
 
     }
 
@@ -58,6 +62,12 @@ public class ActivityController {
     public List<ActivityCateVO> getAllCategories() {
 
         return activityService.getAllActiveCategories();
+    }
+
+    @GetMapping("/home-sections")
+    public List<ActivitySectionDTO> getHomeSections() {
+
+        return activityCateService.getHomeSections();
     }
 
 }

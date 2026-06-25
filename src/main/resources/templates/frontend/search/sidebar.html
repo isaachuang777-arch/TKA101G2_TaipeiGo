@@ -1,0 +1,55 @@
+<section th:fragment="sidebar" class="search-sidebar">
+
+    <div class="filter-panel">
+
+        <!-- 0. 關鍵字搜尋 -->
+        <div class="filter-group">
+            <h4 class="group-title">想去哪裡?</h4>
+            <div class="sidebar-search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="sidebarSearchInput" placeholder="台北市立動物園" th:value="${param.keyword}">
+            </div>
+        </div>
+
+        <hr class="filter-divider">
+
+        <!-- 2. 價格區間篩選 (完美復刻 Klook) -->
+        <div class="filter-group">
+            <h4 class="group-title">價格範圍</h4>
+            <!-- 預留給 noUiSlider 雙拉桿的漂亮容器 -->
+            <div id="priceSlider" class="mt-3 mb-3"></div>
+
+            <div class="price-inputs">
+                <div class="price-input-box">
+                    <span class="currency">NT$</span>
+                    <input type="number" id="minPrice" placeholder="0" min="0">
+                </div>
+                <span class="price-dash">-</span>
+                <div class="price-input-box">
+                    <span class="currency">NT$</span>
+                    <input type="number" id="maxPrice" placeholder="10000" min="0">
+                </div>
+            </div>
+        </div>
+
+        <hr class="filter-divider">
+
+        <!-- 3. 標籤複選 (動態從資料庫撈取 TicketCategoryVO) -->
+        <div class="filter-group">
+            <h4 class="group-title">主題探索</h4>
+
+            <div class="tags-wrapper">
+                <th:block th:each="category : ${ticketCategoryList}">
+                    <label class="checkbox-container">
+                        <input type="checkbox" th:value="${category.ticketCategoryId}" class="tag-checkbox">
+                        <span class="checkmark" th:text="${category.ticketCategoryName == '無障礙旅遊推薦景點' ? '無障礙旅遊' : category.ticketCategoryName}"></span>
+                    </label>
+                </th:block>
+            </div>
+        </div>
+
+        <button id="applyFilterBtn" class="btn-apply-filter mt-4">套用篩選</button>
+
+    </div>
+
+</section>

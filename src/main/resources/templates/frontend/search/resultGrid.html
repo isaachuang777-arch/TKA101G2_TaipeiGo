@@ -1,0 +1,47 @@
+<section th:fragment="resultGrid" class="search-result-grid">
+
+    <!-- 頂部分類頁籤 (Klook Style) -->
+    <div class="result-tabs">
+        <div class="tab-item active" data-type="ALL">
+            <i class="fa-solid fa-border-all"></i> 全部
+        </div>
+        <div class="tab-item" data-type="TICKET">
+            <i class="fa-solid fa-ticket"></i> 景點門票
+        </div>
+        <div class="tab-item" data-type="ACTIVITY">
+            <i class="fa-solid fa-person-hiking"></i> 一日活動
+        </div>
+    </div>
+
+    <!-- 功能列：排序方式 -->
+    <div class="result-toolbar">
+        <div class="sort-box">
+            <span class="sort-label">排序方式</span>
+            <select id="sortSelect" class="sort-select">
+                <option value="priceAsc">價格：由低到高</option>
+                <option value="priceDesc">價格：由高到低</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 🌟 重頭戲：JS 動態渲染小卡的目標容器 -->
+    <div id="searchResultsContainer" class="cards-container">
+
+        <!-- 這是「骨架屏 (Skeleton)」：在資料還沒載入完成時，顯示閃爍的灰色方塊，提升質感 -->
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+
+    </div>
+
+    <!-- 防呆：如果找不到結果時顯示的漂亮提示區塊 (預設用 style="display: none;" 隱藏) -->
+    <div id="noResultsBlock" class="no-results-block" style="display: none;">
+        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486754.png" alt="No Results" class="no-results-icon">
+        <h3>找不到符合的體驗</h3>
+        <p>請嘗試更換關鍵字，或是放寬左側的篩選條件。</p>
+    </div>
+
+</section>

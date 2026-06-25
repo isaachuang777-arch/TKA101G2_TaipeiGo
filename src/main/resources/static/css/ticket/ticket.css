@@ -1,32 +1,96 @@
+body {
+    background-color: #f5f7fa;
+    font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+    margin: 0;
+}
 
 .ticket-container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #333333;
+    margin: 40px auto;
+    padding: 0 20px;
+    padding-bottom: 80px;
 }
 
 /* 門票分類 */
 .category-section {
+    width: 100%;
     margin-bottom: 40px;
-    border-bottom: 1px solid #f2f2f2;
-    padding-bottom: 15px;
 }
 
-.category-list {
+/* 分類標題 */
+.category-section-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.category-section-title i {
+    color: #ff5722; 
+    font-size: 30px;
+}
+
+.category-carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.category-scroll-container {
     display: flex;
     gap: 16px;
     overflow-x: auto;
-    white-space: nowrap;
     padding-top: 10px;
     padding-bottom: 10px;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    width: 100%;
 }
-
-/* 隱藏橫向滾動條，讓畫面更乾淨 */
-.category-list::-webkit-scrollbar {
+.category-scroll-container::-webkit-scrollbar {
     display: none;
 }
+
+/* 左右滑動按鈕 (垂直置中對齊) */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: 1px solid #f0f0f0;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out; 
+}
+
+.category-carousel-wrapper:hover .scroll-btn:not(.bound-hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.scroll-btn:hover {
+    background: #f8f9fa;
+    color: #333;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    transform: translateY(-50%) scale(1.05);
+}
+.left-btn { left: -18px; }
+.right-btn { right: -18px; }
+
 
 .category-item {
     display: flex;
@@ -56,7 +120,6 @@
     background-color: #fff9f5;
 }
 
-/* 門票分類名稱太長改由 ... 顯示 */
 .category-name {
     font-size: 13px;
     font-weight: 500;
@@ -66,12 +129,6 @@
     overflow: hidden;     
     text-overflow: ellipsis;
 }
-
-.category-icon {
-    font-size: 24px;
-    margin-bottom: 6px;
-}
-
 
 .category-item.active .category-name {
     color: #ff5b00;
@@ -84,61 +141,45 @@
 }
 
 .section-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    color: #222222;
-    margin-bottom: 24px;
+    color: #2d3748;
+    margin: 0 0 20px 0;
 }
 
 .ticket-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-
-/* 螢幕太小時的破版處理 */
-@media (max-width: 1024px) {
-    .ticket-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 768px) {
-    .ticket-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-    .ticket-grid { grid-template-columns: repeat(1, 1fr); }
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
 }
 
 /* 門票卡片 */
 .ticket-card {
-    background-color: #ffffff;
-    border-radius: 16px;
-    border: 1px solid #ebebeb;
+    background: white;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .ticket-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    transform: translateY(-4px);
-
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 /* 圖片區塊 */
 .ticket-image-box {
     position: relative;
     width: 100%;
-    padding-top: 66.66%;
-    background-color: #f5f5f5;
+    height: 180px;
+    background-color: #e2e8f0;
     overflow: hidden;
 }
 
 .ticket-image-box img {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -149,27 +190,9 @@
     transform: scale(1.05); 
 }
 
-
-.status-tag {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #ff5b00; 
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 4px;
-    z-index: 1;
-}
-
-.status-tag.promo {
-    background-color: #ff3b30;
-}
-
 /* 文字訊息區塊 */
 .ticket-info {
-    padding: 14px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -177,48 +200,63 @@
 
 /* 景點標題 */
 .ticket-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #222222;
-    line-height: 1.4;
+    font-size: 16px;
+    font-weight: bold;
     margin: 0 0 8px 0;
-    /* 超出兩行自動省略 */
+    line-height: 1.4;
+    color: #2d3748;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 42px; 
+    height: 44px;
 }
 
+/* 門票簡介描述*/
+.ticket-desc {
+    font-size: 13px;
+    color: #718096;
+    margin: 0 0 16px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 36px;
+}
 
-/* 價格與提示區塊 */
-.ticket-price-box {
+.ticket-footer {
     margin-top: auto;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
-.text-hint {
-    font-size: 11px;
-    color: #8c8c8c;
+.ticket-tag {
+    background: #fff4ed; 
+    color: #ff5b00; 
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.ticket-price-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .price-wrapper {
     display: flex;
-    align-items: baseline;
-    justify-content: flex-end; 
-    gap: 6px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-end;
 }
-
 
 .original-price {
     font-size: 12px;
     color: #999999;
     text-decoration: line-through;
 }
-
 
 .current-price {
     font-size: 12px;
@@ -228,7 +266,7 @@
 .current-price strong {
     font-size: 18px;
     color: #ff5b00; 
-    font-weight: 700;
+    font-weight: 800;
 }
 
 /* 無圖片文字垂直水平置中 */
