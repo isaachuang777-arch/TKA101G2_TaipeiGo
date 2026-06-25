@@ -20,9 +20,14 @@
         body {
             margin: 0;
             padding: 0;
+            padding-left: 260px; /* 避開左側 260px 的 Sidebar */
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            body { padding-left: 0; }
         }
 
         .container {
