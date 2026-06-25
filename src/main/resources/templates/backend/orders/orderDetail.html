@@ -3,115 +3,249 @@
 <head>
 <meta charset="UTF-8">
 <title>訂單明細</title>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
+    /* 1. 導入同學的風格變數與字體 */
+    :root {
+        --primary: #0d6efd;
+        --primary-dark: #0a58ca;
+        --sidebar-bg: #1a2236;
+        --sidebar-width: 240px;
+        --success: #16a34a;
+        --success-dark: #14532d;
+    }
 
-body{
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f8f9fa;
-}
+    body {
+        font-family: 'Noto Sans TC', sans-serif;
+        background: #f0f4f8;
+        margin: 0;
+        color: #1e293b;
+    }
 
-.container{
-    max-width: 1100px;
-    margin: 0 auto;
-}
+    /* 2. 容器與標題優化（配合側邊欄，模擬同學的 Topbar 精緻感） */
+    .container {
+        max-width: 1100px;
+        margin-left: 260px !important; /* 對齊上一頁與側邊欄的推推 */
+        padding: 0 32px 32px 32px;
+    }
 
-h2{
-    margin-bottom: 20px;
-}
+    h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a2236;
+        padding: 20px 0;
+        margin: 0 0 24px 0;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* 幫大標題加個精緻圖示感（非必要，但能完美貼合同學風格） */
+    h2::before {
+        content: "\i"; /* 這裡利用 CSS 模擬同學的 bi-receipt 風格 */
+        font-family: "bootstrap-icons";
+        content: "\F513"; 
+        color: var(--primary);
+    }
 
-.card{
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
+    /* 3. 更新成功訊息美化（繼承同學的 valid-feedback 質感） */
+    .success-msg {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 22px;
+        font-size: 0.85rem;
+        color: #166534;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .success-msg::before {
+        font-family: "bootstrap-icons";
+        content: "\F26B"; /* 勾勾圖示 */
+        font-weight: bold;
+    }
 
-.info-row{
-    margin-bottom: 15px;
-}
+    /* 4. 訂單基本資料卡片（完美套用同學的 form-card 風格） */
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        border: 1px solid #e8edf2;
+        padding: 28px;
+        margin-bottom: 24px;
+    }
 
-.info-label{
-    display:inline-block;
-    width:120px;
-    font-weight:bold;
-}
+    .info-row {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        font-size: 0.88rem;
+        color: #334155;
+    }
 
-select{
-    width: 200px;
-    padding: 8px;
-}
+    .info-label {
+        display: inline-block;
+        width: 120px;
+        font-weight: 600;
+        color: #64748b; /* 灰字標籤，凸顯後方資料 */
+    }
 
-table{
-    width:100%;
-    border-collapse: collapse;
-    background:white;
-}
+    /* 關鍵：下拉選單（套用同學的 form-select 圓角與聚焦藍影） */
+    select {
+        width: 220px;
+        border-radius: 9px;
+        border: 1.5px solid #e2e8f0;
+        font-size: 0.88rem;
+        padding: 8px 13px;
+        color: #1e293b;
+        transition: border .18s, box-shadow .18s;
+        background: #fff;
+        outline: none;
+    }
 
-th,td{
-    border:1px solid #ddd;
-    padding:10px;
-    text-align:center;
-}
+    select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+    }
 
-th{
-    background:#f5f5f5;
-}
+    /* 5. 按鈕組美化（對齊同學的 btn-submit 與 btn-cancel 質感） */
+    .button-group {
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        gap: 12px;
+    }
 
-.btn{
-    display:inline-block;
-    padding:8px 16px;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    text-decoration:none;
-    color:white;
-}
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 24px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-decoration: none;
+        border-radius: 10px;
+        border: none;
+        transition: background .2s, transform .1s;
+        cursor: pointer;
+    }
 
-.btn-save{
-    background:#198754;
-}
+    .btn-save {
+        background-color: var(--primary); /* 改為系統主色藍，更具整合感 */
+        color: white !important;
+    }
+    .btn-save:hover {
+        background-color: var(--primary-dark);
+    }
 
-.btn-save:hover{
-    background:#157347;
-}
+    .btn-back {
+        background: #fff;
+        color: #64748b !important;
+        border: 1.5px solid #e2e8f0;
+        font-weight: 600;
+    }
+    .btn-back:hover {
+        border-color: #94a3b8;
+        color: #374151 !important;
+        background: #fff;
+    }
 
-.btn-back{
-    background:#6c757d;
-}
+    /* 6. 商品明細小標題（套用同學的 section-title 風格） */
+    .order-section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #94a3b8;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+        margin-top: 32px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .order-section-title::before {
+        font-family: "bootstrap-icons";
+        content: "\F1A4"; /* 購物籃/箱子圖示 */
+        color: var(--primary);
+        font-size: 0.9rem;
+    }
 
-.btn-back:hover{
-    background:#5c636a;
-}
+    /* 7. 高質感數據明細表格 */
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        margin-top: 12px;
+    }
 
-.button-group{
-    margin-top:20px;
-}
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+        vertical-align: middle;
+    }
 
-.success-msg{
-    color:#198754;
-    font-weight:bold;
-    margin-bottom:15px;
-}
+    th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.82rem;
+        border-bottom: 1.5px solid #e2e8f0;
+    }
 
-.order-section-title{
-    margin-top:30px;
-    margin-bottom:15px;
-}
+    td {
+        font-size: 0.88rem;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
 
+    /* 表格內部特殊強調：如明細編號與小計 */
+    td:first-child {
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    td:nth-child(4) {
+        font-weight: 600;
+        color: #22c55e; /* 小計亮綠色顯示 */
+    }
+
+    tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* 響應式微調 */
+    @media (max-width: 768px) {
+        .container { margin-left: 0 !important; padding: 16px; }
+    }
 </style>
 
 </head>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <body>
 
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 <div class="container">
 
     <h2>訂單明細</h2>
     <div th:if="${param.success}" class="success-msg">更新成功</div>
     <div th:if="${not #lists.isEmpty(details)}">
-        <form th:action="@{/orders/update_status}" method="post">
+        <form th:action="@{/backend/orders/update_status}" method="post">
             <input type="hidden"
                    name="orderId"
                    th:value="${details[0].ordersVO.orderId}">
@@ -165,7 +299,7 @@ th{
 
                 <div class="button-group">
                     <button type="submit"class="btn btn-save">更新狀態</button>
-                    <a th:href="@{/orders}"class="btn btn-back">返回列表</a>
+                    <a th:href="@{/backend/orders}"class="btn btn-back">返回列表</a>
                 </div>
             </div>
         </form>

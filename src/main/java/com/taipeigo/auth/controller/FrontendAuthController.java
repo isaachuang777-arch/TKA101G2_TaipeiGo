@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.taipeigo.cart.model.CartService;
 import com.taipeigo.customer.model.CustomerService;
 import com.taipeigo.customer.model.CustomerVO;
 
@@ -34,6 +35,9 @@ public class FrontendAuthController {
 
     @Autowired
     private CustomerService customerService;
+    
+    @Autowired
+    private CartService cartService;
     
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -90,6 +94,9 @@ public class FrontendAuthController {
         // 登入成功，把會員資料存進 Session
         // 之後訂單、票券、收藏都可以用 loginCustomer 取得目前登入會員
         session.setAttribute("loginCustomer", customer);
+        
+     // 同步未登入購物車到 Redis
+        cartService.mergeTempCart(session);
 
         // 登入成功後回前台首頁
         return "redirect:/";
