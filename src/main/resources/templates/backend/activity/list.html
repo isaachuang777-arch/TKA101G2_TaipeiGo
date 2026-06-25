@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>活動管理列表 - TaipeiGo 後台</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" th:href="@{/css/activity/backend-list.css}">
+
+<style>
+/* 繼承 Dashboard 共用基礎樣式 */
+:root {
+    --primary: #0d6efd;
+}
+
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+}
+
+/* ========================================================= */
+/* 專屬側邊欄動畫覆蓋 (只在此頁面生效，不影響其他組員)           */
+/* ========================================================= */
+.sidebar {
+    width: 260px !important; /* 強制設定寬度 */
+    transform: translateX(calc(-100% + 15px)); /* 留 15px 觸發區 */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar:hover {
+    transform: translateX(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+}
+
+.main-wrap {
+    margin-left: 0 !important; /* 預設收合時，主內容區滿版 */
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.sidebar:hover ~ .main-wrap {
+    margin-left: 260px !important; /* 展開時推移 */
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s !important;
+}
+
+.sidebar::after {
+    content: '';
+    position: fixed;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 40px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    transition: opacity 0.3s;
+}
+
+.sidebar:hover::after {
+    opacity: 0;
+    transition: opacity 0.3s 0.5s;
+}
+/* ========================================================= */
+
+.main-wrap {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.topbar {
+    background: #fff;
+    padding: 14px 40px 14px 80px; /* 左側與 content-area 齊平 (80px) */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.topbar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a2236;
+}
+
+.content-area {
+    padding: 32px 40px 32px 80px; /* 加大左側的 padding，增加滑鼠的緩衝安全區 */
+    flex: 1;
+}
+
+/* 預覽連結特效 */
+.preview-active {
+    transition: color 0.2s;
+    cursor: pointer;
+}
+.preview-active:hover {
+    color: #0d6efd !important;
+}
+.preview-disabled {
+    cursor: not-allowed;
+    pointer-events: none; /* 徹底阻擋任何點擊事件 */
+}
+</style>
+</head>
+<body>
+
+    <!-- 載入共用 Sidebar -->
+    <th:block th:replace="~{backend/fragments/sidebar :: sidebar}"></th:block>
+
+    <div class="main-wrap">
+        
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-title">一日活動管理 <span>/ 列表</span></div>
+            <div class="admin-top-info">
+                <div class="admin-top-name">Admin</div>
+            </div>
+        </div>
+
+        <!-- 內容區 -->
+        <div class="content-area">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0 fw-bold">所有活動</h2>
+                <a th:href="@{/backend/activity/add}" class="btn btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> 新增活動
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- 左側：搜尋條件 (Filter) -->
+                <div class="col-lg-3">
+                    <div class="filter-card">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-funnel-fill text-primary me-2"></i>搜尋條件</h5>
+
+
+                        <form id ="searchForm" th:action="@{/backend/activity}" method="get">
+
+                            <!-- 用來記住第幾頁用的 (移除 name 屬性避免一般搜尋時送出) -->
+                            <input type="hidden" id="pageInput" th:value="${currentPage}">
+                            
+                            <!-- 活動編號 -->
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">活動編號</label>
+                                <input type="number" name="activityId" class="form-control" placeholder="請輸入 ID" th:value="${param.activityId}">
+                            </div>
+
+                            <!-- 關鍵字 -->
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">關鍵字</label>
+                                <input type="text" name="keyword" class="form-control" placeholder="活動名稱或描述" th:value="${param.keyword}">
+                            </div>
+
+                            <!-- 上下架狀態 -->
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">上架狀態</label>
+                                <select name="activityStatus" class="form-select">
+                                    <option value="" th:selected="${param.activityStatus == null || param.activityStatus.isEmpty()}">全部</option>
+                                    <option value="1" th:selected="${param.activityStatus != null && param.activityStatus[0] == '1'}">已上架</option>
+                                    <option value="0" th:selected="${param.activityStatus != null && param.activityStatus[0] == '0'}">已下架</option>
+                                </select>
+                            </div>
+
+                            <!-- 活動主題 -->
+                            <div class="mb-4">
+                                <label class="form-label text-muted small fw-bold">主題分類</label>
+                                <select name="cateId" class="form-select">
+                                    <option value="">所有分類</option>
+                                    <!-- 透過 ModelAttribute 動態取得分類 -->
+                                    <th:block th:each="cate : ${activityCateList}">
+                                        <option th:value="${cate.activityCateId}" 
+                                                th:text="${cate.cateName}"
+                                                th:selected="${param.cateId != null && param.cateId[0] == cate.activityCateId.toString()}">
+                                        </option>
+                                    </th:block>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">套用搜尋</button>
+                            <a th:href="@{/backend/activity}" class="btn btn-light w-100 mt-2 text-muted">清除條件</a>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 右側：資料列表 -->
+                <div class="col-lg-9">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-vertical-center mb-0">
+                                    <thead class="table-light text-muted">
+                                        <tr>
+                                            <th width="80" class="ps-4">圖片</th>
+                                            <th>ID / 名稱</th>
+                                            <th width="120">價格</th>
+                                            <th width="150" class="text-center">狀態</th>
+                                            <th width="100" class="text-center pe-4">修改</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <th:block th:each="activity : ${activityList}">
+                                            <tr>
+                                                <td class="ps-4">
+                                                    <!-- 縮圖 -->
+                                                    <img th:if="${not #lists.isEmpty(activity.activityImage)}" 
+                                                         th:src="${activity.activityImage[0].activityImageSrc}" 
+                                                         class="activity-thumbnail" alt="thumbnail">
+                                                    <img th:if="${#lists.isEmpty(activity.activityImage)}" 
+                                                         th:src="@{/images/activity/default.png}" 
+                                                         class="activity-thumbnail" alt="default">
+                                                </td>
+                                                <td style="max-width: 250px;">
+                                                    <div class="text-muted small">#<span th:text="${activity.activityId}"></span></div>
+                                                    <a href="#" 
+                                                       class="fw-bold text-truncate d-block text-decoration-none activity-name-link" 
+                                                       th:classappend="${activity.activityStatus == 1} ? 'text-dark preview-active' : 'text-muted preview-disabled'"
+                                                       th:data-id="${activity.activityId}"
+                                                       th:onclick="${activity.activityStatus == 1} ? |openPreviewModal(${activity.activityId}); return false;| : 'return false;'"
+                                                       th:title="${activity.activityName} + (${activity.activityStatus == 1} ? ' (點擊預覽前台畫面)' : ' (已下架無法預覽)')" 
+                                                       th:text="${activity.activityName}"></a>
+                                                </td>
+                                                <td>
+                                                    <div class="text-primary fw-bold">
+                                                        $ <span th:text="${activity.adultPrice}"></span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <!-- Switch 狀態切換與 Badge -->
+                                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                                        <!-- 純文字狀態 (無填色背景) -->
+                                                        <span th:id="'status-badge-' + ${activity.activityId}" 
+                                                              class="small me-1"
+                                                              th:classappend="${activity.activityStatus == 1} ? 'text-dark' : 'text-muted'"
+                                                              th:text="${activity.activityStatus == 1} ? '已上架' : '已下架'">
+                                                        </span>
+                                                        
+                                                        <!-- Switch 開關 -->
+                                                        <label class="status-switch m-0">
+                                                            <input type="checkbox" class="toggle-status-btn"
+                                                                   th:data-id="${activity.activityId}"
+                                                                   th:checked="${activity.activityStatus == 1}">
+                                                            <span class="status-slider"></span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <a th:href="@{/backend/activity/{id}/edit(id=${activity.activityId})}" 
+                                                       class="btn btn-light action-btn text-primary" 
+                                                       title="編輯">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                        
+                                        <!-- 空狀態 -->
+                                        <tr th:if="${#lists.isEmpty(activityList)}">
+                                            <td colspan="5" class="text-center py-5 text-muted">
+                                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                                找不到符合條件的活動
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- 分頁區塊 -->
+                            <div class="d-flex justify-content-start py-4 ps-4" th:if="${totalPage > 1}">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination custom-pagination mb-0">
+                                        
+                                        <!-- 上一頁 -->
+                                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)" 
+                                               th:onclick="${currentPage > 1} ? 'goToPage(' + (${currentPage} - 1) + ')' : ''">
+                                               <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        
+                                        <!-- 中間數字頁碼 -->
+                                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPage)}" 
+                                            th:classappend="${currentPage == i} ? 'active'">
+                                            <a class="page-link" href="javascript:void(0)" 
+                                               th:onclick="'goToPage(' + ${i} + ')'" 
+                                               th:text="${i}">1</a>
+                                        </li>
+                                        
+                                        <!-- 下一頁 -->
+                                        <li class="page-item" th:classappend="${currentPage == totalPage} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)" 
+                                               th:onclick="${currentPage < totalPage} ? 'goToPage(' + (${currentPage} + 1) + ')' : ''">
+                                               <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                        
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End row -->
+        </div>
+    </div>
+    <!-- 預覽前台畫面 Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header bg-dark text-white py-2">
+            <h5 class="modal-title fs-6 fw-bold"><i class="bi bi-eye me-2"></i>前台商品詳細頁預覽</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0" style="height: 80vh; background: #f8f9fa; overflow: hidden;">
+            <!-- iframe 載入前台頁面 (由 JS 動態塞入 src) -->
+            <iframe id="previewIframe" src="" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 核心 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/activity/backend-list.js}"></script>
+
+    <script>
+        // 打開 Modal 並載入 iframe
+        function openPreviewModal(activityId) {
+            document.getElementById('previewIframe').src = '/activity/detail?activityId=' + activityId + '&preview=true';
+            var myModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            myModal.show();
+        }
+
+        // 當 modal 關閉時清空 iframe，避免背景繼續消耗資源
+        document.getElementById('previewModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('previewIframe').src = '';
+        });
+    </script>
+
+    <script>
+        // 處理翻頁的函數
+        function goToPage(pageNumber) {
+            let pageInput = document.getElementById('pageInput');
+            
+            // 1. 把藏在 form 裡面的隱藏欄位值，改成目標頁碼
+            pageInput.value = pageNumber;
+            
+            // 2. 「只有在點擊分頁按鈕時」，動態賦予它 name="page" 讓它可以被送出去
+            pageInput.name = 'page';
+            
+            // 3. 直接送出整個搜尋表單 (保留所有搜尋條件)
+            document.getElementById('searchForm').submit();
+        }
+    </script>
+</body>
+</html>

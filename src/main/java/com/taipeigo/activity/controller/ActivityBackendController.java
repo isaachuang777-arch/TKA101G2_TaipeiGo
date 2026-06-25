@@ -3,6 +3,7 @@ package com.taipeigo.activity.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.taipeigo.activity.model.ActivityService;
@@ -21,7 +23,7 @@ import com.taipeigo.activity.model.ActivityVO;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/backend/activities")
+@RequestMapping("/backend/activity")
 public class ActivityBackendController {
 
     private final ActivityService activityService;
@@ -32,6 +34,12 @@ public class ActivityBackendController {
         this.activityService = activityService;
     }
 
+    // 讓所有此 Controller 的頁面都能拿到 activityCateList (為了左側搜尋欄下拉選單)
+    @ModelAttribute("activityCateList")
+    public List<com.taipeigo.activity.model.ActivityCateVO> getCategories() {
+        return activityService.getAllActiveCategories();
+    }
+
     // 萬用查詢列表
 
     @GetMapping
@@ -39,8 +47,20 @@ public class ActivityBackendController {
 
         List<ActivityVO> activityList = activityService.getBackendActivitiesByCompositeQuery(params);
 
-        model.addAttribute("activityList", activityList);
+        // 總頁數
+        int totalPage = activityService.getTotalPageByCompositeQuery(params);
 
+        //抓出算好的頁數 - 三元判斷 沒有的話就 1
+        int currentPage = params.containsKey("page") ? Integer.parseInt(params.get("page").get(0)) : 1;
+
+        // 包給HTML
+        model.addAttribute("activityList", activityList);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("currentPage", currentPage);
+
+        // 把前端的params在傳回去 避免換頁的時候消失
+        model.addAttribute("queryParams", params);
+        
         return "backend/activity/list";
 
     }
@@ -124,5 +144,26 @@ public class ActivityBackendController {
 
         return "redirect:/backend/activities";
     }
+
+
+    @PostMapping("/{id}/status")
+    @ResponseBody
+    public ResponseEntity<String> updateStatus(
+
+        @PathVariable("id") Integer id,
+        @RequestParam("status") Integer status ){
+
+            try{
+                
+                activityService.updateActivityStatus(id, status);
+                return ResponseEntity.ok("狀態更新成功");
+
+            } catch (Exception e){
+
+                return ResponseEntity.badRequest().body("狀態更新失敗: " + e.getMessage());
+                
+            }
+            
+        }
 
 }

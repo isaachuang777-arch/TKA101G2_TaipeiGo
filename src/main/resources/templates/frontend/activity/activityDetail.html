@@ -17,10 +17,18 @@
 
 <body>
 
-    <div th:replace="~{frontend/index/header :: header}"></div>
+    <!-- 正常模式：顯示 Header -->
+    <th:block th:if="${param.preview == null || param.preview[0] != 'true'}">
+        <div th:replace="~{frontend/index/header :: header}"></div>
+    </th:block>
 
-    <main class="ticket-detail-container">
+    <main class="ticket-detail-container" th:style="${param.preview != null && param.preview[0] == 'true'} ? 'margin-top: 0; padding-top: 20px;' : ''">
         
+        <!-- 後台預覽模式：頂部提示橫幅 -->
+        <div th:if="${param.preview != null && param.preview[0] == 'true'}" 
+             style="background-color: #1a2236; color: #fff; text-align: center; padding: 12px; font-weight: bold; position: sticky; top: 0; z-index: 9999; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <i class="fa-solid fa-eye"></i> 此為後台「一日活動」詳情參考畫面，購買與互動功能已停用
+        </div>
         <nav class="breadcrumb">
             <a th:href="@{/}">首頁</a> &gt; 
             <a th:href="@{/activity}">活動清單</a> &gt; 
@@ -57,8 +65,19 @@
 
         <hr>
 
-        <section class="options-section">
-            <h2>方案選擇</h2>
+        <section class="options-section" style="position: relative;">
+            
+            <!-- 預覽模式：全遮罩，阻擋所有選擇與輸入操作 -->
+            <div th:if="${param.preview != null && param.preview[0] == 'true'}" 
+                 style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.4); z-index: 10; cursor: not-allowed;">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 10px;">
+                <h2>方案選擇</h2>
+                <div style="color: #6c757d; font-size: 14px; font-weight: 500;">
+                    <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i> 部分活動因折扣關係，最少將酌收 30 元手續費
+                </div>
+            </div>
             
             <div class="date-selector-row">
                 <button type="button" class="date-btn active" onclick="selectQuickDate('tomorrow')" id="btnTomorrow">明日</button>
@@ -133,11 +152,22 @@
                     已選 <span id="totalTicketsCount" style="color: #ff5b00; font-size: 20px;">0</span> 張，
                     共 <span style="color: #ff5b00; font-size: 20px;">NT$ <span id="totalPriceAmount">0</span></span> 元
                 </div>
-                <div class="action-buttons-group" style="display: flex; gap: 12px; align-items: center;">
-                    <a href="#" id="addToCartBtn" class="btn-cart" onclick="return validateBooking(event)" 
-                       style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #fff; color: #ff5b00; border: 1px solid #ff5b00; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box;">加入購物車</a>
-                    <a href="#" id="bookingBtn" class="btn-booking" onclick="return validateBooking(event)" 
-                       style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #ff5b00; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box; border: 1px solid #ff5b00;">立即購買</a>
+                <div class="action-buttons-group" style="display: flex; gap: 12px; align-items: center; position: relative; z-index: 11;">
+                    <!-- 正常模式：可點擊的按鈕 -->
+                    <th:block th:if="${param.preview == null || param.preview[0] != 'true'}">
+                        <a href="#" id="addToCartBtn" class="btn-cart" onclick="return validateBooking(event)" 
+                           style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #fff; color: #ff5b00; border: 1px solid #ff5b00; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box;">加入購物車</a>
+                        <a href="#" id="bookingBtn" class="btn-booking" onclick="return validateBooking(event)" 
+                           style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #ff5b00; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box; border: 1px solid #ff5b00;">立即購買</a>
+                    </th:block>
+
+                    <!-- 預覽模式：反灰不可點擊的按鈕 -->
+                    <th:block th:if="${param.preview != null && param.preview[0] == 'true'}">
+                        <button type="button" disabled 
+                           style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #f1f5f9; color: #94a3b8; border: 1px solid #cbd5e1; padding: 12px 24px; border-radius: 4px; font-weight: bold; cursor: not-allowed; height: 45px; box-sizing: border-box;">加入購物車</button>
+                        <button type="button" disabled 
+                           style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #cbd5e1; color: #fff; border: 1px solid #cbd5e1; padding: 12px 24px; border-radius: 4px; font-weight: bold; cursor: not-allowed; height: 45px; box-sizing: border-box;">立即購買</button>
+                    </th:block>
                 </div>
             </div>
             
@@ -173,7 +203,10 @@
 
     </main>
 
-    <div th:replace="~{frontend/index/footer :: footer}"></div>
+    <!-- 正常模式：顯示 Footer -->
+    <th:block th:if="${param.preview == null || param.preview[0] != 'true'}">
+        <div th:replace="~{frontend/index/footer :: footer}"></div>
+    </th:block>
 
     <script th:src="@{/js/activity/activityDetail.js}"></script>
 </body>

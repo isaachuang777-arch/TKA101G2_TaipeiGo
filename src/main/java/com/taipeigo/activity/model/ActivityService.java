@@ -2,6 +2,7 @@ package com.taipeigo.activity.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import com.taipeigo.product.dto.CartItemDTO;
+import com.taipeigo.ticket.model.TicketService;
 import com.taipeigo.ticket.model.TicketVO;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ActivityService {
@@ -21,80 +25,21 @@ public class ActivityService {
     private final ActivityRepository activityRepo;
     private final ActivityJDBCDAO activityJDBCDAO;
     private final ActivityCateRepository activityCateRepo;
+    private final TicketService ticketService;
 
     @Autowired
-    public ActivityService(ActivityRepository activityRepo, ActivityJDBCDAO activityJDBCDAO,
-            ActivityCateRepository activityCateRepo) {
+    public ActivityService(ActivityRepository activityRepo, 
+                           ActivityJDBCDAO activityJDBCDAO,
+                           ActivityCateRepository activityCateRepo,
+                           TicketService ticketService) {
 
         this.activityRepo = activityRepo;
         this.activityJDBCDAO = activityJDBCDAO;
         this.activityCateRepo = activityCateRepo;
+        this.ticketService = ticketService;
 
     }
 
-    // 傳送商品到購物車用的DTO
-    public CartItemDTO getActivityCartItem(Integer activityId, String ticketType) {
-
-        Optional<ActivityVO> box = activityRepo.findById(activityId);
-
-        if (box.isEmpty()) {
-
-            throw new RuntimeException("找不到該活動 " + activityId);
-        }
-
-        ActivityVO activity = box.get();
-
-        int totalPrice = 0;
-
-        String typeName = "";
-
-        for (ActivityDetailVO detail : activity.getActivityDetails()) {
-
-            if (detail.getTicket().getAvailableSerialCount() < 1) {
-
-                throw new IllegalArgumentException("活動包含的某些門票已售完，無法加入購物車！");
-
-            }
-
-            switch (ticketType.toUpperCase()) {
-
-                case "CHILD":
-                    totalPrice += detail.getTicket().getChildPrice();
-                    typeName = "兒童票";
-                    break;
-
-                case "CONCESSION":
-                    totalPrice += detail.getTicket().getConcessionPrice();
-                    typeName = "優待票";
-                    break;
-
-                case "ADULT":
-                    totalPrice += detail.getTicket().getAdultPrice();
-                    typeName = "全票";
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("未知的票種" + ticketType);
-
-            }
-
-        }
-
-        int finalPrice = totalPrice - activity.getDiscount();
-
-        if (finalPrice < 0)
-            finalPrice = 0;
-
-        CartItemDTO cartItem = new CartItemDTO();
-        cartItem.setPrice(finalPrice);
-        cartItem.setProductId(activityId);
-        cartItem.setProductName(activity.getActivityName() + " - " + typeName);
-        cartItem.setQuantity(1); // 預設為一張
-        cartItem.setProductType("ACTIVITY");
-
-        return cartItem;
-
-    }
 
     // -----------------單一查詢---------------------
 
@@ -124,6 +69,13 @@ public class ActivityService {
     public List<ActivityVO> getBackendActivitiesByCompositeQuery(MultiValueMap<String, String> map) {
 
         return activityJDBCDAO.getSearch(map, false);
+    }
+
+    public int getTotalPageByCompositeQuery(MultiValueMap<String, String> map){
+
+        return activityJDBCDAO.getTotalPage(map);
+
+
     }
 
     // ----------------- 圖片路徑 -----------------
@@ -364,5 +316,160 @@ public class ActivityService {
 
         return activityCateRepo.findAllActiveCategories();
     }
+
+    // ----------------- 後台：一鍵切換上下架狀態 -----------------
+
+    public void updateActivityStatus(Integer activityId, Integer newStatus){
+
+        ActivityVO activity = activityRepo.findById(activityId).orElseThrow
+                              (()-> new RuntimeException("找不到該活動 ID : " + activityId ));
+
+        
+        // 更新狀態
+
+        activity.setActivityStatus(newStatus);
+
+        // 存回資料庫
+
+        activityRepo.save(activity);
+    }
+
+
+    // ----------------- 購物車顯示用功能 -----------------
+
+    public CartItemDTO getActivityCartItem(Integer activityId, Integer quantity, String spec){
+
+        ActivityVO activity = activityRepo.findById(activityId)
+                            .orElseThrow(() -> new RuntimeException("找不到該活動 " + activityId));
+
+        int totalPrice = 0;
+        String typeName = "";
+
+
+        // 1. 動態計算活動總價
+        for (ActivityDetailVO detail : activity.getActivityDetails()) {
+
+            if (detail.getTicket().getAvailableSerialCount() < 1) {
+
+                throw new IllegalArgumentException("活動包含的某些門票已售完，無法加入購物車！");
+            }
+
+            switch (spec.toUpperCase()) {
+
+                case "CHILD":
+                    totalPrice += detail.getTicket().getChildPrice();
+                    typeName = "兒童票";
+                    break;
+
+                case "CONCESSION":
+                    totalPrice += detail.getTicket().getConcessionPrice();
+                    typeName = "優待票";
+                    break;
+
+                case "ADULT":
+                    totalPrice += detail.getTicket().getAdultPrice();
+                    typeName = "成人票";
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("未知的票種: " + spec);
+            }
+        }
+        // 2. 扣除活動專屬折扣，並設定防呆最低手續費 30 元
+        int finalPrice = totalPrice - activity.getDiscount();
+
+        if (finalPrice <= 0) {
+            finalPrice = 30; 
+        }
+        
+        CartItemDTO cartItem = new CartItemDTO();
+        cartItem.setProductId(activityId);
+        cartItem.setProductType("ACTIVITY");
+        cartItem.setSpec(spec);          // 記錄票種
+        cartItem.setQuantity(quantity);  // 記錄數量
+        
+        cartItem.setPrice(finalPrice);
+        cartItem.setProductName(activity.getActivityName() + " (" + typeName + ")");
+        cartItem.setSubtotal(finalPrice * quantity);
+        
+        // 抓活動圖片
+        if (activity.getActivityImage() != null && !activity.getActivityImage().isEmpty()) {
+            cartItem.setImageUrl(activity.getActivityImage().get(0).getActivityImageSrc());
+        }
+        
+        return cartItem;
+
+
+    }
+
+
+    // ----------------- 結帳用功能 -----------------
+
+    //加入購物車前使用，檢查票數夠不夠
+
+    public boolean checkStock(Integer activityId, Integer quantity){
+
+        ActivityVO activity = activityRepo.findById(activityId).orElse(null);
+        if (activity == null) return false;
+
+
+        // 活動裡面每一張票的庫存用 ticketService的checkStock檢查庫存
+        for(ActivityDetailVO detail : activity.getActivityDetails()){
+
+            Integer ticketId = detail.getTicket().getTicketId();
+
+            if(!ticketService.checkStock(ticketId, quantity)){
+
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
+
+    // 結帳用的，扣庫存與建立定單綁定(同樣拿ticketService.buyTicketSerial來用)
+
+    @Transactional
+    public void buyActivity(Integer activityId, 
+                            Integer quantity, 
+                            Integer custId, 
+                            Integer orderId){
+
+       ActivityVO activity = activityRepo.findById(activityId)
+                                          .orElseThrow(() -> new RuntimeException("找不到該活動" + activityId));
+
+
+       // 我自己的Activity的有效期限設計不一樣 在使用 ticketService.buyTicketSerial的方法第二個參數需要設定有效期限
+       // 這邊將我之前表格的設計邏輯直接帶入 買的當下再加上我的ExpiryDate(int 然後是天數)
+
+       long currentTimeMillis = System.currentTimeMillis();
+       long validDaysInMillis = activity.getExpiryDate() * 24L * 60L * 60L * 1000L; 
+       
+       // 這邊貫徹我的邏輯 買的當下天數+我設定的天數 = 這個活動所有票卷的有效期限
+       Timestamp expiryTimestamp = new Timestamp(currentTimeMillis + validDaysInMillis);
+
+       // 用forEach 買下所有的票並使用ticketService裡面的方法buyTicketSerial 
+       // 綁定會員、訂單，並將狀態改為「已售出/未使用」status = 2
+
+       for (ActivityDetailVO detail : activity.getActivityDetails()){
+
+        Integer ticketId = detail.getTicket().getTicketId();
+
+            for(int i = 0; i < quantity; i++){
+
+                ticketService.buyTicketSerial(ticketId, expiryTimestamp, custId, orderId);
+
+
+            }
+       }
+                             
+
+
+    }
+
+    
+
 
 }
