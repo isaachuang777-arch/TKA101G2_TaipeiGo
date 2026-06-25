@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.taipeigo.ticket.model.TicketSerialVO;
 import com.taipeigo.ticket.model.TicketService;
 import com.taipeigo.ticket.model.TicketVO;
 import com.taipeigo.ticketcategory.model.TicketCategoryService;
@@ -65,7 +66,7 @@ public class TicketController {
     }
     */
     
-     /* 新增門票 */
+    /* 新增門票 */
     @GetMapping("/addTicket")
     public String addTicket(ModelMap model) {
         TicketVO ticketVO = new TicketVO();
@@ -185,5 +186,26 @@ public class TicketController {
 
         // 修改成功，回列表主頁
         return "redirect:/backend/ticket/list"; 
+    }
+
+    /* 進入門票頁面 （查全部）*/
+    @GetMapping("/serialList")
+    public String listAllTicketSerial(ModelMap model) {
+        List<TicketSerialVO> list = ticketService.getAllTicketSerial();
+        model.addAttribute("activePage", "ticketSerial");
+        model.addAttribute("ticketSerialListData", list);
+        return "backend/ticket/listAllTicketSerial";
+    }
+
+    /* 下架序號 */
+    @PostMapping("/offMarketSerial")
+    public String offMarketSerial(@RequestParam("ticketSerialId") Integer ticketSerialId, RedirectAttributes redirectAttributes) {
+        try {
+            ticketService.offMarketTicketSerial(ticketSerialId);
+            // redirectAttributes.addFlashAttribute("success", "序號 (編號: " + ticketSerialId + ") 已成功下架！");
+        } catch (Exception e) {
+            // redirectAttributes.addFlashAttribute("error", "下架序號失敗：" + e.getMessage());
+        }
+        return "redirect:/backend/ticket/serialList";
     }
 }
