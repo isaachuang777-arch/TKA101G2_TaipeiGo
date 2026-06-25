@@ -23,6 +23,49 @@ body {
     margin: 0;
 }
 
+/* ========================================================= */
+/* 專屬側邊欄動畫覆蓋 (只在此頁面生效，不影響其他組員)           */
+/* ========================================================= */
+.sidebar {
+    width: 260px !important; /* 強制設定寬度 */
+    transform: translateX(calc(-100% + 15px)); /* 留 15px 觸發區 */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar:hover {
+    transform: translateX(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+}
+
+.main-wrap {
+    margin-left: 0 !important; /* 預設收合時，主內容區滿版 */
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.sidebar:hover ~ .main-wrap {
+    margin-left: 260px !important; /* 展開時推移 */
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s !important;
+}
+
+.sidebar::after {
+    content: '';
+    position: fixed;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 40px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    transition: opacity 0.3s;
+}
+
+.sidebar:hover::after {
+    opacity: 0;
+    transition: opacity 0.3s 0.5s;
+}
+/* ========================================================= */
+
 .main-wrap {
     margin-left: var(--sidebar-width);
     min-height: 100vh;
