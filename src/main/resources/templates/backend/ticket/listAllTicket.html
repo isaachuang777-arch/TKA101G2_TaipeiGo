@@ -4,340 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaipeiGO ｜ 後台門票管理</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <style>
-        @charset "UTF-8";
-
-        :root {
-            --primary: #ff7a1a;
-            --primary-hover: #ea6c0e;
-            --blue: #2563eb;
-            --blue-hover: #1d4ed8;
-            --warning-amber: #f59e0b;
-            --warning-hover: #d97706;
-            --info-teal: #0d9488;
-            --info-hover: #0f766e;
-            --dark-slate: #4b5563;
-            --dark-slate-hover: #374151;
-            --danger: #ef4444;
-            --bg: #f5f6f8;
-            --card: #ffffff;
-            --border: #e5e7eb;
-            --text: #111827;
-            --text-light: #6b7280;
-        }
-
-        body {
-            background: var(--bg);
-            font-family: "Microsoft JhengHei", sans-serif;
-            margin: 0;
-        }
-
-        /* ==========================
-           Top Header (沿用分類管理)
-        ========================== */
-        .topbar {
-            height: 70px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .logo span {
-            color: var(--primary);
-        }
-
-        /* ==========================
-           Main Layout
-        ========================== */
-        .page-wrapper {
-            padding: 30px;
-        }
-
-        .page-card {
-            background: white;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
-            overflow: hidden;
-        }
-
-        /* ==========================
-           Card Header
-        ========================== */
-        .page-header {
-            padding: 24px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .page-title {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .page-subtitle {
-            color: var(--text-light);
-            margin-top: 6px;
-            font-size: 14px;
-        }
-
-        /* ==========================
-           Buttons (維持圓角與視覺一致)
-        ========================== */
-        .btn-add {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.2s;
-        }
-
-        .btn-add:hover {
-            background: var(--primary-hover);
-            color: white;
-        }
-
-        .btn-detail {
-            background: var(--dark-slate);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 6px 12px;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: none;
-        }
-        .btn-detail:hover { background: var(--dark-slate-hover); color: white; }
-
-        .btn-edit {
-            background: var(--blue);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 6px 12px;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: none;
-        }
-        .btn-edit:hover { background: var(--blue-hover); color: white; }
-
-        .btn-serial {
-            background: var(--warning-amber);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 6px 12px;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: none;
-        }
-        .btn-serial:hover { background: var(--warning-hover); color: white; }
-
-        .btn-gallery {
-            background: var(--info-teal);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 6px 12px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .btn-gallery:hover { background: var(--info-hover); color: white; }
-
-        /* ==========================
-           Table Style
-        ========================== */
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table thead {
-            background: #f8fafc;
-        }
-
-        .table th {
-            border: none;
-            padding: 18px;
-            font-weight: 700;
-            color: #374151;
-        }
-
-        .table td {
-            padding: 18px;
-            border-top: 1px solid #f1f5f9;
-            vertical-align: middle;
-        }
-
-        .table img.ticket-cover {
-            width: 54px;
-            height: 54px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        /* ==========================
-           Status Labels & Badges
-        ========================== */
-        .status-active {
-            background: #dcfce7;
-            color: #15803d;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-inactive {
-            background: #e5e7eb;
-            color: #6b7280;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .category-badge {
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        /* 票種小標籤 */
-        .ticket-type-label {
-            font-size: 11px;
-            font-weight: 600;
-            background-color: #f1f5f9;
-            color: #475569;
-            padding: 2px 6px;
-            border-radius: 4px;
-            display: inline-block;
-            min-width: 36px;
-            text-align: center;
-        }
-
-        /* ==========================
-           Footer Count
-        ========================== */
-        .table-footer {
-            padding: 18px 30px;
-            border-top: 1px solid #f1f5f9;
-            color: #6b7280;
-            background: #fafafa;
-        }
-
-        /* 找不到圖顯示「載入圖片失敗」 */
-        img.ticket-cover {
-            position: relative;
-            background-color: #f1f5f9; 
-            display: inline-block;
-            object-fit: cover;
-            text-align: center;
-        }
-
-        /* 當圖片加載失敗找不到圖時顯示「載入圖片失敗」 */
-        img.ticket-cover::before {
-            content: "載入圖片失敗";
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #f1f5f9;
-            color: #6b7280;
-            font-size: 11px;
-            font-weight: bold;
-            z-index: 1;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/ticket/backend/listAllTicket.css}">
 </head>
+
 <body>
 
-<div class="topbar">
-    <div class="logo">
-        台北<span>GO</span>了沒
-    </div>
-</div>
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 
-<div class="page-wrapper">
-    <div class="page-card">
+<div class="main-wrap">
 
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">門票管理系統</h2>
-                <div class="page-subtitle">
-                    管理所有門票商品資料與庫存
-                </div>
-            </div>
-            <a th:href="@{/backend/ticket/addTicket}" class="btn-add">
-                ＋ 新增門票商品
-            </a>
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="bi bi-ticket-perforated-fill me-2" style="color:var(--primary);"></i>
+            門票商品管理
+            <span>/ 商品列表</span>
         </div>
 
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
+        <a class="btn-add" th:href="@{/backend/ticket/addTicket}">
+            <i class="bi bi-plus-lg"></i>
+            新增門票商品
+        </a>
+    </header>
+
+    <main class="content-area">
+
+        <div class="alert-success-custom" th:if="${success}">
+            <i class="bi bi-check-circle-fill"></i>
+            <span th:text="${success}"></span>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row stats-row g-3" th:if="${not #lists.isEmpty(ticketListData)}">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-label">總門票商品</div>
+                        <div class="stat-value"
+                             th:text="${#lists.size(ticketListData)}">
+                            0
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-label">上架中</div>
+                        <div class="stat-value"
+                             th:text="${#lists.size(ticketListData.?[ticketStatus == 1])}">
+                            0
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="bi bi-cloud-arrow-down-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-label">已下架</div>
+                        <div class="stat-value"
+                             th:text="${#lists.size(ticketListData.?[ticketStatus == 0])}">
+                            0
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-card-header">
+                <div class="table-card-title">
+                    <i class="bi bi-list-ul me-1" style="color:var(--primary);"></i>
+                    門票商品列表
+                    <span th:text="${'共 ' + #lists.size(ticketListData) + ' 筆'}"></span>
+                </div>
+
+                <div class="search-bar">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" placeholder="搜尋門票名稱、分類..." class="form-control">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table custom-table" id="ticketTable">
+                    <thead>
                     <tr>
-                        <th width="7%" class="text-center">編號</th>
-                        <th width="24%">門票名稱</th>
-                        <th width="11%">所屬分類</th>
-                        <th width="13%">地址</th>
-                        <th width="11%" class="text-center">可用庫存</th> 
-                        <th width="14%" class="text-end">票種 售價 (原價)</th>
+                        <th width="5%" class="text-center">#</th>
+                        <th width="28%">門票商品名稱與描述</th>
+                        <th width="12%">所屬分類</th>
+                        <th width="15%">地址</th>
+                        <th width="10%" class="text-center">可用庫存</th>
+                        <th width="15%" class="text-end">票種 售價 (原價)</th>
                         <th width="8%" class="text-center">狀態</th>
-                        <th width="12%" class="text-center">操作功能</th>
+                        <th width="7%" class="text-center">操作</th>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="ticket : ${ticketListData}">
-                        <td class="text-center fw-bold" th:text="${ticket.ticketId}">1</td>
+                    </thead>
+
+                    <tbody>
+                    <tr th:if="${ticketListData == null or ticketListData.isEmpty()}">
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <div>目前沒有任何門票商品資料</div>
+
+                                <a class="btn-add mt-3 d-inline-flex" th:href="@{/backend/ticket/addTicket}">
+                                    <i class="bi bi-plus-lg"></i>
+                                    新增第一筆門票商品
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:each="ticket, iterStat : ${ticketListData}">
+                        <td class="text-center" style="color:#94a3b8; font-size:0.8rem;" th:text="${iterStat.index + 1}"></td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div th:if="${#lists.isEmpty(ticket.ticketImages)}" 
-                                    class="me-3 border shadow-sm bg-light text-secondary d-flex align-items-center justify-content-center fw-bold" 
-                                    style="width: 54px; height: 54px; border-radius: 8px; font-size: 11px; letter-spacing: 0.5px; background-color: #f1f5f9 !important;">
+                                <div th:if="${#lists.isEmpty(ticket.ticketImages)}" class="no-image-placeholder me-3">
                                     無圖片
                                 </div>
                                 
                                 <th:block th:if="${not #lists.isEmpty(ticket.ticketImages)}">
-                                    
                                     <img th:if="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
                                          th:src="${ticket.ticketImages[0].ticketImageSrc}" 
-                                         class="me-3 border shadow-sm ticket-cover" alt="外部網路封面">
+                                         class="me-3 ticket-cover shadow-sm" alt="網路封面">
                                     
                                     <img th:unless="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
                                          th:src="@{${ticket.ticketImages[0].ticketImageSrc}}" 
-                                         class="me-3 border shadow-sm ticket-cover" alt="本機上傳封面">
-                                         
+                                         class="me-3 ticket-cover shadow-sm" alt="本機封面">
                                 </th:block>
                                 
                                 <div>
-                                    <div class="fw-bold text-dark mb-1" th:text="${ticket.ticketName}">台北市立動物園門票</div>
+                                    <div class="fw-bold text-dark mb-1" th:text="${ticket.ticketName}">門票名稱</div>
                                     <small class="text-muted text-truncate d-inline-block" style="max-width: 180px;" th:text="${ticket.ticketDescription}">描述...</small>
                                 </div>
                             </div>
@@ -350,63 +160,67 @@
                                 <span th:if="${#lists.isEmpty(ticket.ticketCategories)}" class="text-muted small">未分類</span>
                             </div>
                         </td>
-                        <td class="text-muted small" th:text="${ticket.ticketAddress}">台北市文山區新光路二段30號</td>
-                        
+                        <td class="text-muted small" th:text="${ticket.ticketAddress}">地址</td>
                         <td class="text-center">
                             <div class="d-flex align-items-center justify-content-center gap-2">
-                                <span class="text-muted small">
-                                    <span th:text="${ticket.availableSerialCount}">0</span> 張
-                                </span>
+                                <span class="text-dark fw-bold" th:text="${ticket.availableSerialCount}">0</span>
                                 <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" 
                                         data-bs-toggle="modal" th:data-bs-target="'#generateSerialsModal' + ${ticket.ticketId}" 
                                         style="border-radius: 6px; font-size: 11px; height: 20px; line-height: 18px;">
-                                    ＋ 補貨
+                                    ＋ 新增
                                 </button>
                             </div>
                         </td>
-                        
                         <td class="text-end">
                             <div class="mb-1">
                                 <span class="ticket-type-label me-1">成人</span>
-                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.adultOriginalPrice}">$100</span>
-                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.adultPrice}">$60</span>
+                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.adultOriginalPrice}">$0</span>
+                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.adultPrice}">$0</span>
                             </div>
                             <div class="mb-1">
                                 <span class="ticket-type-label me-1">兒童</span>
-                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.childOriginalPrice}">$80</span>
-                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.childPrice}">$40</span>
+                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.childOriginalPrice}">$0</span>
+                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.childPrice}">$0</span>
                             </div>
                             <div>
                                 <span class="ticket-type-label me-1">優待</span>
-                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.concessionOriginalPrice}">$70</span>
-                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.concessionPrice}">$35</span>
+                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.concessionOriginalPrice}">$0</span>
+                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.concessionPrice}">$0</span>
                             </div>
                         </td>
-                        
                         <td class="text-center">
-                            <span th:if="${ticket.ticketStatus == 1}" class="status-active">上架中</span>
-                            <span th:if="${ticket.ticketStatus == 0}" class="status-inactive">已下架</span>
+                            <span th:if="${ticket.ticketStatus == 1}" class="status-badge status-active">
+                                <span class="status-dot"></span>
+                                上架中
+                            </span>
+                            
+                            <span th:if="${ticket.ticketStatus == 0}" class="status-badge status-inactive">
+                                <span class="status-dot"></span>
+                                已下架
+                            </span>
                         </td>
-                        <td>
+                        <td class="text-center">
                             <div class="d-flex justify-content-center gap-1">
-                                <a th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticket.ticketId})}" class="btn-detail" title="查看門票詳情">
-                                    詳情
+                                <a th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticket.ticketId})}" class="action-btn btn-view" title="查看門票詳情">
+                                    <i class="bi bi-eye"></i>
                                 </a>
-                                <form th:action="@{/backend/ticket/getOne_For_Update}" method="post" class="d-inline">
-						            <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
-						            <button type="submit" class="btn-edit" title="編輯門票" style="border: none;">
-						                修改
-						            </button>
-						        </form>
+                                
+                                <form th:action="@{/backend/ticket/getOne_For_Update}" method="post" class="d-inline" style="margin:0;">
+                                    <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
+                                    <button type="submit" class="action-btn btn-edit" title="編輯門票">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </form>
                             </div>
 
+                            <!-- Restock Modal -->
                             <div class="modal fade" th:id="'generateSerialsModal' + ${ticket.ticketId}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-sm">
                                     <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none;">
                                         <form th:action="@{/backend/ticket/generateSerials}" method="post">
                                             <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
                                             <div class="modal-header" style="background: #f8fafc; border-bottom: 1px solid var(--border);">
-                                                <h6 class="modal-title fw-bold">新增門票序號</h6>
+                                                <h6 class="modal-title fw-bold text-start">新增門票序號</h6>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body p-3">
@@ -421,24 +235,39 @@
                                     </div>
                                 </div>
                             </div>
-
                         </td>
                     </tr>
-                    
-                    <tr th:if="${#lists.isEmpty(ticketListData)}">
-                        <td colspan="8" class="text-center text-muted py-5 fs-5"> <i class="bi bi-inbox d-block mb-2" style="font-size: 3rem;"></i>目前沒有任何門票資料。
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="table-footer" th:if="${not #lists.isEmpty(ticketListData)}">
-            共 <span th:text="${#lists.size(ticketListData)}">0</span> 筆門票商品資料
+            <div class="table-footer" th:if="${not #lists.isEmpty(ticketListData)}">
+                <div class="table-footer-info">
+                    共 <span th:text="${#lists.size(ticketListData)}"></span> 筆資料
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const keyword = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#ticketTable tbody tr');
+
+            rows.forEach(row => {
+                if (row.querySelector('.empty-state')) return;
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(keyword) ? '' : 'none';
+            });
+        });
+    }
+</script>
+
 </body>
 </html>
