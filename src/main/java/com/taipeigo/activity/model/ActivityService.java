@@ -80,10 +80,15 @@ public class ActivityService {
 
         }
 
+        // 突然發現折扣下來有些太便宜的票會變成0感覺很怪值皆條件是看如果小於等於0至少有個手續費
+
         int finalPrice = totalPrice - activity.getDiscount();
 
-        if (finalPrice < 0)
-            finalPrice = 0;
+        if(finalPrice <= 0) {
+            finalPrice = 30; // 若折扣下來小於或等於 0，則統一酌收 30 元手續費
+        }
+
+
 
         CartItemDTO cartItem = new CartItemDTO();
         cartItem.setPrice(finalPrice);
@@ -124,6 +129,13 @@ public class ActivityService {
     public List<ActivityVO> getBackendActivitiesByCompositeQuery(MultiValueMap<String, String> map) {
 
         return activityJDBCDAO.getSearch(map, false);
+    }
+
+    public int getTotalPageByCompositeQuery(MultiValueMap<String, String> map){
+
+        return activityJDBCDAO.getTotalPage(map);
+
+
     }
 
     // ----------------- 圖片路徑 -----------------
@@ -363,6 +375,23 @@ public class ActivityService {
     public List<ActivityCateVO> getAllActiveCategories() {
 
         return activityCateRepo.findAllActiveCategories();
+    }
+
+    // ----------------- 後台：一鍵切換上下架狀態 -----------------
+
+    public void updateActivityStatus(Integer activityId, Integer newStatus){
+
+        ActivityVO activity = activityRepo.findById(activityId).orElseThrow
+                              (()-> new RuntimeException("找不到該活動 ID : " + activityId ));
+
+        
+        // 更新狀態
+
+        activity.setActivityStatus(newStatus);
+
+        // 存回資料庫
+
+        activityRepo.save(activity);
     }
 
 }

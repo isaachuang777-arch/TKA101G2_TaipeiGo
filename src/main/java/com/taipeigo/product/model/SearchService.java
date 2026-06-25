@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.taipeigo.activity.model.ActivityDetailVO;
 import com.taipeigo.activity.model.ActivityRepository;
 import com.taipeigo.activity.model.ActivityVO;
 import com.taipeigo.product.dto.SearchResultDTO;

@@ -6,12 +6,13 @@
 <style>
 :root {
     --primary: #0d6efd;
-    --sidebar-width: 260px;
+    --sidebar-real-width: 260px;
+    --sidebar-width: 0px; /* 讓主內容區可以滿版 */
     --sidebar-bg: #1a2236;
 }
 
 .sidebar {
-    width: var(--sidebar-width);
+    width: var(--sidebar-real-width);
     height: 100vh;
     background: var(--sidebar-bg);
     position: fixed;
@@ -19,8 +20,42 @@
     top: 0;
     color: white;
     overflow-y: auto;
-    z-index: 100;
+    z-index: 1000;
     box-shadow: 4px 0 18px rgba(0,0,0,0.12);
+    
+    /* 懸浮滑出動畫 */
+    transform: translateX(calc(-100% + 15px)); /* 留 15px 在畫面邊緣當觸發區 */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar:hover {
+    transform: translateX(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s; /* 增加 0.5 秒延遲，避免誤觸 */
+}
+
+/* 讓主內容區跟著被往右推 */
+.sidebar:hover ~ .main-wrap {
+    margin-left: var(--sidebar-real-width) !important;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s; /* 同步延遲 0.5 秒 */
+}
+
+/* 邊緣的視覺提示小把手 */
+.sidebar::after {
+    content: '';
+    position: fixed;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 40px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    transition: opacity 0.3s;
+}
+
+.sidebar:hover::after {
+    opacity: 0; /* 展開時隱藏把手 */
+    transition: opacity 0.3s 0.5s; /* 同步延遲 */
 }
 
 .sidebar-title {
