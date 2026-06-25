@@ -192,6 +192,7 @@ public class TicketController {
     @GetMapping("/serialList")
     public String listAllTicketSerial(ModelMap model) {
         List<TicketSerialVO> list = ticketService.getAllTicketSerial();
+        model.addAttribute("activePage", "ticketSerial");
         model.addAttribute("ticketSerialListData", list);
         return "backend/ticket/listAllTicketSerial";
     }
