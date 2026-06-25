@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpSession;
 
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/auth")
@@ -125,7 +126,11 @@ public class FrontendAuthController {
 	// 接收會員註冊資料
 	// 註冊後預設為未啟用帳號，並產生 Email 驗證 token 存入 Redis
 	@PostMapping("/register")
-	public String register(@Valid CustomerVO customerVO, BindingResult result, Model model) {
+	public String register(
+	        @Valid CustomerVO customerVO,
+	        BindingResult result,
+	        Model model,
+	        RedirectAttributes redirectAttributes) {
 		
 		System.out.println("custStatus = " + customerVO.getCustStatus());
 		
@@ -169,27 +174,33 @@ public class FrontendAuthController {
 
 		System.out.println("驗證信已寄出：" + customerVO.getCustEmail());
 
-		model.addAttribute("successMsg", "註冊成功，請至信箱完成驗證");
-		return "frontend/auth/login";
+		redirectAttributes.addFlashAttribute(
+		        "successMsg",
+		        "🎉 Email 驗證成功！帳號已啟用，現在可以登入了。"
+		);
+		
+		return "redirect:/auth/login";
 	}
 	
 	// Email 驗證
 	// 網址：GET /auth/verify?token=xxxx
 	@GetMapping("/verify")
-	public String verifyEmail(@RequestParam("token") String token, Model model) {
+	public String verifyEmail(
+	        @RequestParam("token") String token,
+	        RedirectAttributes redirectAttributes) {
 
 	    String custId = stringRedisTemplate.opsForValue().get("verify:" + token);
 
 	    if (custId == null) {
-	        model.addAttribute("errorMsg", "驗證連結已失效，請重新註冊或重新寄送驗證信");
-	        return "frontend/auth/login";
+	    		redirectAttributes.addFlashAttribute("errorMsg", "驗證連結已失效，請重新註冊或重新寄送驗證信");
+	    		return "redirect:/auth/login";
 	    }
 
 	    CustomerVO customer = customerService.getOneCustomer(Integer.valueOf(custId));
 
 	    if (customer == null) {
-	        model.addAttribute("errorMsg", "查無會員資料");
-	        return "frontend/auth/login";
+	    		redirectAttributes.addFlashAttribute("errorMsg", "查無會員資料");
+	    		return "redirect:/auth/login";
 	    }
 
 	    customer.setCustStatus(1); // 1 = 啟用
@@ -197,8 +208,12 @@ public class FrontendAuthController {
 
 	    stringRedisTemplate.delete("verify:" + token);
 
-	    model.addAttribute("successMsg", "Email 驗證成功，請重新登入");
-	    return "frontend/auth/login";
+	    redirectAttributes.addFlashAttribute(
+	            "successMsg",
+	            "Email 驗證成功，現在可以登入！"
+	    );
+
+	    return "redirect:/auth/login";
 	}
 	
 

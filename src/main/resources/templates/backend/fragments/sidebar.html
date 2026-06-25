@@ -86,6 +86,24 @@
     border-left-color: var(--primary);
 }
 
+.sidebar-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 12px 10px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    color: #e2e8f0;
+    text-decoration: none;
+}
+
+.sidebar-profile-card:hover {
+    background: rgba(255,255,255,0.1);
+    color: #ffffff;
+    transform: none;
+}
+
 .admin-menu {
     margin: 4px 12px;
 }
@@ -125,6 +143,14 @@
     width: auto;
     font-size: 0.8rem;
     transition: transform .2s;
+}
+
+.admin-summary-role {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 400;
 }
 
 .admin-menu[open] .arrow {
@@ -207,6 +233,32 @@
             <div class="brand">台北GO了沒</div>
             <div class="sub">Backend Management</div>
         </div>
+        
+        <a th:href="@{/backend/admin/profile/index}"
+   class="sidebar-profile-card"
+   th:if="${session.adminVO != null}">
+
+    <div class="admin-info-icon">
+        <i class="bi bi-person-circle"></i>
+    </div>
+
+    <div>
+        <div class="sidebar-admin-name"
+             th:text="${session.adminVO.admName}">
+            管理員名稱
+        </div>
+
+        <div class="sidebar-admin-role">
+		            <span th:each="perVO, iterStat : ${session.adminVO.admPerVO}">
+		                <span th:text="${perVO.admfuncVO.funcName}">
+		                    權限名稱
+		                </span>
+		                <span th:if="${!iterStat.last}">、</span>
+		            </span>
+		        </div>
+		    </div>
+		
+		</a>
 
         <div class="menu-title">後台總覽</div>
 
@@ -216,25 +268,6 @@
             <span>後台首頁</span>
         </a>
 
-        <details class="admin-menu">
-            <summary>
-                <i class="bi bi-person-circle"></i>
-                <span>個人設定</span>
-                <i class="bi bi-chevron-down arrow"></i>
-            </summary>
-
-            <div class="submenu">
-                <a th:href="@{/backend/admin/profile/index}">
-                    <i class="bi bi-person-lines-fill"></i>
-                    <span>個人資訊</span>
-                </a>
-
-                <a th:href="@{/backend/admin/profile/resetPw}">
-                    <i class="bi bi-key-fill"></i>
-                    <span>更改密碼</span>
-                </a>
-            </div>
-        </details>
 
         <div class="menu-title">主要管理</div>
 
@@ -292,15 +325,16 @@
             </div>
         </details>
 
-        <a href="#">
-            <i class="bi bi-receipt-cutoff"></i>
-            <span>訂單管理</span>
-        </a>
+	    <a th:href="@{/backend/orders}"
+	      th:classappend="${activePage == 'orders'} ? ' active'">
+	        <i class="bi bi-receipt-cutoff"></i>
+	        <span>訂單管理</span>
+	    </a>
 
-        <a href="#">
-            <i class="bi bi-headset"></i>
-            <span>客服管理</span>
-        </a>
+        <a th:href="@{/backend/cs/}">
+		    <i class="bi bi-headset"></i>
+		    <span>客服管理</span>
+		</a>
 
         <div class="menu-title">系統管理</div>
 
@@ -320,40 +354,6 @@
               method="post"
               style="display: none;">
         </form>
-
-    </div>
-
-    <a th:href="@{/backend/orders}"
-      th:classappend="${activePage == 'orders'} ? ' active'">
-        <i class="bi bi-receipt-cutoff"></i>
-        <span>訂單管理</span>
-    </a>
-    <div class="sidebar-admin-info"
-         th:if="${session.adminVO != null}">
-
-        <div class="admin-info-row">
-
-            <div class="admin-info-icon">
-                <i class="bi bi-person-circle"></i>
-            </div>
-
-            <div>
-                <div class="sidebar-admin-name"
-                     th:text="${session.adminVO.admName}">
-                    管理員名稱
-                </div>
-
-                <div class="sidebar-admin-role">
-                    <span th:each="perVO, iterStat : ${session.adminVO.admPerVO}">
-                        <span th:text="${perVO.admfuncVO.funcName}">
-                            權限名稱
-                        </span>
-                        <span th:if="${!iterStat.last}">、</span>
-                    </span>
-                </div>
-            </div>
-
-        </div>
 
     </div>
 

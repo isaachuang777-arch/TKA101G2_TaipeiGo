@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.taipeigo.customer.model.CustomerService;
 import java.time.LocalDate;
-
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/customer")
@@ -61,7 +61,10 @@ public class FrontendCustomerController {
     }
 
     @GetMapping("/tickets")
-    public String tickets(HttpSession session, Model model) {
+    public String tickets(
+            HttpSession session,
+            Model model,
+            HttpServletRequest request) {
 
         CustomerVO loginCustomer =
                 (CustomerVO) session.getAttribute("loginCustomer");
@@ -72,7 +75,15 @@ public class FrontendCustomerController {
                 myTicketService.getMyTickets(loginCustomer.getCustId());
 
         System.out.println("查到票券數量 = " + myTickets.size());
+        
+        String baseUrl =
+                request.getScheme()
+                + "://"
+                + request.getServerName()
+                + ":"
+                + request.getServerPort();
 
+        model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("myTickets", myTickets);
         model.addAttribute("activePage", "tickets");
 
@@ -81,6 +92,49 @@ public class FrontendCustomerController {
 
     @GetMapping("/password")
     public String password() {
+        return "frontend/customer/password";
+    }
+    
+    @PostMapping("/updatePassword")
+    public String updatePassword(
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            HttpSession session,
+            Model model) {
+
+        CustomerVO loginCustomer =
+                (CustomerVO) session.getAttribute("loginCustomer");
+
+        if (loginCustomer == null) {
+            return "redirect:/frontend/auth/login";
+        }
+
+        CustomerVO db =
+                customerService.getOneCustomer(loginCustomer.getCustId());
+
+        if (!db.getCustPassword().equals(oldPassword)) {
+            model.addAttribute("errorMessage", "舊密碼錯誤");
+            return "frontend/customer/password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("errorMessage", "新密碼與確認新密碼不一致");
+            return "frontend/customer/password";
+        }
+
+        if (!newPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z0-9]{8,20}$")) {
+            model.addAttribute("errorMessage", "新密碼需 8~20 字元，且必須包含大寫、小寫英文字母及數字，不可包含特殊字元");
+            return "frontend/customer/password";
+        }
+
+        db.setCustPassword(newPassword);
+        customerService.updateCustomer(db);
+
+        session.setAttribute("loginCustomer", db);
+
+        model.addAttribute("successMessage", "密碼修改成功");
+
         return "frontend/customer/password";
     }
     

@@ -32,7 +32,7 @@
     font-size: 24px;
 }
 
-.customer-sidebar a {
+.customer-sidebar > a {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -45,7 +45,7 @@
     font-weight: 500;
 }
 
-.customer-sidebar a:hover {
+.customer-sidebar > a:hover {
     background: #fff3e8;
     color: #ff6b00;
 }
@@ -70,7 +70,7 @@
     margin-bottom: 14px;
 }
 
-.sidebar-help button {
+.sidebar-help-btn {
     width: 100%;
     padding: 10px;
     border: 1px solid #0d6efd;
@@ -78,9 +78,13 @@
     color: #0d6efd;
     border-radius: 6px;
     cursor: pointer;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
 }
 
-.sidebar-help button:hover {
+.sidebar-help-btn:hover {
     background: #f0f6ff;
 }
 </style>
@@ -108,9 +112,9 @@
         🎟 我的票券
     </a>
 
-    <a href="#">
-        🎧 客服紀錄
-    </a>
+    <a th:href="@{/CustomerService/}">
+    🎧 客服中心
+	</a>
 
     <a th:href="@{/customer/password}">
         🔒 修改密碼
@@ -120,19 +124,22 @@
         🚪 登出
     </a>
 
-    <div class="sidebar-help">
-        <div class="sidebar-help-title">
-            🎧 需要協助？
-        </div>
+	<div class="sidebar-help">
 
-        <div class="sidebar-help-text">
-            如有任何問題，歡迎聯繫客服中心
-        </div>
-
-        <button type="button">
-            聯絡客服
-        </button>
+    <div class="sidebar-help-title">
+        🎧 需要協助？
     </div>
+
+    <div class="sidebar-help-text">
+        如有任何問題，歡迎聯繫客服中心
+    </div>
+
+    <a th:href="@{/CustomerService/createticket}"
+       class="sidebar-help-btn">
+        聯絡客服
+    </a>
+
+</div>
 
 </div>
 
