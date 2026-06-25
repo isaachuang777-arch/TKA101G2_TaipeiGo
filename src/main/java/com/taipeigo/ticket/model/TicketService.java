@@ -299,6 +299,11 @@ public class TicketService {
     public void cancelTicketSerial(Integer ordersId) {
        ticketSerialRepository.updateStatusByOrderId(ordersId, 6);
     }
+
+	/* 取得所有門票序號 */
+	public List<TicketSerialVO> getAllTicketSerial() {
+		return ticketSerialRepository.findAll();
+	}
     
 
 
