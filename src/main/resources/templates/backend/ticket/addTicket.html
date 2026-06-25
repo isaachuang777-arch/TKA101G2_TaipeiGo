@@ -5,364 +5,243 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaipeiGO ｜ 新增門票商品</title>
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <style>
-        @charset "UTF-8";
-
-        :root {
-            --primary: #ff7a1a;
-            --primary-hover: #ea6c0e;
-            --blue: #2563eb;
-            --blue-hover: #1d4ed8;
-            --bg: #f5f6f8;
-            --card: #ffffff;
-            --border: #e5e7eb;
-            --text: #111827;
-            --text-light: #6b7280;
-        }
-
-        body {
-            background: var(--bg);
-            font-family: "Microsoft JhengHei", sans-serif;
-            margin: 0;
-        }
-
-        /* ==========================
-           Top Header
-        ========================== */
-        .topbar {
-            height: 70px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .logo span {
-            color: var(--primary);
-        }
-
-        /* ==========================
-           Main Layout
-        ========================== */
-        .page-wrapper {
-            padding: 30px;
-        }
-
-        .page-card {
-            background: white;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
-            overflow: hidden;
-        }
-
-        /* ==========================
-           Card Header
-        ========================== */
-        .page-header {
-            padding: 24px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .page-title {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        /* ==========================
-           Form Elements
-        ========================== */
-        .form-label {
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        .form-control, .form-select {
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            padding: 12px 16px;
-            color: var(--text);
-            transition: all 0.2s;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.15);
-        }
-
-        /* 票價專用小區塊 */
-        .price-setup-card {
-            background: #fff8f3;
-            border: 1px solid #ffeada;
-            border-radius: 14px;
-            padding: 20px;
-        }
-
-        .price-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #c2410c;
-            border-bottom: 1px solid #ffeada;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-        }
-
-        /* 圖片上傳框 */
-        .image-uploader-box {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .image-uploader-box:hover {
-            border-color: var(--primary);
-            background: #fff8f3;
-        }
-
-        .preview-img-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 15px;
-        }
-
-        /* 圖片預覽框 */
-        .preview-img-wrapper {
-            position: relative;
-            width: 100px;
-            height: 100px;
-        }
-
-        .preview-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-        /* 圖片刪除按鈕 */
-        .btn-delete-img {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .btn-delete-img:hover {
-            transform: scale(1.15);
-            background: #dc2626;
-            color: white;
-        }
-
-        /* ==========================
-           Buttons
-        ========================== */
-        .btn-back {
-            background: #f3f4f6;
-            color: var(--text-light);
-            border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.2s;
-        }
-
-        .btn-back:hover {
-            background: #e5e7eb;
-            color: var(--text);
-        }
-
-        .btn-submit {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        .btn-submit:hover {
-            background: var(--primary-hover);
-            color: white;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/ticket/backend/addTicket.css}">
+ 
 </head>
 <body>
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 
-<div class="topbar">
-    <div class="logo">
-        台北<span>GO</span>了沒
-    </div>
-</div>
+<!-- Main -->
+<div class="main-wrap">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="bi bi-plus-circle me-2" style="color:var(--primary);"></i>
+            新增門票商品
+            <span>/ 填寫商品資料</span>
+        </div>
+    </header>
 
-<div class="page-wrapper">
-    <div class="page-card"> 
-        
-        <div class="page-header">
-            <div>
-                <h2 class="page-title">新增門票商品</h2>
-            </div>
-            <a th:href="@{/backend/ticket/list}" class="btn-back">
-                <i class="bi bi-arrow-left me-1"></i> 返回門票列表
-            </a>
+    <div class="content-area">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-custom">
+            <a th:href="@{/backend/ticket/list}"><i class="bi bi-house-door"></i> 門票商品列表</a>
+            <i class="bi bi-chevron-right" style="font-size:0.7rem;"></i>
+            <span>新增門票商品</span>
         </div>
 
-        <form id="ticketForm" th:action="@{/backend/ticket/insert}" method="post" th:object="${ticketVO}" enctype="multipart/form-data" class="p-4 p-md-5">
-            
-            <div class="row g-4">
-                
-                <div class="col-md-8">
-                    <label for="ticketName" class="form-label">門票商品名稱</label>
-                    <input type="text" th:field="*{ticketName}" class="form-control" id="ticketName" placeholder="例如：台北市立動物園特展門票" required>
-                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('ticketName')}" th:errors="*{ticketName}"></div>
-                </div>
-
-                <div class="col-md-4">
-                    <label for="ticketStatus" class="form-label">上架狀態</label>
-                    <select th:field="*{ticketStatus}" class="form-select" id="ticketStatus">
-                        <option value="1">上架</option>
-                        <option value="0">下架</option>
-                    </select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label d-block">選擇門票分類 (可多選)</label>
-                    <div class="card p-3" style=" border: 1px solid var(--border); border-radius: 10px;">
-                        <div class="d-flex flex-wrap gap-4">
-                            <div th:each="category : ${categoryList}" class="form-check">
-                                <input class="form-check-input" type="checkbox" 
-                                       th:value="${category.ticketCategoryId}" 
-                                       th:field="*{ticketCategories}"
-                                       th:id="'cate-' + ${category.ticketCategoryId}">
-                                <label class="form-check-label text-dark" 
-                                       th:for="'cate-' + ${category.ticketCategoryId}" 
-                                       th:text="${category.ticketCategoryName}">景點</label>
-                            </div>
-                            <div th:if="${#lists.isEmpty(categoryList)}" class="text-muted small">
-                                <i class="bi bi-info-circle me-1"></i>請先至門票分類管理建立分類資料。
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <label for="ticketAddress" class="form-label">地址</label>
-                    <input type="text" th:field="*{ticketAddress}" class="form-control" id="ticketAddress" placeholder="請輸入完整景點地址" required>
-                </div>
-
-                <div class="col-12">
-                    <label for="ticketDescription" class="form-label">門票詳細描述 / 使用須知</label>
-                    <textarea th:field="*{ticketDescription}" class="form-control" id="ticketDescription" rows="4" placeholder="請填寫門票的詳細介紹、交通方式與後續核銷說明..."></textarea>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label mb-2"><i class="bi bi-currency-dollar text-primary"></i> 票種售價設定</label>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="price-setup-card">
-                                <div class="price-title">成人票設定</div>
-                                <div class="mb-2">
-                                    <label class="small text-muted fw-bold mb-1">原價</label>
-                                    <input type="number" th:field="*{adultOriginalPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
-                                </div>
-                                <div>
-                                    <label class="small text-muted fw-bold mb-1">促銷售價</label>
-                                    <input type="number" th:field="*{adultPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="price-setup-card">
-                                <div class="price-title">兒童票設定</div>
-                                <div class="mb-2">
-                                    <label class="small text-muted fw-bold mb-1">原價</label>
-                                    <input type="number" th:field="*{childOriginalPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
-                                </div>
-                                <div>
-                                    <label class="small text-muted fw-bold mb-1">促銷售價</label>
-                                    <input type="number" th:field="*{childPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="price-setup-card">
-                                <div class="price-title">優待票設定</div>
-                                <div class="mb-2">
-                                    <label class="small text-muted fw-bold mb-1">原價</label>
-                                    <input type="number" th:field="*{concessionOriginalPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
-                                </div>
-                                <div>
-                                    <label class="small text-muted fw-bold mb-1">促銷售價</label>
-                                    <input type="number" th:field="*{concessionPrice}" class="form-control form-control-sm" placeholder="0" min="0" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 mt-4">
-                    <label class="form-label">
-                        <i class="bi bi-images text-primary me-1"></i> 上傳門票商品圖片 
-                        <span id="uploadCountText" class="text-muted small fw-normal">(目前 0/8 張)</span>
-                    </label>
-                    <div class="image-uploader-box" onclick="document.getElementById('ticketImageFiles').click()">
-                        <i class="bi bi-cloud-arrow-up text-muted" style="font-size: 2.5rem;"></i>
-                        <p class="mt-2 mb-1 fw-bold text-dark">點擊此處選擇圖片檔案</p>
-                        <p class="text-muted small mb-0">支援 JPG、PNG 格式，第一張自動為主封面圖，最多限上傳 8 張</p>
-                        <input type="file" id="ticketImageFiles" class="d-none" multiple accept="image/*" onchange="previewImages(this)">
-                    </div>
-                    <div class="preview-img-container" id="previewContainer"></div>
-                </div>
-
-                <div class="col-12 text-end mt-5 border-top pt-4">
-                    <button type="button" onclick="resetForm()" class="btn btn-link text-muted me-3 text-decoration-none fw-semibold">重新填寫</button>
-                    <button type="submit" class="btn-submit">
-                        <i class="bi bi-check-circle me-1"></i> 確認新增門票商品
-                    </button>
-                </div>
-
+        <div class="form-card">
+            <div class="form-card-header">
+                <h5><i class="bi bi-ticket-perforated-fill me-2" style="color:var(--primary);"></i>新增門票商品資料</h5>
+                <p>請填寫以下欄位，帶有 <span style="color:#ef4444;">*</span> 的欄位為必填。</p>
             </div>
-        </form>
-        
+
+            <div class="form-card-body">
+
+                <form id="ticketForm" th:action="@{/backend/ticket/insert}" method="post" th:object="${ticketVO}" enctype="multipart/form-data" novalidate>
+
+                    <!-- Error Summary -->
+                    <div class="error-summary" th:if="${#fields.hasAnyErrors()}">
+                        <div class="error-title">
+                            <i class="bi bi-exclamation-circle-fill"></i> 請修正以下錯誤：
+                        </div>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                        </ul>
+                    </div>
+
+                    <!-- Section: 基本資料 -->
+                    <div class="section-title"><i class="bi bi-info-circle-fill"></i> 基本資料</div>
+
+                    <div class="row g-3 mb-4">
+                        <!-- 商品名稱 -->
+                        <div class="col-md-8">
+                            <label class="form-label">門票商品名稱 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-ticket-perforated"></i></span>
+                                <input type="text" class="form-control" th:field="*{ticketName}"
+                                       th:classappend="${#fields.hasErrors('ticketName')} ? 'is-invalid'"
+                                       placeholder="例如：台北市立動物園特展門票" id="ticketName" required>
+                            </div>
+                            <div class="invalid-feedback-custom server-error-ticketName" th:if="${#fields.hasErrors('ticketName')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{ticketName}"></span>
+                            </div>
+                        </div>
+
+                        <!-- 上架狀態 -->
+                        <div class="col-md-4">
+                            <label class="form-label">上架狀態 <span class="required-mark">*</span></label>
+                            <select class="form-select" th:field="*{ticketStatus}" id="ticketStatus">
+                                <option value="1">上架中</option>
+                                <option value="0">已下架</option>
+                            </select>
+                        </div>
+
+                        <!-- 門票分類 -->
+                        <div class="col-12">
+                            <label class="form-label">選擇門票分類 (可多選)</label>
+                            <div class="card p-3" style="border: 1.5px solid #e2e8f0; border-radius: 9px; background: #fafbfc;">
+                                <div class="d-flex flex-wrap gap-4">
+                                    <div th:each="category : ${categoryList}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               th:value="${category.ticketCategoryId}" 
+                                               th:field="*{ticketCategories}"
+                                               th:id="'cate-' + ${category.ticketCategoryId}">
+                                        <label class="form-check-label text-dark" 
+                                               th:for="'cate-' + ${category.ticketCategoryId}" 
+                                               th:text="${category.ticketCategoryName}">分類</label>
+                                    </div>
+                                    <div th:if="${#lists.isEmpty(categoryList)}" class="text-muted small">
+                                        <i class="bi bi-info-circle me-1"></i>請先至門票分類管理建立分類資料。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 地址 -->
+                        <div class="col-12">
+                            <label class="form-label">景點地址 <span class="required-mark">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                <input type="text" class="form-control" th:field="*{ticketAddress}"
+                                       th:classappend="${#fields.hasErrors('ticketAddress')} ? 'is-invalid'"
+                                       placeholder="請輸入完整景點地址" id="ticketAddress" required>
+                            </div>
+                            <div class="invalid-feedback-custom server-error-ticketAddress" th:if="${#fields.hasErrors('ticketAddress')}">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span th:errors="*{ticketAddress}"></span>
+                            </div>
+                        </div>
+
+                        <!-- 描述 -->
+                        <div class="col-12">
+                            <label class="form-label">門票詳細描述 / 使用須知</label>
+                            <textarea th:field="*{ticketDescription}" class="form-control" id="ticketDescription" rows="4" 
+                                      placeholder="請填寫門票的詳細介紹、交通方式與後續核銷說明..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section: 票價設定 -->
+                    <div class="section-title"><i class="bi bi-currency-dollar"></i> 票價設定</div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="price-setup-card">
+                                <div class="price-title"><i class="bi bi-person-fill text-primary"></i> 成人票設定</div>
+                                <div class="mb-3">
+                                    <label class="form-label text-secondary small">原價 <span class="required-mark">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" th:field="*{adultOriginalPrice}" class="form-control" placeholder="0" min="0" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label text-secondary small">促銷售價 <span class="required-mark">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" th:field="*{adultPrice}" class="form-control" placeholder="0" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="price-setup-card">
+                                <div class="price-title"><i class="bi bi-backpack-fill text-success"></i> 兒童票設定</div>
+                                <div class="mb-3">
+                                    <label class="form-label text-secondary small">原價 <span class="required-mark">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" th:field="*{childOriginalPrice}" class="form-control" placeholder="0" min="0" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label text-secondary small">促銷售價 <span class="required-mark">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" th:field="*{childPrice}" class="form-control" placeholder="0" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="price-setup-card">
+                                <div class="price-title"><i class="bi bi-heart-pulse-fill text-warning"></i> 優待票設定</div>
+                                <div class="mb-3">
+                                    <label class="form-label text-secondary small">原價 <span class="required-mark">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" th:field="*{concessionOriginalPrice}" class="form-control" placeholder="0" min="0" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label text-secondary small">促銷售價 <span class="required-mark">*</span></label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" th:field="*{concessionPrice}" class="form-control" placeholder="0" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: 圖片上傳 -->
+                    <div class="section-title"><i class="bi bi-images"></i> 圖片上傳</div>
+
+                    <div class="mb-4">
+                        <label class="form-label d-flex justify-content-between align-items-center">
+                            <span>選擇商品圖片 (最多 8 張)</span>
+                            <span id="uploadCountText" class="text-secondary small">(目前 0/8 張)</span>
+                        </label>
+                        <div class="image-uploader-box" onclick="document.getElementById('ticketImageFiles').click()">
+                            <i class="bi bi-cloud-arrow-up text-muted" style="font-size: 2.2rem;"></i>
+                            <p class="mt-2 mb-1 fw-bold text-dark">點擊此處選擇圖片檔案</p>
+                            <p class="text-muted small mb-0">支援 JPG、PNG 格式，第一張自動為主封面圖，最多限上傳 8 張</p>
+                            <input type="file" id="ticketImageFiles" class="d-none" multiple accept="image/*" onchange="previewImages(this)">
+                        </div>
+                        <div class="preview-img-container" id="previewContainer"></div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div style="display:flex; gap:12px; padding-top:16px; border-top:1px solid #f1f5f9; margin-top:24px;">
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-plus-circle-fill"></i> 新增門票商品
+                        </button>
+                        <button type="button" onclick="resetForm()" class="btn btn-link text-secondary text-decoration-none fw-semibold">
+                            重新填寫
+                        </button>
+                        <a th:href="@{/backend/ticket/list}" class="btn-cancel ms-auto">
+                            <i class="bi bi-arrow-left"></i> 返回列表
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
-<script th:src="@{/js/ticket/addTicket.js}"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/ticket/addTicket.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ---- 使用者重新輸入時，清除該欄位上一次由後端回傳的錯誤 ----
+    document.querySelectorAll('input[name], select[name], textarea[name]').forEach(function (el) {
+        function clearServerError() {
+            document.querySelectorAll('.server-error-' + el.name)
+                .forEach(function (msg) {
+                    msg.style.display = 'none';
+                });
+        }
+
+        el.addEventListener('input', clearServerError);
+        el.addEventListener('change', clearServerError);
+    });
+</script>
 </body>
 </html>

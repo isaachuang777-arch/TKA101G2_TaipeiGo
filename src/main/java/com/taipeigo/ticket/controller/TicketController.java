@@ -34,6 +34,7 @@ public class TicketController {
     @GetMapping("list")
     public String listAllTicket(ModelMap model) {
         List<TicketVO> list = ticketService.getAll();
+        model.addAttribute("activePage", "ticket");
         model.addAttribute("ticketListData", list);
         return "backend/ticket/listAllTicket";
     }

@@ -267,7 +267,8 @@
             </summary>
 
             <div class="submenu">
-                <a href="#">
+                <a th:href="@{/backend/ticket/list}"
+                    th:classappend="${activePage == 'ticket'} ? ' active'">
                     <i class="bi bi-ticket-perforated"></i>
                     <span>門票管理</span>
                 </a>
