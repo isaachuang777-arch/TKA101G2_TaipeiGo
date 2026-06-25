@@ -1,5 +1,7 @@
 package com.taipeigo.product.model;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -117,7 +119,7 @@ public class ProductCartFacade {
     // 結帳最後一步用的:扣除庫存並建立訂單綁定
     public void checkoutItem(String productType, Integer productId,
                              Integer quantity, Integer custId, 
-                             Integer orderId) {
+                             Integer orderId, LocalDateTime expiryDate) {
 
         if ("ACTIVITY".equalsIgnoreCase(productType)) {
         
@@ -127,11 +129,17 @@ public class ProductCartFacade {
 
     else if ("TICKET".equalsIgnoreCase(productType)){
 
+        // 將 LocalDateTime 轉換為 Timestamp 供 TicketService 使用
+        java.sql.Timestamp sqlExpiryDate = null;
+        if (expiryDate != null) {
+            sqlExpiryDate = java.sql.Timestamp.valueOf(expiryDate);
+        }
+
         // ticketService的buyTicketSerial拿來用，但這方法一次只能處理一張，跑迴圈方式去處理
 
         for(int i = 0; i < quantity; i++){
 
-             ticketService.buyTicketSerial(productId, null, custId, orderId); 
+             ticketService.buyTicketSerial(productId, sqlExpiryDate, custId, orderId); 
         }
     } 
 
