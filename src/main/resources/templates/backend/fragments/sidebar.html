@@ -320,6 +320,11 @@
 
     </div>
 
+    <a th:href="@{/backend/orders}"
+      th:classappend="${activePage == 'orders'} ? ' active'">
+        <i class="bi bi-receipt-cutoff"></i>
+        <span>訂單管理</span>
+    </a>
     <div class="sidebar-admin-info"
          th:if="${session.adminVO != null}">
 

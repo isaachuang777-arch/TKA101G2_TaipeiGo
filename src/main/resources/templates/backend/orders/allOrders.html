@@ -3,143 +3,385 @@
 <head>
 <meta charset="UTF-8">
 <title>訂單管理</title>
-
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+ 
 <style>
+
+/* 1. 導入同學的風格變數與字體 */
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --sidebar-bg: #1a2236;
+    --sidebar-width: 240px;
+}
+
 body {
-	font-family: Arial, sans-serif;
-	margin: 20px;
+	font-family: 'Noto Sans TC', sans-serif;
+	background: #f0f4f8;
+	margin: 0;
+	color: #1e293b;
 }
 
+/* 2. 大標題與外邊距優化：強制注入 bi-receipt */
 h2 {
-	margin-bottom: 20px;
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #1a2236;
+	padding: 20px 32px;
+	background: #fff;
+	margin: 0 0 24px 0;
+	border-bottom: 1px solid #e2e8f0;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 
+h2::before {
+	font-family: "bootstrap-icons" !important;
+	content: "\F513"; 
+	color: var(--primary);
+	font-size: 1.2rem;
+}
+
+/* 讓內容整體包在跟同學一樣的寬敞間距裡 */
+div[style*="margin-left: 260px"] {
+	margin-left: 260px !important;
+	padding: 0 32px 32px 32px;
+}
+
+/* 3. 錯誤訊息美化 */
+.error-msg {
+	background: #fff1f2;
+	border: 1px solid #fecdd3;
+	border-radius: 10px;
+	padding: 14px 18px;
+	margin-bottom: 22px;
+	font-size: 0.85rem;
+	color: #be123c;
+}
+
+/* 4. 查詢區塊 */
 .search-box {
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	padding: 20px;
-	margin-bottom: 20px;
-	background: #fafafa;
+	background: #fff;
+	border-radius: 16px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+	border: 1px solid #e8edf2;
+	padding: 28px;
+	margin-bottom: 24px;
 }
 
 .search-group {
-	margin-bottom: 15px;
+	margin-bottom: 18px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
 }
 
 .search-group label {
-	display: inline-block;
-	width: 100px;
-	font-weight: bold;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	width: 110px;
+	font-size: 0.83rem;
+	font-weight: 600;
+	color: #374151;
+	margin: 0;
+}
+
+/* 針對第一個和第二個表單欄位精準注入 # 與 人頭圖示 */
+form:nth-of-type(1) .search-group label::before {
+	font-family: "bootstrap-icons" !important;
+	content: "\F423";
+	color: var(--primary);
+	font-size: 0.9rem;
+}
+
+form:nth-of-type(2) .search-group label::before {
+	font-family: "bootstrap-icons" !important;
+	content: "\F4E2";
+	color: var(--primary);
+	font-size: 0.9rem;
 }
 
 .search-group input {
-	width: 250px;
-	padding: 8px;
+	width: 280px;
+	border-radius: 9px;
+	border: 1.5px solid #e2e8f0;
+	font-size: 0.88rem;
+	padding: 8px 13px;
+	color: #1e293b;
+	transition: border .18s, box-shadow .18s;
+	background: #fff;
 }
 
-.search-btn{
-    display:inline-block;
-    padding:6px 12px;
-    text-decoration:none;
-    border-radius:5px;
-    color:white;
-    background-color:#0d6efd;
+.search-group input:focus {
+	border-color: var(--primary);
+	box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+	outline: none;
 }
 
-.search-btn:hover{
-    background-color:#0b5ed7;
+/* 5. 按鈕美化（藍色主色調）：強制注入放大鏡 bi-search */
+.search-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 20px;
+	font-size: 0.88rem;
+	font-weight: 700;
+	text-decoration: none;
+	border-radius: 10px;
+	color: white !important;
+	background-color: var(--primary);
+	border: none;
+	transition: background .2s, transform .1s;
+	cursor: pointer;
 }
 
-.error-msg {
-	color: red;
-	font-weight: bold;
-	margin-bottom: 15px;
+.search-btn:hover {
+	background-color: var(--primary-dark);
 }
 
+/* 幫按鈕標籤注入放大鏡 */
+button.search-btn::before {
+	font-family: "bootstrap-icons" !important;
+	content: "\F52A";
+	font-size: 0.85rem;
+}
+
+/* 讓「顯示全部」變成同學的取消白底按鈕風格，並注入 bi-arrow-clockwise */
+div[style*="margin-top: 15px;"] .search-btn {
+	background: #fff;
+	color: #64748b !important;
+	border: 1.5px solid #e2e8f0;
+	font-weight: 600;
+}
+
+div[style*="margin-top: 15px;"] .search-btn:hover {
+	border-color: #94a3b8;
+	color: #374151 !important;
+	background: #fff;
+}
+
+div[style*="margin-top: 15px;"] .search-btn::before {
+	font-family: "bootstrap-icons" !important;
+	content: "\F130";
+	font-size: 0.88rem;
+}
+
+/* 6. 高質感後台數據表格 */
 table {
 	width: 100%;
-	border-collapse: collapse;
+	border-collapse: separate;
+	border-spacing: 0;
+	background: #fff;
+	border-radius: 12px;
+	overflow: hidden;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+	margin-top: 10px;
 }
 
 th, td {
-	border: 1px solid #ddd;
-	padding: 10px;
+	padding: 14px 16px;
 	text-align: center;
+	vertical-align: middle;
 }
 
 th {
-	background: #f5f5f5;
+	background-color: #f8fafc;
+	color: #64748b;
+	font-weight: 600;
+	font-size: 0.82rem;
+	border-bottom: 1.5px solid #e2e8f0;
 }
 
-.btn {
-	padding: 6px 12px;
-	border-radius: 5px;
-	text-decoration: none;
-	color: white;
+td {
+	font-size: 0.88rem;
+	color: #334155;
+	border-bottom: 1px solid #f1f5f9;
 }
 
+tbody tr:hover {
+	background-color: #f8fafc;
+}
+
+tbody tr:last-child td {
+	border-bottom: none;
+}
+
+/* 表格內的「查看明細」按鈕：注入小眼睛 bi-eye-fill */
 .btn-view {
-	background: #0d6efd;
+	background: #eff6ff !important;
+	color: var(--primary) !important;
+	border-radius: 6px;
+	padding: 6px 14px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	transition: all .2s;
+}
+
+.btn-view:hover {
+	background: var(--primary) !important;
+	color: #fff !important;
+}
+
+.btn-view::before {
+	font-family: "bootstrap-icons" !important;
+	content: "\F33E";
+	font-size: 0.85rem;
+}
+
+/* 7. 分頁導覽列 CSS (對齊同學色系) */
+.pagination-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 24px;
+	padding: 0 4px;
+}
+
+.pagination-info {
+	font-size: 0.83rem;
+	color: #64748b;
+}
+
+.pagination-info strong {
+	color: #1e293b;
+}
+
+.pagination-list {
+	display: flex;
+	gap: 6px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.pagination-item a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 36px;
+	height: 36px;
+	padding: 0 8px;
+	border-radius: 8px;
+	border: 1.5px solid #e2e8f0;
+	background: #fff;
+	color: #64748b;
+	text-decoration: none;
+	font-size: 0.85rem;
+	font-weight: 600;
+	transition: all .2s;
+}
+
+.pagination-item a:hover {
+	border-color: #94a3b8;
+	color: #374151;
+}
+
+.pagination-item.active a {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: #fff;
+}
+
+.pagination-item.disabled a {
+	background: #f1f5f9;
+	border-color: #e2e8f0;
+	color: #cbd5e1;
+	pointer-events: none;
 }
 </style>
-
 </head>
-
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <body>
+	<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+	<div style="margin-left: 260px">
+		<h2>訂單管理</h2>
+		<div class="error-msg" th:if="${errorMessage}"
+			th:utext="${errorMessage}"></div>
+		<div class="search-box">
 
-	<h2>訂單管理</h2>
-	<div class="error-msg" th:if="${errorMessage}"
-		th:utext="${errorMessage}"></div>
-	<div class="search-box">
+			<!-- 訂單編號查詢 -->
+			<form th:action="@{/backend/orders/search_ordersId}" method="post">
+				<div class="search-group">
+					<label>訂單編號</label> <input type="text" name="ordersId"
+						placeholder="請輸入訂單編號">
+					<button type="submit" class="search-btn">查詢</button>
+				</div>
+			</form>
 
-		<!-- 訂單編號查詢 -->
-		<form th:action="@{/orders/search_ordersId}" method="post">
-			<div class="search-group">
-				<label>訂單編號</label> <input type="text" name="ordersId" placeholder="請輸入訂單編號">
-				<button type="submit" class="search-btn">查詢</button>
+			<!-- 會員編號查詢 -->
+			<form th:action="@{/backend/orders/search_custId}" method="post">
+				<div class="search-group">
+					<label>會員編號</label> <input type="text" name="custId" placeholder="請輸入會員編號">
+					<button type="submit" class="search-btn">查詢</button>
+				</div>
+			</form>
+
+			<div style="margin-top: 15px;">
+				<a th:href="@{/backend/orders}" class="search-btn"> 顯示全部 </a>
 			</div>
-		</form>
-
-		<!-- 會員編號查詢 -->
-		<form th:action="@{/orders/search_custId}" method="post">
-			<div class="search-group">
-				<label>會員編號</label> <input type="text" name="custId"placeholder="請輸入會員編號">
-				<button type="submit" class="search-btn">查詢</button>
-			</div>
-		</form>
-
-		<div style="margin-top: 15px;">
-			<a th:href="@{/orders}" class="search-btn"> 顯示全部 </a>
 		</div>
-	</div>
-	
-	<table>
-		<thead>
-			<tr>
-				<th>訂單編號</th>
-				<th>會員編號</th>
-				<th>訂單總額</th>
-				<th>訂單狀態</th>
-				<th>付款狀態</th>
-				<th>付款方式</th>
-				<th>建立時間</th>
-				<th>明細確認</th>
-			</tr>
-		</thead>
 
-		<tbody>
-			<tr th:each="order : ${allOrders}">
-				<td th:text="${order.orderId}"></td>
-				<td th:text="${order.custId}"></td>
-				<td th:text="${order.orderTotal}"></td>
-				<td th:text="${order.orderStatus}"></td>
-				<td th:text="${order.paymentStatus}"></td>
-				<td th:text="${order.paymentMethod}"></td>
-				<td th:text="${order.createdAt}"></td>
-				<td><a class="btn btn-view"
-					th:href="@{/orderDetail/{id}(id=${order.orderId})}"> 查看明細 </a></td>
-			</tr>
-		</tbody>
-	</table>
+		<table>
+			<thead>
+				<tr>
+					<th>訂單編號</th>
+					<th>會員編號</th>
+					<th>訂單總額</th>
+					<th>訂單狀態</th>
+					<th>付款狀態</th>
+					<th>付款方式</th>
+					<th>建立時間</th>
+					<th>明細確認</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr th:each="order : ${allOrders}">
+					<td th:text="${order.orderId}"></td>
+					<td th:text="${order.custId}"></td>
+					<td th:text="${order.orderTotal}"></td>
+					<td th:text="${order.orderStatus}"></td>
+					<td th:text="${order.paymentStatus}"></td>
+					<td th:text="${order.paymentMethod}"></td>
+					<td th:text="${order.createdAt}"></td>
+					<td><a class="btn btn-view"
+						th:href="@{/backend/orderDetail/{id}(id=${order.orderId})}">查看明細 </a></td>
+				</tr>
+			</tbody>
+
+		</table>
+		<div class="pagination-container"
+			th:if="${totalPages != null and totalPages > 0}">
+			<div class="pagination-info"> 共 <strong th:text="${totalItems}">0</strong> 筆資料， 目前顯示第 <strong
+					th:text="${currentPage + 1}">1</strong> / <strong th:text="${totalPages}">1</strong> 頁</div>
+
+			<ul class="pagination-list">
+				<li class="pagination-item"
+					th:classappend="${currentPage == 0} ? 'disabled'"><a
+					th:href="@{/backend/orders(page=${currentPage - 1})}"> 
+					<i class="bi bi-chevron-left"></i>
+				</a></li>
+
+				<li class="pagination-item"
+					th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+					th:classappend="${pageNumber == currentPage} ? 'active'"><a th:href="@{/backend/orders(page=${pageNumber})}"
+					th:text="${pageNumber + 1}">1</a>
+				</li>
+
+				<li class="pagination-item"
+					th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+					<a th:href="@{/backend/orders(page=${currentPage + 1})}"> <i class="bi bi-chevron-right"></i></a>
+				</li>
+			</ul>
+		</div>
 </body>
 </html>

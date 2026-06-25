@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<title>訂單明細</title>
+
+<style>
+
+.container{
+    display:flex;
+    max-width:1200px;
+    margin:30px auto;
+}
+
+.content{
+    flex:1;
+    padding:30px;
+}
+
+.page-title{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.order-card{
+    background:#f8f9fa;
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+.order-card p{
+    margin:10px 0;
+}
+
+.detail-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+}
+
+.detail-table th{
+    background:#f5f5f5;
+    border:1px solid #ddd;
+    padding:12px;
+}
+
+.detail-table td{
+    border:1px solid #ddd;
+    padding:12px;
+    text-align:center;
+}
+
+.total-row{
+    background:#fafafa;
+    font-weight:bold;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:10px 18px;
+    background:#ff7a00;
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
+}
+
+.back-btn:hover{
+    background:#e66d00;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- 左側會員選單Sidebar -->
+    <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
+
+    <!-- 訂單明細內容 -->
+    <div class="content">
+        <div class="page-title">訂單明細</div>
+        <div class="order-card">
+            <p>
+                <strong>訂單編號：</strong>
+                <span th:text="${order.orderId}"></span>
+            </p>
+
+            <p>
+                <strong>建立日期：</strong>
+                <span th:text="${#dates.format(order.createdAt,'yyyy-MM-dd')}"></span>
+            </p>
+
+            <p>
+                <strong>訂單狀態：</strong>
+                <span th:text="${order.orderStatus}"></span>
+            </p>
+
+            <p>
+                <strong>付款狀態：</strong>
+                <span th:text="${order.paymentStatus}"></span>
+            </p>
+
+            <p>
+                <strong>付款方式：</strong>
+                <span th:text="${order.paymentMethod}"></span>
+            </p>
+        </div>
+
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>商品編號</th>
+                    <th>購買數量</th>
+                    <th>小計</th>
+                    <th>備註</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="detail : ${detailList}">
+                    <td th:text="${detail.productId}"></td>
+                    <td th:text="${detail.productQuantity}"></td>
+                    <td> NT$<span th:text="${detail.orderDetailSubtotal}"></span></td>
+                    <td th:text="${detail.orderDetailRemark}"></td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="2">訂單總金額</td>
+                    <td colspan="2">NT$<span th:text="${order.orderTotal}"></span></td>
+                </tr>
+            </tbody>
+        </table>
+        <a th:href="@{/frontend/customer/orders}" class="back-btn">返回我的訂單</a>
+    </div>
+</div>
+
+</body>
+</html>
