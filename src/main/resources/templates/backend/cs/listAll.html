@@ -214,6 +214,58 @@
             margin: 0 0 8px 0;
             color: var(--text-main);
         }
+
+        /* 分頁元件 CSS */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 24px 0 0 0;
+            gap: 8px;
+        }
+
+        .page-item {
+            display: inline-block;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background-color: #e0e7ff;
+            color: var(--primary);
+            border-color: #c7d2fe;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(67, 24, 255, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            color: var(--text-muted);
+            background-color: #f8fafc;
+            border-color: var(--border-color);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -300,7 +352,36 @@
                 </tr>
             </tbody>
         </table>
-
+		<!-- 分頁區塊 -->
+			<nav th:if="${pageResult != null and pageResult.totalPages > 1}" aria-label="Page navigation">
+			    <ul class="pagination">
+			        <!-- 上一頁 -->
+			        <li class="page-item" th:classappend="${pageResult.first} ? 'disabled'">
+			            <a class="page-link" 
+			               th:href="@{/backend/cs/listAll(page=${pageResult.number}, caseStatus=${caseStatus}, caseCate=${caseCate}, keyword=${keyword}, urgent=${urgent}, unclosed=${unclosed})}">
+			                <i class="fa-solid fa-angle-left"></i> 上一頁
+			            </a>
+			        </li>
+			        
+			        <!-- 頁碼自動產生  -->
+			        <li class="page-item" 
+			            th:each="i : ${#numbers.sequence(1, pageResult.totalPages)}" 
+			            th:classappend="${pageResult.number + 1 == i} ? 'active'">
+			            <a class="page-link" 
+			               th:href="@{/backend/cs/listAll(page=${i}, caseStatus=${caseStatus}, caseCate=${caseCate}, keyword=${keyword}, urgent=${urgent}, unclosed=${unclosed})}" 
+			               th:text="${i}">
+			            </a>
+			        </li>
+			        
+			        <!-- 下一頁 -->
+			        <li class="page-item" th:classappend="${pageResult.last} ? 'disabled'">
+			            <a class="page-link" 
+			               th:href="@{/backend/cs/listAll(page=${pageResult.number + 2}, caseStatus=${caseStatus}, caseCate=${caseCate}, keyword=${keyword}, urgent=${urgent}, unclosed=${unclosed})}">
+			                下一頁 <i class="fa-solid fa-angle-right"></i>
+			            </a>
+			        </li>
+			    </ul>
+			</nav>
         <!-- 查無資料空狀態 -->
         <div class="empty-state" th:if="${csList == null or csList.isEmpty()}">
             <i class="fa-solid fa-box-open"></i>

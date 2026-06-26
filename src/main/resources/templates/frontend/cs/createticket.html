@@ -1,62 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>台北GO了沒 - 客服中心 - 提出新詢問</title>
-<style >
-textarea {
-resize : none;
-}
-</style>
+<link rel="stylesheet" th:href="@{/css/header.css}">
 <link rel="stylesheet" th:href="@{/css/footer.css}">
 <link rel="stylesheet" th:href="@{/css/cs/cs.css}">
+<link rel="stylesheet" th:href="@{/css/index/header.css}">
+<link rel="stylesheet" th:href="@{/css/index/heroSearch.css}">
+<link rel="stylesheet" th:href="@{/css/index/footer.css}">
+<link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
 </head>
 <body>
-<div class="main-box">
-<h2>客服中心 - 提出新詢問</h2>
+<div th:replace="~{frontend/index/header :: header}"></div>
 
-<br>
-<div>
-    <a th:href="@{/CustomerService/index}">
-        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-        返回 客服中心 首頁
-        </button>
-    </a>
-   </div>
-<hr>
-<span class="info">請填寫以下資料，便於客服人員理解您的狀況。</span>
-<form th:action="@{/CustomerService/createticket}" method="post" enctype="multipart/formdate">
+<div class="customer-container">
+    <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
+    
+    <div class="customer-content">
+        <div class="main-box">
+            <h2>客服中心 - 提出新詢問</h2>
 
-<table>
-	<tr>
-		<td>問題分類</td>
-		<td>
-			<select name="caseCate"> 
-		    <option value="11">操作問題</option>
-		    <option value="12">訂單問題</option>
-			<option value="13">其他問題</option>
-			</select>
-		</td>
-	</tr>
+            <div style="margin-bottom: 20px;">
+                <a th:href="@{/CustomerService/index}" class="btn-brand">返回客服中心首頁</a>
+            </div>
 
-	<tr>
-		<td>詳細問題</td>
-		<td><textarea name="msg" cols="100" rows="10" ></textarea></td>
-	</tr>
-	
-	<tr><!--TODO之後的圖片上傳-->
-		<td></td>
-		<td></td>
-	</tr>
-</table>
-	<button type="submit" style="background-color: #f05a28; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">送出問題</button>
+            <div style="color: var(--text-muted); margin-bottom: 15px;">請填寫以下資料，便於客服人員理解您的狀況。</div>
+                        <div th:if="${successMsg}" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; margin-bottom: 20px; border-radius: 5px; position: relative;">
+                <span th:text="${successMsg}"></span>
+                <button type="button" onclick="this.parentElement.style.display='none';" style="position: absolute; right: 10px; top: 12px; background: none; border: none; cursor: pointer; font-size: 16px;">✖</button>
+            </div>
+            
+            <div th:if="${errorMsg != null}" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                <p th:text="${errorMsg}" style="margin: 0;"></p>
+            </div>
+            <form th:action="@{/CustomerService/createticket}" method="post" enctype="multipart/form-data">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px;">問題分類</label>
+                    <select name="caseCate" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #dcdcdc; font-size: 15px;"> 
+					    <option value="11" th:selected="${caseCate == 11}">操作問題</option>
+					    <option value="12" th:selected="${caseCate == 12}">訂單問題</option>
+					    <option value="13" th:selected="${caseCate == 13}">其他問題</option>
+                    </select>
+                </div>
 
-
-    </a>
-</form>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px;">詳細問題</label>
+                    <textarea name="msg"  th:text="${msg}" rows="10" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #dcdcdc; font-size: 15px; resize: vertical; box-sizing: border-box;"></textarea>
+                </div>
+                
+                <div style="text-align: right;">
+                    <button type="submit" class="btn-brand">送出問題</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-   <!-- Footer -->
-    <div th:replace="~{frontend/index/footer :: footer}"></div>
+
+<div th:replace="~{frontend/index/footer :: footer}"></div>
 </body>
 </html>
