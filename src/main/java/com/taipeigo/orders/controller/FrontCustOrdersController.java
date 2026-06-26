@@ -18,7 +18,7 @@ import com.taipeigo.orders.model.OrdersVO;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-/* 凡是網址開頭是 /orders 的請求，都交給這個 Controller 處理 */
+/* 凡是網址開頭是 /frontend 的請求，都交給這個 Controller 處理 */
 @RequestMapping("/frontend")
 
 public class FrontCustOrdersController {

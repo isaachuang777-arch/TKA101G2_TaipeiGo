@@ -4,13 +4,15 @@
 <head>
 <meta charset="UTF-8">
 <title>訂單明細</title>
+<link rel="stylesheet" th:href="@{/css/index/header.css}">
+<link rel="stylesheet" th:href="@{/css/index/footer.css}">
 
 <style>
-
 .container{
     display:flex;
     max-width:1200px;
-    margin:30px auto;
+    margin: 30px 0 30px 60px;
+    gap: 24px;
 }
 
 .content{
@@ -19,57 +21,86 @@
 }
 
 .page-title{
-    font-size:28px;
-    font-weight:700;
-    margin-bottom:20px;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #333;
 }
 
 .order-card{
-    background:#f8f9fa;
-    border-radius:10px;
-    padding:20px;
-    margin-bottom:25px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
 }
 
 .order-card p{
-    margin:10px 0;
+    margin: 12px 0;
+    font-size: 15px;
+    color: #555;
 }
 
+.order-card strong{
+    color: #444;
+    font-weight: 600;
+}
 .detail-table{
     width:100%;
-    border-collapse:collapse;
+    border-collapse: separate; 
+    border-spacing: 0;
     background:#fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    overflow: hidden; 
 }
 
 .detail-table th{
-    background:#f5f5f5;
-    border:1px solid #ddd;
-    padding:12px;
+    background:#fdfdfd;
+    border-bottom: 2px solid #eee;
+    padding:14px 12px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #444;
 }
 
 .detail-table td{
-    border:1px solid #ddd;
-    padding:12px;
+    border-bottom: 1px solid #eee;
+    padding: 16px 12px;
     text-align:center;
+    font-size: 15px;
+    color: #555;
 }
 
 .total-row{
-    background:#fafafa;
-    font-weight:bold;
+    background: #fdfdfd;
+    font-weight: 700;
+}
+
+.total-row td {
+    color: #ff7a00; 
+    font-size: 16px;
+    border-bottom: none; 
 }
 
 .back-btn{
     display:inline-block;
-    margin-top:20px;
-    padding:10px 18px;
+    margin-top:24px;
+    padding:12px 24px; 
     background:#ff7a00;
     color:white;
     text-decoration:none;
-    border-radius:6px;
+    border-radius: 8px; 
+    font-size: 15px;
+    font-weight: 600;
+    transition: background 0.2s ease;
 }
 
 .back-btn:hover{
-    background:#e66d00;
+    background:#e86f00; 
 }
 
 </style>
@@ -77,7 +108,7 @@
 </head>
 
 <body>
-
+<div th:replace="~{frontend/index/header :: header}"></div>
 <div class="container">
 
     <!-- 左側會員選單Sidebar -->
@@ -139,6 +170,7 @@
         <a th:href="@{/frontend/customer/orders}" class="back-btn">返回我的訂單</a>
     </div>
 </div>
+<div th:replace="~{frontend/index/footer :: footer}"></div>
 
 </body>
 </html>
