@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +34,8 @@ public class CsFrontendController {
 	@Autowired
 	private CsService csService;
 	
-	private static final Path CS_IMAGE_DIR = Path.of("src/main/resources/static/images/cs");
+	@Value("${taipeigo.upload.base-dir}")
+	private String uploadBaseDir;
 	
 //掛客服中心首頁
 	@GetMapping({"/index","/"})
@@ -52,7 +54,7 @@ public class CsFrontendController {
 	public String createticketToDB(HttpSession session, 
 			@RequestParam("caseCate") Byte caseCate,
 			@RequestParam("msg") String msg, 
-			@RequestParam (value = "msgImgsrc", required = false) String msgImgsrc, 
+			@RequestParam (value = "uploadImg", required = false) MultipartFile uploadImg, 
 			Model model,
 			RedirectAttributes redirectAttributes) {
 
@@ -69,7 +71,29 @@ public class CsFrontendController {
 	    }		
 		
 		//2. 上傳圖片
-			//TODO
+		String msgImgsrc = null;
+		if (uploadImg != null && !uploadImg.isEmpty()) {
+			try {
+				String originalFilename = uploadImg.getOriginalFilename();
+				String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+				String newFileName = UUID.randomUUID().toString() + extension;
+				
+				Path csDirPath = Path.of(uploadBaseDir, "cs");
+				if (!Files.exists(csDirPath)) {
+					Files.createDirectories(csDirPath);
+				}
+				
+				Path filePath = csDirPath.resolve(newFileName);
+				uploadImg.transferTo(filePath);
+				
+				msgImgsrc = "/images/cs/" + newFileName;
+			} catch (IOException e) {
+				e.printStackTrace();
+				redirectAttributes.addFlashAttribute("errorMsg", "圖片上傳失敗，請稍後再試！");
+				return "redirect:/CustomerService/createticket";
+			}
+		}
+
 		//3.
 		try {
 			//把newticket丟給service
@@ -142,7 +166,7 @@ public class CsFrontendController {
 		public String custReply(HttpSession session,
 								@RequestParam("csId") Integer csId,
 								@RequestParam("msg") String msg,
-								@RequestParam (value = "msgImgsrc", required = false) String msgImgsrc,
+								@RequestParam (value = "uploadImg", required = false) MultipartFile uploadImg,
 								RedirectAttributes redirectAttributes) 
 		{
 			//驗證字數
@@ -160,7 +184,30 @@ public class CsFrontendController {
 			//存留言+who
 			csmsgVO.setMsgContent(msg);
 			csmsgVO.setCustomerVO(customerVO);
-			//TODO 上傳圖片
+			
+			//上傳圖片
+			if (uploadImg != null && !uploadImg.isEmpty()) {
+				try {
+					String originalFilename = uploadImg.getOriginalFilename();
+					String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+					String newFileName = UUID.randomUUID().toString() + extension;
+					
+					Path csDirPath = Path.of(uploadBaseDir, "cs");
+					if (!Files.exists(csDirPath)) {
+						Files.createDirectories(csDirPath);
+					}
+					
+					Path filePath = csDirPath.resolve(newFileName);
+					uploadImg.transferTo(filePath);
+					
+					csmsgVO.setMsgImgsrc("/images/cs/" + newFileName);
+				} catch (IOException e) {
+					e.printStackTrace();
+					redirectAttributes.addFlashAttribute("errorMsg", "圖片上傳失敗，請稍後再試！");
+					return "redirect:/CustomerService/viewmsgs?csId=" + csId;
+				}
+			}
+			
 			try {
 			//丟回Service做事
 			csService.customerreply(csmsgVO , csId);

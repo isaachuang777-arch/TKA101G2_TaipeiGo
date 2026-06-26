@@ -45,32 +45,32 @@ public class CsService {
 	}
 	//模糊搜尋Customer[分頁]
 	public Page<CsVO> getCsByCustContainingByPage(String keyword, int pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		Pageable pageable = PageRequest.of(pageNumber -1, 10 , Sort.by("createdAt").ascending());
 		return csRepository.findByCustomerVO_CustNameContainingOrCustomerVO_CustAccountContaining(keyword, keyword,  pageable);
 	}
 	//問題類別分類的列表 [分頁]
 	public Page<CsVO> getCsByCaseCate(Byte caseCate, int pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		Pageable pageable = PageRequest.of(pageNumber -1, 10, Sort.by("createdAt").ascending());
 		return csRepository.findByCaseCate(caseCate, pageable);
 	}
 	//狀態類別分類的列表 [分頁]
 	public Page<CsVO> getCsByCaseStatus(Byte caseStatus, int pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		Pageable pageable = PageRequest.of(pageNumber -1, 10, Sort.by("createdAt").ascending());
 		return csRepository.findByCaseStatus(caseStatus, pageable);	
 	}
 	//最新緊急案件列表(條件: 24小時內 還是new的) [分頁]
 	public Page<CsVO> getUrgentCs(java.sql.Timestamp time, int pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		Pageable pageable = PageRequest.of(pageNumber -1, 10, Sort.by("createdAt").ascending());
 		return csRepository.findByCaseStatusAndCreatedAtAfter(CsVO.SsCreated, time, pageable);
 	}
 	//最新緊急案件列表(條件: 24小時內 還是new的) [分頁]for Index
 	public Page<CsVO> getUrgentCsforindex(java.sql.Timestamp time, int pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber -1, 5);
+		Pageable pageable = PageRequest.of(pageNumber -1, 5, Sort.by("createdAt").ascending());
 		return csRepository.findByCaseStatusAndCreatedAtAfter(CsVO.SsCreated, time, pageable);
 	}
 	//非結案狀態的列表 !=3 [分頁]
     public Page <CsVO> getActiveCs(int pageNumber){
-		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		Pageable pageable = PageRequest.of(pageNumber -1, 10, Sort.by("createdAt").ascending());
 		return csRepository.findByCaseStatusNot(CsVO.SsResovled, pageable);	
     }	
   //後台管理員的reply 跟cust相同 只是增加senderType判斷
@@ -87,6 +87,7 @@ public class CsService {
       
   		//newcsmsgVO要有csId 這樣才會關聯到(因為csId 是FK)
   		newcsmsgVO.setCsVO(csVO);
+  		
   		//如果senderType是admin=>setSenderType + csVO.setCaseStatus
   		if(senderType == CsMsgVO.Sradmin){
   		newcsmsgVO.setSenderType(CsMsgVO.Sradmin);

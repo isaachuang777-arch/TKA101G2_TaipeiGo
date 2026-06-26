@@ -36,6 +36,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
          System.out.println("  ticketLocation: " + ticketLocation);
          System.out.println("==================================================");
         */
-       
+     // ====== 加入客服系統 (cs) 的圖片路徑對應 ======
+        String csLocation = Paths.get(uploadBaseDir, "cs").toUri().toString();
+        if (!csLocation.endsWith("/")) {
+            csLocation += "/";
+        }
+        registry.addResourceHandler("/images/cs/**")
+                .addResourceLocations(csLocation);
     }
 }

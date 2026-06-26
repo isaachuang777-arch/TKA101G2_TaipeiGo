@@ -1,8 +1,14 @@
 package com.taipeigo.cs.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.taipeigo.admin.model.AdminVO;
@@ -31,6 +38,8 @@ public class CsBackendController {
 	private CsRepository csRepository;
 	@Autowired
 	private CsMsgRepository csMsgRepository;
+	@Value("${taipeigo.upload.base-dir}")
+	private String uploadBaseDir;
 	
 //後台客服首頁+dashboard
 	@GetMapping({"/", "/index", "/dashboard"})
@@ -123,7 +132,7 @@ public class CsBackendController {
 		public String backendCsReply(HttpSession session,
 								@RequestParam("csId") Integer csId,
 								@RequestParam("msg") String msg,
-								@RequestParam (value = "msgImgsrc", required = false) String msgImgsrc,
+								@RequestParam (value = "uploadImg", required = false) MultipartFile uploadImg, 
 								@RequestParam ("senderType") Byte senderType,
 								RedirectAttributes redirectAttributes)
 		{
@@ -142,7 +151,36 @@ public class CsBackendController {
 			//存留言+who
 			csmsgVO.setMsgContent(msg);
 			csmsgVO.setAdminVO(adminVO);
-			//TODO 上傳圖片
+			//4. 上傳圖片
+			String msgImgsrc = null; // 預設沒有圖片
+		    if (uploadImg != null && !uploadImg.isEmpty()) {
+				try {
+					// 取得原本的副檔名 (例如 .jpg, .png)
+					String originalFilename = uploadImg.getOriginalFilename();
+					String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+					
+					// 為了避免檔名重複被覆蓋，我們用 UUID 產生亂碼作為新檔名
+					String newFileName = UUID.randomUUID().toString() + extension;
+					
+					// 建立我們要存檔的實體資料夾路徑 (C:/taipeiGo_uploads/images/cs)
+					Path csDirPath = Paths.get(uploadBaseDir, "cs");
+					if (!Files.exists(csDirPath)) {
+						Files.createDirectories(csDirPath); // 如果資料夾不存在就自動建立
+					}
+					
+					// 把檔案存進去
+					Path filePath = csDirPath.resolve(newFileName);
+					uploadImg.transferTo(filePath);
+					
+					// 準備要存進資料庫的相對路徑 (對應到 WebMvcConfig 裡的網址)
+					msgImgsrc = "/images/cs/" + newFileName;
+					csmsgVO.setMsgImgsrc(msgImgsrc);					
+				} catch (IOException e) {
+					e.printStackTrace();
+					redirectAttributes.addFlashAttribute("errorMsg", "圖片上傳失敗，請稍後再試！");
+					return "redirect:/backend/cs/view?csId=" + csId;
+				}
+		    }
 			try {
 			//丟回Service做事
 			csService.adminorworknotereply(csmsgVO , csId, senderType);
