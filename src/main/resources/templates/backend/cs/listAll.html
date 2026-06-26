@@ -283,14 +283,15 @@
             <span class="filter-label"><i class="fa-solid fa-filter"></i> 綜合</span>
             <a href="/backend/cs/listAll" class="filter-btn" th:classappend="${param.caseStatus == null and param.caseCate == null and param.urgent == null and param.unclosed == null} ? 'active' : ''"><i class="fa-solid fa-bars"></i> 所有案件</a>
             <a href="/backend/cs/listAll?unclosed=true" class="filter-btn" th:classappend="${param.unclosed != null} ? 'active' : ''"><i class="fa-solid fa-envelope-open-text"></i> 未結案</a>
-            <a href="/backend/cs/listAll?urgent=true" class="filter-btn urgent" th:classappend="${param.urgent != null} ? 'active' : ''"><i class="fa-solid fa-fire"></i> 1天內沒回覆</a>
+                        <a href="/backend/cs/listAll?caseStatus=3" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '3'} ? 'active' : ''"><i class="fa-solid fa-check-circle"></i> 已結案</a>
+            
         </div>
         <div class="filter-group">
             <span class="filter-label"><i class="fa-solid fa-bars-progress"></i> 狀態</span>
+            <a href="/backend/cs/listAll?urgent=true" class="filter-btn urgent" th:classappend="${param.urgent != null} ? 'active' : ''"><i class="fa-solid fa-fire"></i> 1天內沒回覆</a>
             <a href="/backend/cs/listAll?caseStatus=0" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '0'} ? 'active' : ''"><i class="fa-solid fa-asterisk"></i> 新增</a>
             <a href="/backend/cs/listAll?caseStatus=1" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '1'} ? 'active' : ''"><i class="fa-solid fa-hourglass-half"></i> 待處理</a>
             <a href="/backend/cs/listAll?caseStatus=2" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '2'} ? 'active' : ''"><i class="fa-solid fa-comment-dots"></i> 已回覆</a>
-            <a href="/backend/cs/listAll?caseStatus=3" class="filter-btn" th:classappend="${param.caseStatus != null and param.caseStatus[0] == '3'} ? 'active' : ''"><i class="fa-solid fa-check-circle"></i> 已結案</a>
         </div>
         <div class="filter-group">
             <span class="filter-label"><i class="fa-solid fa-folder-open"></i> 分類</span>

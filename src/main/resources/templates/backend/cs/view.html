@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>案件詳情 | TaipeiGO 後台</title>
@@ -9,30 +10,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #f4f7f6; /* 使用者指定的背景色 */
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
             --primary: #4318ff;
-            --text-main: #1e293b; /* 更深的顏色，方便閱讀 */
+            --text-main: #1e293b;
+
             --border-color: #e2e8f0;
-            
+
             /* Sender Colors (Border only) */
-            --color-customer: #ff5b00; /* 橘色 */
-            --color-admin: #3b82f6;    /* 藍色 */
-            --color-system: #9ca3af;  
-            --color-worknote: #eab308; 
+            --color-customer: #ff5b00;
+            /* 橘色 */
+            --color-admin: #3b82f6;
+            /* 藍色 */
+            --color-system: #9ca3af;
+            --color-worknote: #eab308;
         }
 
         body {
             margin: 0;
             padding: 0;
-            padding-left: 260px; /* 避開左側 260px 的 Sidebar */
+            padding-left: 260px;
+            /* 避開左側 260px 的 Sidebar */
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
         }
 
         @media (max-width: 768px) {
-            body { padding-left: 0; }
+            body {
+                padding-left: 0;
+            }
         }
 
         .container {
@@ -60,7 +67,10 @@
             font-weight: 600;
             transition: color 0.2s;
         }
-        .btn-back:hover { color: var(--primary); }
+
+        .btn-back:hover {
+            color: var(--primary);
+        }
 
         /* 案件資訊大白框 */
         .info-card {
@@ -74,7 +84,7 @@
         /* 每一列的排版 */
         .info-row {
             display: flex;
-            gap: 60px; 
+            gap: 60px;
             margin-bottom: 24px;
         }
 
@@ -82,12 +92,13 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            min-width: 150px; /* 確保欄位寬度一致 */
+            min-width: 150px;
+            /* 確保欄位寬度一致 */
         }
 
         .info-label {
             font-size: 14px;
-            color: #64748b; 
+            color: #64748b;
             font-weight: 700;
         }
 
@@ -97,7 +108,7 @@
             color: var(--text-main);
         }
 
-        
+
         .badge {
             padding: 4px 10px;
             border-radius: 6px;
@@ -105,28 +116,58 @@
             font-weight: 700;
             display: inline-block;
         }
-        .status-0 { background: #fef2f2; color: #ef4444; }
-        .status-1 { background: #fffbeb; color: #f59e0b; }
-        .status-2 { background: #eff6ff; color: #3b82f6; }
-        .status-3 { background: #ecfdf5; color: #10b981; }
-        
-        .cate-11 { background: #e0e7ff; color: #4338ca; }
-        .cate-12 { background: #ffedd5; color: #c2410c; }
-        .cate-13 { background: #f3f4f6; color: #4b5563; }
+
+        .status-0 {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .status-1 {
+            background: #fffbeb;
+            color: #f59e0b;
+        }
+
+        .status-2 {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .status-3 {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .cate-11 {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .cate-12 {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .cate-13 {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
 
         /* 初始問題描述 */
         .initial-message {
             background-color: #ffffff;
-            border: 2px solid #1e293b; /* 黑色框 */
+            border: 2px solid #1e293b;
+            /* 黑色框 */
             padding: 12px 16px;
             border-radius: 8px;
-            margin-top: 24px; 
+            margin-top: 24px;
         }
+
         .initial-message h3 {
-            margin: 0 0 8px 0; 
+            margin: 0 0 8px 0;
             font-size: 15px;
             color: #1e293b;
         }
+
         .initial-message p {
             margin: 0;
             font-size: 15px;
@@ -143,215 +184,332 @@
         }
 
         .msg-box {
-            background-color: #ffffff; /* 白底 */
+            background-color: #ffffff;
+            /* 白底 */
             border: 2px solid;
             border-radius: 12px;
-            padding: 12px 16px; 
-            width: 100%; 
-            box-sizing: border-box; 
+            padding: 12px 16px;
+            width: 100%;
+            box-sizing: border-box;
             text-align: left;
         }
 
         /* 根據 Sender 決定外框顏色 */
-        .sender-0 { border-color: var(--color-customer); }
-        .sender-1 { border-color: var(--color-admin); }
-        .sender-3 { border-color: var(--color-system); }
-        .sender-7 { 
-            border-color: var(--color-worknote); 
-            background-color: #fffbeb; /* 仿便利貼 */
+        .sender-0 {
+            border-color: var(--color-customer);
+        }
+
+        .sender-1 {
+            border-color: var(--color-admin);
+        }
+
+        .sender-3 {
+            border-color: var(--color-system);
+        }
+
+        .sender-7 {
+            border-color: var(--color-worknote);
+            background-color: #fffbeb;
+            /* 仿便利貼 */
         }
 
         /* 留言者名稱  */
         .msg-header {
             font-size: 14px;
             font-weight: 700;
-            margin-bottom: 6px; 
+            margin-bottom: 6px;
             color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .msg-header i { font-size: 16px; }
-        .sender-0 .msg-header i { color: var(--color-customer); }
-        .sender-1 .msg-header i { color: var(--color-admin); }
-        .sender-3 .msg-header i { color: var(--color-system); }
-        .sender-7 .msg-header i { color: var(--color-worknote); }
+        .msg-header i {
+            font-size: 16px;
+        }
+
+        .sender-0 .msg-header i {
+            color: var(--color-customer);
+        }
+
+        .sender-1 .msg-header i {
+            color: var(--color-admin);
+        }
+
+        .sender-3 .msg-header i {
+            color: var(--color-system);
+        }
+
+        .sender-7 .msg-header i {
+            color: var(--color-worknote);
+        }
 
         .msg-content {
             font-size: 15px;
             line-height: 1.5;
             color: var(--text-main);
             white-space: pre-wrap;
-            margin: 0 0 6px 0; 
+            margin: 0 0 6px 0;
         }
 
         /* 留言時間 */
         .msg-time {
-            font-size: 12px; 
+            font-size: 12px;
             font-weight: 600;
-            color: #64748b; 
+            color: #64748b;
         }
 
+        /* 自訂上傳按鈕 */
+        .file-upload-wrapper {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .file-upload-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 16px; background-color: #fff;
+            border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main);
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+            height: 42px; box-sizing: border-box;
+        }
+        .file-upload-btn:hover {
+            background-color: #eff6ff; color: var(--primary); border-color: #bfdbfe;
+        }
+        .file-upload-btn i { margin-right: 6px; }
+        .file-upload-text { 
+            font-size: 14px; color: #64748b; 
+            max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block;
+        }
+        input[type="file"].hidden-upload { display: none; }
+
+        /* 圖片縮圖與燈箱特效 */
+        .chat-image {
+            max-width: 250px; max-height: 250px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid #e2e8f0; cursor: pointer; transition: transform 0.2s;
+        }
+        .chat-image:hover {
+            transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .lightbox-modal {
+            display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+        }
+        .lightbox-modal.show { display: flex; opacity: 1; }
+        .lightbox-content {
+            max-width: 90%; max-height: 90vh; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s;
+        }
+        .lightbox-modal.show .lightbox-content { transform: scale(1); }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; transition: color 0.2s;
+        }
+        .lightbox-close:hover { color: var(--primary); }
     </style>
 </head>
+
 <body>
-<!--side bar-->
-<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
-<div class="container" th:if="${csVO != null}">
-    <div class="page-header">
-        <h1><i class="fa-solid fa-file-lines"></i> 案件詳情</h1>
-        <a href="/backend/cs/listAll" class="btn-back"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
-        
-    </div>
-	
-    <!-- 案件資訊 -->
-    <div class="info-card">
-        
-        <!-- 案件編號、會員編號、會員名字 -->
-        <div class="info-row">
-            <div class="info-item">
-                <span class="info-label">案件編號</span>
-                <span class="info-value" style="font-weight: 700;" th:text="'#' + ${csVO.csId}">#1</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">會員編號</span>
-                <span class="info-value" th:text="${csVO.customerVO != null ? 'CUST' + csVO.customerVO.custId : '未知'}">CUST123</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">會員名字</span>
-                <span class="info-value" th:text="${csVO.customerVO != null ? csVO.customerVO.custName : '未知'}">王小明</span>
-            </div>
+    <!--side bar-->
+    <div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+    <div class="container" th:if="${csVO != null}">
+        <div class="page-header">
+            <h1><i class="fa-solid fa-file-lines"></i> 案件詳情</h1>
+            <a href="listAll?unclosed=true" class="btn-back"><i class="fa-solid fa-arrow-left"></i> 返回列表</a>
+
         </div>
 
-        <!-- 狀態、案件分類 -->
-        <div class="info-row">
-            <div class="info-item">
-                <span class="info-label">狀態</span>
-                <div>
-                    <span class="badge status-0" th:if="${csVO.caseStatus == 0}"><i class="fa-solid fa-asterisk"></i> 新增</span>
-                    <span class="badge status-1" th:if="${csVO.caseStatus == 1}"><i class="fa-solid fa-hourglass-half"></i> 待處理</span>
-                    <span class="badge status-2" th:if="${csVO.caseStatus == 2}"><i class="fa-solid fa-comment-dots"></i> 已回覆</span>
-                    <span class="badge status-3" th:if="${csVO.caseStatus == 3}"><i class="fa-solid fa-check-circle"></i> 已結案</span>
+        <!-- 案件資訊 -->
+        <div class="info-card">
+
+            <!-- 案件編號、會員編號、會員名字 -->
+            <div class="info-row">
+                <div class="info-item">
+                    <span class="info-label">案件編號</span>
+                    <span class="info-value" style="font-weight: 700;" th:text="'#' + ${csVO.csId}">#1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">會員編號</span>
+                    <span class="info-value"
+                        th:text="${csVO.customerVO != null ? 'CUST' + csVO.customerVO.custId : '未知'}">CUST123</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">會員名字</span>
+                    <span class="info-value"
+                        th:text="${csVO.customerVO != null ? csVO.customerVO.custName : '未知'}">王小明</span>
                 </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">案件分類</span>
-                <div>
-                    <span class="badge cate-11" th:if="${csVO.caseCate == 11}"><i class="fa-solid fa-laptop"></i> 操作問題</span>
-                    <span class="badge cate-12" th:if="${csVO.caseCate == 12}"><i class="fa-solid fa-box"></i> 訂單問題</span>
-                    <span class="badge cate-13" th:if="${csVO.caseCate == 13}"><i class="fa-solid fa-circle-question"></i> 其他</span>
+
+            <!-- 狀態、案件分類 -->
+            <div class="info-row">
+                <div class="info-item">
+                    <span class="info-label">狀態</span>
+                    <div>
+                        <span class="badge status-0" th:if="${csVO.caseStatus == 0}"><i
+                                class="fa-solid fa-asterisk"></i> 新增</span>
+                        <span class="badge status-1" th:if="${csVO.caseStatus == 1}"><i
+                                class="fa-solid fa-hourglass-half"></i> 待處理</span>
+                        <span class="badge status-2" th:if="${csVO.caseStatus == 2}"><i
+                                class="fa-solid fa-comment-dots"></i> 已回覆</span>
+                        <span class="badge status-3" th:if="${csVO.caseStatus == 3}"><i
+                                class="fa-solid fa-check-circle"></i> 已結案</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">案件分類</span>
+                    <div>
+                        <span class="badge cate-11" th:if="${csVO.caseCate == 11}"><i class="fa-solid fa-laptop"></i>
+                            操作問題</span>
+                        <span class="badge cate-12" th:if="${csVO.caseCate == 12}"><i class="fa-solid fa-box"></i>
+                            訂單問題</span>
+                        <span class="badge cate-13" th:if="${csVO.caseCate == 13}"><i
+                                class="fa-solid fa-circle-question"></i> 其他</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 建立時間、更新時間、結案時間 -->
+            <div class="info-row">
+                <div class="info-item">
+                    <span class="info-label">建立時間</span>
+                    <span class="info-value"
+                        th:text="${#dates.format(csVO.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-06-24</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">更新時間</span>
+                    <span class="info-value"
+                        th:text="${csVO.updatedAt != null ? #dates.format(csVO.updatedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">結案時間</span>
+                    <span class="info-value"
+                        th:text="${csVO.resolvedAt != null ? #dates.format(csVO.resolvedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">-</span>
+                </div>
+            </div>
+
+            <!-- 第一筆留言  -->
+            <div class="initial-message" th:if="${csMsgList != null and !csMsgList.isEmpty()}"
+                th:with="initialMsg=${csMsgList[0]}">
+                <h3><i class="fa-solid fa-quote-left"></i> 初始問題描述</h3>
+                <p th:text="${initialMsg.msgContent}">這是客戶一開始發問的內容...</p>
+            </div>
+        </div>
+
+        <!-- 歷史對話區塊 -->
+        <div class="info-card" th:if="${csMsgList != null and !csMsgList.isEmpty()}">
+
+            <h2 style="font-size: 18px; margin-top: 0; margin-bottom: 24px; color: var(--text-main);"><i
+                    class="fa-solid fa-comments"></i> 歷史對話紀錄</h2>
+
+            <div class="chat-section">
+                <!-- 迴圈顯示所有回覆 -->
+                <div th:each="msg : ${csMsgList}" class="msg-box" th:classappend="'sender-' + ${msg.senderType}">
+
+                    <div class="msg-header">
+                        <!-- 根據 Sender 顯示不同的 Icon 與名稱 -->
+                        <i class="fa-solid fa-user" th:if="${msg.senderType == 0}"></i>
+                        <span th:if="${msg.senderType == 0}"
+                            th:text="${msg.customerVO != null ? msg.customerVO.custName : '會員'}">會員</span>
+
+                        <i class="fa-solid fa-headset" th:if="${msg.senderType == 1}"></i>
+                        <span th:if="${msg.senderType == 1}"
+                            th:text="${msg.adminVO != null ? msg.adminVO.admName : '客服人員'}">客服人員</span>
+
+                        <i class="fa-solid fa-robot" th:if="${msg.senderType == 3}"></i>
+                        <span th:if="${msg.senderType == 3}">
+                            系統訊息
+                            <span th:if="${msg.adminVO != null}" th:text="'(' + ${msg.adminVO.admName} + ')'"></span>
+                            <span th:if="${msg.customerVO != null}"
+                                th:text="'(' + ${msg.customerVO.custName} + ')'"></span>
+                        </span>
+
+                        <i class="fa-solid fa-note-sticky" th:if="${msg.senderType == 7}"></i>
+                        <span th:if="${msg.senderType == 7}"
+                            th:text="${msg.adminVO != null ? msg.adminVO.admName + ' (工作筆記)' : '工作筆記'}">工作筆記</span>
+                    </div>
+
+                    <p class="msg-content" th:if="${msg.msgContent != null and !msg.msgContent.trim().isEmpty()}" th:text="${msg.msgContent}">對話內容</p>
+                    <img th:if="${msg.msgImgsrc != null and !msg.msgImgsrc.trim().isEmpty()}" th:src="${msg.msgImgsrc}" class="chat-image" onclick="openLightbox(this.src)" style="display: block;"></img>
+                    <!-- 時間放在留言下面 -->
+                    <div class="msg-time" th:text="${#dates.format(msg.createdAt, 'yyyy-MM-dd HH:mm:ss')}">時間</div>
                 </div>
             </div>
         </div>
 
-        <!-- 建立時間、更新時間、結案時間 -->
-        <div class="info-row">
-            <div class="info-item">
-                <span class="info-label">建立時間</span>
-                <span class="info-value" th:text="${#dates.format(csVO.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-06-24</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">更新時間</span>
-                <span class="info-value" th:text="${csVO.updatedAt != null ? #dates.format(csVO.updatedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">-</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">結案時間</span>
-                <span class="info-value" th:text="${csVO.resolvedAt != null ? #dates.format(csVO.resolvedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">-</span>
-            </div>
-        </div>
+        <!-- 回覆與筆記表單 (案件未結案才顯示) -->
+        <div class="info-card" th:if="${csVO.caseStatus != 3}" style="position: relative;">
 
-        <!-- 第一筆留言  -->
-        <div class="initial-message" th:if="${csMsgList != null and !csMsgList.isEmpty()}" th:with="initialMsg=${csMsgList[0]}">
-            <h3><i class="fa-solid fa-quote-left"></i> 初始問題描述</h3>
-            <p th:text="${initialMsg.msgContent}">這是客戶一開始發問的內容...</p>
-        </div>
-    </div>
-
-    <!-- 歷史對話區塊 -->
-    <div class="info-card" th:if="${csMsgList != null and !csMsgList.isEmpty()}">
-        
-        <h2 style="font-size: 18px; margin-top: 0; margin-bottom: 24px; color: var(--text-main);"><i class="fa-solid fa-comments"></i> 歷史對話紀錄</h2>
-        
-        <div class="chat-section">
-            <!-- 迴圈顯示所有回覆 -->
-            <div th:each="msg : ${csMsgList}" 
-                 class="msg-box" 
-                 th:classappend="'sender-' + ${msg.senderType}">
-                
-                <div class="msg-header">
-                    <!-- 根據 Sender 顯示不同的 Icon 與名稱 -->
-                    <i class="fa-solid fa-user" th:if="${msg.senderType == 0}"></i>
-                    <span th:if="${msg.senderType == 0}" th:text="${msg.customerVO != null ? msg.customerVO.custName : '會員'}">會員</span>
-                    
-                    <i class="fa-solid fa-headset" th:if="${msg.senderType == 1}"></i>
-                    <span th:if="${msg.senderType == 1}" th:text="${msg.adminVO != null ? msg.adminVO.admName : '客服人員'}">客服人員</span>
-                    
-                    <i class="fa-solid fa-robot" th:if="${msg.senderType == 3}"></i>
-                    <span th:if="${msg.senderType == 3}">
-                        系統訊息
-                        <span th:if="${msg.adminVO != null}" th:text="'(' + ${msg.adminVO.admName} + ')'"></span>
-                        <span th:if="${msg.customerVO != null}" th:text="'(' + ${msg.customerVO.custName} + ')'"></span>
-                    </span>
-                    
-                    <i class="fa-solid fa-note-sticky" th:if="${msg.senderType == 7}"></i>
-                    <span th:if="${msg.senderType == 7}" th:text="${msg.adminVO != null ? msg.adminVO.admName + ' (工作筆記)' : '工作筆記'}">工作筆記</span>
-                </div>
-                
-                <p class="msg-content" th:text="${msg.msgContent}">對話內容</p>
-                
-                <!-- 時間放在留言下面 -->
-                <div class="msg-time" th:text="${#dates.format(msg.createdAt, 'yyyy-MM-dd HH:mm:ss')}">時間</div>
-            </div>
-        </div>
-    </div>
-			
-    <!-- 回覆與筆記表單 (案件未結案才顯示) -->
-    <div class="info-card" th:if="${csVO.caseStatus != 3}" style="position: relative;">
-        
-        <!-- 獨立的結案按鈕表單 (放在卡片右上角) -->
-        <form action="/backend/cs/backendClose" method="post" style="position: absolute; top: 32px; right: 32px;" onsubmit="return confirm('確定要結束此案件嗎？結案後將無法再新增回覆！');">
-            <input type="hidden" name="csId" th:value="${csVO.csId}">
-            <button type="submit" style="background: none; border: none; color: #ef4444; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-                <i class="fa-solid fa-power-off"></i> 結束此案件
-            </button>
-        </form>
-	
-        <h3 style="margin-top: 0; margin-bottom: 16px; color: var(--text-main); font-size: 16px;">
-            <i class="fa-solid fa-pen"></i> 新增回覆 / 內部筆記
-        </h3>
-        
-        <form action="/backend/cs/backendReply" method="post" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- 隱藏欄位帶上案件ID與預設的 senderType -->
-            <input type="hidden" name="csId" th:value="${csVO.csId}">
-            <input type="hidden" name="senderType" id="senderTypeInput" value="1">
-            
-            <textarea name="msg" rows="4" placeholder="請輸入回覆內容或是內部筆記..." required
-                      style="width: 100%; padding: 16px; border: 2px solid var(--border-color); border-radius: 8px; resize: vertical; font-family: 'Inter', sans-serif; font-size: 15px; outline: none; box-sizing: border-box;"></textarea>
-            
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <button type="submit" onclick="document.getElementById('senderTypeInput').value='1';" 
-                        style="padding: 10px 24px; background-color: var(--color-admin); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                    <i class="fa-solid fa-paper-plane"></i> 發送給會員
+            <!-- 獨立的結案按鈕表單 (放在卡片右上角) -->
+            <form action="/backend/cs/backendClose" method="post" style="position: absolute; top: 32px; right: 32px;"
+                onsubmit="return confirm('確定要結束此案件嗎？結案後將無法再新增回覆！');">
+                <input type="hidden" name="csId" th:value="${csVO.csId}">
+                <button type="submit"
+                    style="background: none; border: none; color: #ef4444; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s;"
+                    onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+                    <i class="fa-solid fa-power-off"></i> 結束此案件
                 </button>
-                <button type="submit" onclick="document.getElementById('senderTypeInput').value='7';" 
-                        style="padding: 10px 24px; background-color: var(--color-worknote); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                    <i class="fa-solid fa-note-sticky"></i> 儲存內部筆記
-                </button>
-            </div>
-        </form>
-    </div>
-    
-</div>
+            </form>
 
-<!-- 查無資料的防錯 -->
-<div class="container" th:if="${csVO == null}">
-    <div style="text-align: center; padding: 60px; color: var(--text-main);">
-        <i class="fa-solid fa-triangle-exclamation" style="font-size: 48px; margin-bottom: 16px;"></i>
-        <h2>找不到該案件</h2>
-        <a href="/backend/cs/listAll" class="btn-back">返回列表</a>
-    </div>
-</div>
+            <h3 style="margin-top: 0; margin-bottom: 16px; color: var(--text-main); font-size: 16px;">
+                <i class="fa-solid fa-pen"></i> 新增回覆 / 內部筆記
+            </h3>
 
+            <form action="/backend/cs/backendReply" method="post" enctype="multipart/form-data"
+                style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- 隱藏欄位帶上案件ID與預設的 senderType -->
+                <input type="hidden" name="csId" th:value="${csVO.csId}">
+                <input type="hidden" name="senderType" id="senderTypeInput" value="1">
+
+                <textarea name="msg" rows="4" placeholder="請輸入回覆內容或是內部筆記..." required
+                    style="width: 100%; padding: 16px; border: 2px solid var(--border-color); border-radius: 8px; resize: vertical; font-family: 'Inter', sans-serif; font-size: 15px; outline: none; box-sizing: border-box;"></textarea>
+
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <div style="margin-right: auto;">
+                        <div class="file-upload-wrapper">
+                            <label class="file-upload-btn">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> 上傳圖片 (選填)
+                                <input type="file" name="uploadImg" accept="image/*" class="hidden-upload" onchange="this.parentElement.nextElementSibling.textContent = this.files[0] ? this.files[0].name : '未選擇任何檔案'">
+                            </label>
+                            <span class="file-upload-text">未選擇任何檔案</span>
+                        </div>
+                    </div>
+                    <button type="submit" onclick="document.getElementById('senderTypeInput').value='1';"
+                        style="padding: 10px 24px; background-color: var(--color-admin); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; transition: opacity 0.2s;"
+                        onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                        <i class="fa-solid fa-paper-plane"></i> 發送給會員
+                    </button>
+                    <button type="submit" onclick="document.getElementById('senderTypeInput').value='7';"
+                        style="padding: 10px 24px; background-color: var(--color-worknote); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; transition: opacity 0.2s;"
+                        onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                        <i class="fa-solid fa-note-sticky"></i> 儲存內部筆記
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- 查無資料的防錯 -->
+    <div class="container" th:if="${csVO == null}">
+        <div style="text-align: center; padding: 60px; color: var(--text-main);">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 48px; margin-bottom: 16px;"></i>
+            <h2>找不到該案件</h2>
+            <a href="/backend/cs/listAll" class="btn-back">返回列表</a>
+        </div>
+    </div>
+
+    <!-- 圖片燈箱 -->
+    <div id="imageLightbox" class="lightbox-modal" onclick="closeLightbox(event)">
+        <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+        <img class="lightbox-content" id="lightboxImg">
+    </div>
+
+    <script>
+        function openLightbox(src) {
+            var modal = document.getElementById('imageLightbox');
+            var img = document.getElementById('lightboxImg');
+            img.src = src;
+            modal.classList.add('show');
+        }
+        function closeLightbox(event) {
+            if(event.target.id === 'lightboxImg') return;
+            document.getElementById('imageLightbox').classList.remove('show');
+        }
+    </script>
 </body>
+
 </html>

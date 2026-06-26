@@ -10,6 +10,26 @@
 <link rel="stylesheet" th:href="@{/css/index/heroSearch.css}">
 <link rel="stylesheet" th:href="@{/css/index/footer.css}">
 <link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
+<style>
+/* 自訂上傳按鈕 */
+.file-upload-wrapper {
+    display: flex; align-items: center; gap: 12px; margin-top: 5px;
+}
+.file-upload-btn {
+    display: inline-block; padding: 10px 16px; background-color: #fff;
+    border: 1px solid #dcdcdc; border-radius: 8px; color: #333;
+    font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s ease;
+}
+.file-upload-btn:hover {
+    background-color: #fff7ed; color: #ff7a00; border-color: #ffdda1;
+}
+.file-upload-btn i { margin-right: 6px; }
+.file-upload-text { 
+    font-size: 14px; color: #666; 
+    max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block;
+}
+input[type="file"].hidden-upload { display: none; }
+</style>
 </head>
 <body>
 <div th:replace="~{frontend/index/header :: header}"></div>
@@ -48,7 +68,16 @@
                     <label style="display: block; font-weight: bold; margin-bottom: 8px;">詳細問題</label>
                     <textarea name="msg"  th:text="${msg}" rows="10" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #dcdcdc; font-size: 15px; resize: vertical; box-sizing: border-box;"></textarea>
                 </div>
-                
+                <div style="margin-bottom: 20px;">
+				    <label style="display: block; font-weight: bold; margin-bottom: 8px;">上傳圖片 (選填)</label>
+				    <div class="file-upload-wrapper">
+                        <label class="file-upload-btn">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> 選擇圖片
+                            <input type="file" name="uploadImg" accept="image/*" class="hidden-upload" onchange="this.parentElement.nextElementSibling.textContent = this.files[0] ? this.files[0].name : '未選擇任何檔案'">
+                        </label>
+                        <span class="file-upload-text">未選擇任何檔案</span>
+                    </div>
+				</div>
                 <div style="text-align: right;">
                     <button type="submit" class="btn-brand">送出問題</button>
                 </div>
