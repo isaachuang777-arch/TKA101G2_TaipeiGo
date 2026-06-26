@@ -1,9 +1,9 @@
 package com.taipeigo.cs.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,6 @@ import com.taipeigo.cs.model.CsMsgVO;
 import com.taipeigo.cs.model.CsRepository;
 import com.taipeigo.cs.model.CsService;
 import com.taipeigo.cs.model.CsVO;
-import com.taipeigo.customer.model.CustomerVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -34,8 +33,8 @@ public class CsBackendController {
 	private CsMsgRepository csMsgRepository;
 	
 //後台客服首頁+dashboard
-	@GetMapping({"/", "index", "dashboard"})
-	public String showCsdahsboardpage(Model model) {
+	@GetMapping({"/", "/index", "/dashboard"})
+	public String showCsdahsboardpage(Model model, @RequestParam(value = "page", defaultValue = "1")  Integer page) {
 		//以問題類別分類的總數
 		//11=操作問題, 12=訂單問題, 13=其他
 		Long caseCate11=  csRepository.countByCaseCate((byte) 11);
@@ -61,9 +60,10 @@ public class CsBackendController {
 		//[結案]狀態+結案在XX 的總數 Long countByCaseStatusAndResolvedAtAfter(Byte caseStatus, java.sql.Timestamp time);
 		Long todayClosed = csRepository.countByCaseStatusAndResolvedAtAfter((byte)3, yesterday);
 		
-		//urgentCases
-		List<CsVO> urgentCases = csRepository.findByCaseStatusAndCreatedAtAfter((byte) 0, yesterday);
-		model.addAttribute("urgentCases", urgentCases);
+		//urgentCases =>只會列5張 其餘會叫html 轉去大表
+		Page<CsVO> pageResult = csService.getUrgentCsforindex( yesterday, page);
+		model.addAttribute("pageResult", pageResult);
+		model.addAttribute("urgentCases", pageResult.getContent());
 		
 		return "backend/cs/index";
 	}
@@ -72,35 +72,39 @@ public class CsBackendController {
 	public String listCase(Model model,
 							@RequestParam (value = "caseStatus", required = false) Byte caseStatus,
 							@RequestParam (value = "caseCate", required = false) Byte caseCate,
-							@RequestParam (value = "keyword", required = false) String keyword1,
+							@RequestParam (value = "keyword", required = false) String keyword,
 							@RequestParam(value = "urgent", required = false) Boolean isUrgent,
-							@RequestParam(value = "unclosed", required = false) Boolean isUnclosed
+							@RequestParam(value = "unclosed", required = false) Boolean isUnclosed,
+							@RequestParam(value = "page", defaultValue = "1")  Integer page
 							) {
 		
-		List<CsVO> csList = null;
+		Page<CsVO> pageResult = null;
 		
 		if(Boolean.TRUE.equals(isUrgent)){
 			long oneDayAgoMillis = System.currentTimeMillis() - (24 * 60 * 60 * 1000);
         	java.sql.Timestamp yesterday = new java.sql.Timestamp(oneDayAgoMillis);
-        	csList = csRepository.findByCaseStatusAndCreatedAtAfter((byte) 0, yesterday);
+        	pageResult = csService.getUrgentCs(yesterday, page);
 		}else if(Boolean.TRUE.equals(isUnclosed)){
-			csList = csRepository.findByCaseStatusNot((byte)3);
-		}else if(keyword1 != null){
-			String keyword2 = keyword1;
-			csList = csRepository.findByCustomerVO_CustNameContainingOrCustomerVO_CustAccountContaining(keyword1, keyword2);
+			pageResult = csService. getActiveCs(page);
+		}else if(keyword != null){
+			pageResult  = csService.getCsByCustContainingByPage(keyword, page);
 		}else if(caseStatus != null) {
-			csList = csRepository.findByCaseStatus(caseStatus);
+			pageResult = csService.getCsByCaseStatus(caseStatus, page);
 		}else if (caseCate != null) {
-			csList = csRepository.findByCaseCate(caseCate);
+			pageResult = csService.getCsByCaseCate(caseCate, page);
 		}else {
-			csList = csRepository.findAll();
+			pageResult = csService.getAllCsByPage(page);
 		}
 	    
-		if (csList != null) {
-	        csList.sort(java.util.Comparator.comparing(CsVO::getCreatedAt));
-	    }
-		
-		model.addAttribute("csList", csList);
+		//保留原來的搜尋條件
+	    model.addAttribute("caseStatus", caseStatus);
+	    model.addAttribute("caseCate", caseCate);
+	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("urgent", isUrgent);
+	    model.addAttribute("unclosed", isUnclosed);		
+		//
+        model.addAttribute("pageResult", pageResult);
+		model.addAttribute("csList", pageResult.getContent());
 		return "backend/cs/listAll";
 	}
 	//讀案件
@@ -123,6 +127,12 @@ public class CsBackendController {
 								@RequestParam ("senderType") Byte senderType,
 								RedirectAttributes redirectAttributes)
 		{
+			//驗證字數
+		    if (msg == null || msg.trim().isEmpty() || msg.length() > 500) {
+		        redirectAttributes.addFlashAttribute("errorMsg", "回覆內容不能為空，或在 500 字以內！");
+		        redirectAttributes.addFlashAttribute("msg", msg);
+		        return "redirect:/backend/cs/view?csId=" + csId;
+		    }
 			//1.由網頁拿資料
 			//who reply
 			AdminVO adminVO = (AdminVO) session.getAttribute("adminVO");

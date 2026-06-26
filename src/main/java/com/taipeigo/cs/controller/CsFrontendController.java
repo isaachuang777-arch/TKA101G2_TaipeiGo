@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,9 +55,19 @@ public class CsFrontendController {
 			@RequestParam (value = "msgImgsrc", required = false) String msgImgsrc, 
 			Model model,
 			RedirectAttributes redirectAttributes) {
+
 		//1. who create the ticket
 		CustomerVO customerVO = (CustomerVO) session.getAttribute("loginCustomer");
 		Integer custId= customerVO.getCustId();
+		//驗證字數
+	    if (msg == null || msg.trim().isEmpty() || msg.length() > 500) {
+	        redirectAttributes.addFlashAttribute("errorMsg", "回覆內容不能為空，或在 500 字以內！");
+	        redirectAttributes.addFlashAttribute("caseCate", caseCate);
+	        redirectAttributes.addFlashAttribute("msg", msg);
+	        
+	        return "redirect:/CustomerService/createticket";
+	    }		
+		
 		//2. 上傳圖片
 			//TODO
 		//3.
@@ -66,7 +77,7 @@ public class CsFrontendController {
 			//csId = 用newticket 取新的CsId
 			Integer csId = newTicket.getCsId();
 			//新增後就可以回傳到看到自己留言的頁面
-			redirectAttributes.addFlashAttribute("successMsg", "謝謝您的詢問，已經新增一個問題，請耐心等待客服人員回覆。");
+			redirectAttributes.addFlashAttribute("successMsg", "謝謝您的詢問，已經新增一個問題，請耐心等待客服人員回覆。");	
 			return "redirect:/CustomerService/viewmsgs?csId=" + csId;
 		}catch(RuntimeException e) {
 			redirectAttributes.addFlashAttribute("errorMsg",  "系統維護中，請稍後再試。");
@@ -77,22 +88,24 @@ public class CsFrontendController {
 	
 //ActivecaseList
 	@GetMapping("/ActiveCase")
-	public String showactivecaseList(HttpSession session, Model model) {
+	public String showactivecaseList(HttpSession session, Model model, @RequestParam(value = "page", defaultValue = "1")  Integer page) {
 		CustomerVO customerVO = (CustomerVO) session.getAttribute("loginCustomer");  //去session找登入的人
 		Integer custId = customerVO.getCustId(); // custId = session找出的VO.再做getCustId()
-		List<CsVO> csList = csService.findByActiveCases(custId); //一個csList = 剛才的service方法
-		model.addAttribute("csList", csList); //存進model 叫csList
+		Page<CsVO> pageResult = csService.findByActiveCases(custId, page ); 
+		model.addAttribute("pageResult", pageResult); //存進model 叫csList
+		model.addAttribute("csList", pageResult.getContent()); //存進model 叫csList
 		
 		return "frontend/cs/activecase";
 	}
 //InactivecaseList
 		@GetMapping("/InactiveCase")
-		public String showinactivecaseList(HttpSession session, Model model) {
+		public String showinactivecaseList(HttpSession session, Model model, @RequestParam(value = "page", defaultValue = "1")  Integer page) {
 			CustomerVO customerVO = (CustomerVO) session.getAttribute("loginCustomer");
 			Integer custId = customerVO.getCustId();
-			List<CsVO> csList = csService.findByInactiveCases(custId);
-			csList.sort(Comparator.comparing(CsVO::getResolvedAt).reversed());
-			model.addAttribute("csList", csList);
+			Page<CsVO> pageResult = csService.findByInactiveCases(custId,  page );
+
+			model.addAttribute("pageResult", pageResult); //存進model 叫csList
+			model.addAttribute("csList", pageResult.getContent()); //存進model 叫csList
 			
 			return "frontend/cs/inactivecase";
 		}	
@@ -132,6 +145,12 @@ public class CsFrontendController {
 								@RequestParam (value = "msgImgsrc", required = false) String msgImgsrc,
 								RedirectAttributes redirectAttributes) 
 		{
+			//驗證字數
+		    if (msg == null || msg.trim().isEmpty() || msg.length() > 500) {
+		        redirectAttributes.addFlashAttribute("errorMsg", "回覆內容不能為空，或在 500 字以內！");
+		        redirectAttributes.addFlashAttribute("msg", msg);
+		        return "redirect:/CustomerService/viewmsgs?csId=" + csId;
+		    }
 			//1.由網頁拿資料
 			//who reply
 			CustomerVO customerVO = (CustomerVO) session.getAttribute("loginCustomer");

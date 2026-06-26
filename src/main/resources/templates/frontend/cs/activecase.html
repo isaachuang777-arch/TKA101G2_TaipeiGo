@@ -1,60 +1,110 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台北GO了沒 - 客服中心 - 追蹤進度</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
-<link rel="stylesheet" th:href="@{/css/cs/cs.css}">
-    
+    <link rel="stylesheet" th:href="@{/css/cs/cs.css}">
+    <link rel="stylesheet" th:href="@{/css/index/header.css}">
+<link rel="stylesheet" th:href="@{/css/index/heroSearch.css}">
+<link rel="stylesheet" th:href="@{/css/index/footer.css}">
+<link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
+<style>
+    /* 分頁元件 CSS - 前台橘色版 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
+        margin: 30px 0 10px 0;
+        gap: 8px;
+    }
+    .page-item { display: inline-block; }
+    .page-link {
+        display: flex; align-items: center; justify-content: center;
+        min-width: 36px; height: 36px; padding: 0 12px;
+        background-color: #ffffff; border: 1px solid #dcdcdc;
+        border-radius: 8px; color: #333333; text-decoration: none;
+        font-size: 14px; font-weight: bold; transition: all 0.2s ease;
+    }
+    .page-link:hover {
+        background-color: #fff7ed; color: #ff7a00; border-color: #ffdda1;
+    }
+    .page-item.active .page-link {
+        background-color: #ff7a00; color: white; border-color: #ff7a00;
+        box-shadow: 0 2px 6px rgba(255, 122, 0, 0.3);
+    }
+    .page-item.disabled .page-link {
+        color: #aaaaaa; background-color: #f9f9f9; border-color: #eeeeee;
+        cursor: not-allowed; pointer-events: none;
+    }
+    /* 客服已回覆邊框 */
+    .case-card.replied-card {
+        border: 2px solid #e86f00 !important;
+        box-shadow: 0 4px 15px rgba(232, 111, 0, 0.2) !important;
+    }
+</style>
 </head>
 <body>
-<div class="main-box">
-<h2>客服中心 - 追蹤進度</h2>
+<div id="top"></div>
+<div th:replace="~{frontend/index/header :: header}"></div>
 
-<br>
-<div>
-    <a th:href="@{/CustomerService/index}">
-        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-        返回 客服中心 首頁
-        </button>
-    </a>
-   </div>
-
-<hr>
-
-<div class="case-container">
+<div class="customer-container">
+    <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
     
-    <a class="case-card"   th:each="cs : ${csList}" th:href="@{/CustomerService/viewmsgs(csId=${cs.csId})}" style="text-decoration: none;">
-        <!-- 左邊 -->
-        <div class="card-left">
-            <!-- 分類 -->
-            <h2 >            
-            <span th:if="${cs.caseCate == 11}" >操作問題</span>
-            <span th:if="${cs.caseCate == 12}" >訂單問題</span>
-            <span th:if="${cs.caseCate == 13}" >其他問題</span></h2>
-            <!-- 狀態 -->
-	          <span>	            
-		    <span th:if="${cs.caseStatus == 0}"  style="background-color: #ff8b8b90; color: white; padding: 4px 10px; border: none; border-radius: 12px; ">新增</span>
-            <span th:if="${cs.caseStatus == 1}" style="background-color: #039e3f90; color: white; padding: 4px 10px; border: none; border-radius: 12px;  ">待處理</span>
-            <span th:if="${cs.caseStatus == 2}" style="background-color: #0089b390; color: white; padding: 4px 10px; border: none; border-radius: 12px; ;">已回覆</span>
-            <span th:if="${cs.caseStatus == 3}" style="background-color: #ff5b0095; color: white; padding: 4px 7px; border: none; border-radius: 12px; ;">已結案</span>
-            </span>
+    <div class="customer-content">
+        <div class="main-box">
+            <h2>客服中心 - 追蹤進度</h2>
+
+            <div style="margin-bottom: 20px;">
+                <a th:href="@{/CustomerService/index}" class="btn-brand">返回客服中心首頁</a>
+            </div>
+
+            <div class="case-container">
+                <a class="case-card" th:each="cs : ${csList}" th:href="@{/CustomerService/viewmsgs(csId=${cs.csId})}" th:classappend="${cs.caseStatus == 2} ? 'replied-card' : ''">
+                    <div class="card-left">
+                        <h3>            
+                            <span th:if="${cs.caseCate == 11}">操作問題</span>
+                            <span th:if="${cs.caseCate == 12}">訂單問題</span>
+                            <span th:if="${cs.caseCate == 13}">其他問題</span>
+                        </h3>
+                        <div>	            
+                            <span th:if="${cs.caseStatus == 0}" class="status-badge status-0">新增</span>
+                            <span th:if="${cs.caseStatus == 1}" class="status-badge status-1">待處理</span>
+                            <span th:if="${cs.caseStatus == 2}" class="status-badge status-2">已回覆</span>
+                            <span th:if="${cs.caseStatus == 3}" class="status-badge status-3">已結案</span>
+                        </div>
+                    </div>
+                    <div class="card-right">
+                        <div class="time-text" th:text="|建立於 ${#dates.format(cs.createdAt, 'yyyy-MM-dd HH:mm')}|"></div>
+                        <div class="time-text" style="margin-top: 5px;" th:text="|更新於 ${#dates.format(cs.updatedAt, 'yyyy-MM-dd HH:mm')}|"></div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 分頁區塊 -->
+            <nav th:if="${pageResult != null and pageResult.totalPages > 1}" aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${pageResult.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/CustomerService/ActiveCase(page=${pageResult.number})}">&laquo; 上一頁</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, pageResult.totalPages)}" th:classappend="${pageResult.number + 1 == i} ? 'active'">
+                        <a class="page-link" th:href="@{/CustomerService/ActiveCase(page=${i})}" th:text="${i}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${pageResult.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/CustomerService/ActiveCase(page=${pageResult.number + 2})}">下一頁 &raquo;</a>
+                    </li>
+                </ul>
+            </nav>
 
         </div>
-     
-        <!-- 右邊 -->
-        <div class="card-right">
-            <!-- 時間 -->
-            <span class="time-text" th:text="|建立於 ${#dates.format(cs.createdAt, 'yyyy-MM-dd HH:mm')}|"></span>
-            <br>
-            <span class="time-text" th:text="|更新於 ${#dates.format(cs.updatedAt, 'yyyy-MM-dd HH:mm')}|"></span>
-        </div>
-        </a>
     </div>
 </div>
 
-   <!-- Footer -->
-    <div class="footer"th:replace="~{frontend/index/footer :: footer}"></div>
+<a href="#top" class="top-btn">TOP</a>
+
+<div class="footer" th:replace="~{frontend/index/footer :: footer}"></div>
 </body>
 </html>

@@ -296,6 +296,13 @@
             </tbody>
         </table>
 
+        <!-- 當超過一頁 (5筆) 時，顯示更多按鈕 -->
+        <div th:if="${pageResult != null and pageResult.totalPages > 1}" style="text-align: center; margin-top: 20px;">
+            <a href="/backend/cs/listAll?urgent=true" class="btn-view" style="padding: 10px 24px; border: 1px solid var(--border-color); background-color: #fff;">
+                顯示更多 <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
         <!-- 當沒有緊急案件時顯示空狀態 -->
         <div class="empty-state" th:if="${urgentCases == null or urgentCases.isEmpty()}">
             <h3 style="margin-bottom: 5px; color: var(--success);"><i class="fa-solid fa-award"></i> 太棒了！</h3>

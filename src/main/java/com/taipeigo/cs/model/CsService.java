@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.taipeigo.admin.model.AdminVO;
@@ -29,13 +33,91 @@ public class CsService {
 	public List<CsVO> findAllCs(){
 		return csRepository.findAll();
 	}
+	//getAllCs全查[分頁]
+	public Page<CsVO> getAllCsByPage(int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		return csRepository.findAll(pageable);
+	}
+	
 	//findByCsId 找單
 	public CsVO findByCsId(Integer csId) {
 		return csRepository.findById(csId).orElse(null);
 	}
+	//模糊搜尋Customer[分頁]
+	public Page<CsVO> getCsByCustContainingByPage(String keyword, int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		return csRepository.findByCustomerVO_CustNameContainingOrCustomerVO_CustAccountContaining(keyword, keyword,  pageable);
+	}
+	//問題類別分類的列表 [分頁]
+	public Page<CsVO> getCsByCaseCate(Byte caseCate, int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		return csRepository.findByCaseCate(caseCate, pageable);
+	}
+	//狀態類別分類的列表 [分頁]
+	public Page<CsVO> getCsByCaseStatus(Byte caseStatus, int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		return csRepository.findByCaseStatus(caseStatus, pageable);	
+	}
+	//最新緊急案件列表(條件: 24小時內 還是new的) [分頁]
+	public Page<CsVO> getUrgentCs(java.sql.Timestamp time, int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		return csRepository.findByCaseStatusAndCreatedAtAfter(CsVO.SsCreated, time, pageable);
+	}
+	//最新緊急案件列表(條件: 24小時內 還是new的) [分頁]for Index
+	public Page<CsVO> getUrgentCsforindex(java.sql.Timestamp time, int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 5);
+		return csRepository.findByCaseStatusAndCreatedAtAfter(CsVO.SsCreated, time, pageable);
+	}
+	//非結案狀態的列表 !=3 [分頁]
+    public Page <CsVO> getActiveCs(int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		return csRepository.findByCaseStatusNot(CsVO.SsResovled, pageable);	
+    }	
+  //後台管理員的reply 跟cust相同 只是增加senderType判斷
+  	@Transactional
+  	public void adminorworknotereply(CsMsgVO newcsmsgVO, Integer csId , Byte senderType) {
+  		//用findById(csId去)拿出一個csVO
+  		CsVO csVO = csRepository.findById(csId).orElseThrow();
+  		//先拿現在的CaseStatus
+  		Byte currentStatus = csVO.getCaseStatus();
+  		//資安防呆 不要相信前端 如果已結案 不準存回覆
+  		if(currentStatus == (byte) 3){
+          throw new RuntimeException("此案件已結案，無法新增回覆！");
+      	}
+      
+  		//newcsmsgVO要有csId 這樣才會關聯到(因為csId 是FK)
+  		newcsmsgVO.setCsVO(csVO);
+  		//如果senderType是admin=>setSenderType + csVO.setCaseStatus
+  		if(senderType == CsMsgVO.Sradmin){
+  		newcsmsgVO.setSenderType(CsMsgVO.Sradmin);
+  		csVO.setCaseStatus(csVO.SsReplied);
+  		}else if(senderType == CsMsgVO.Srworknote){
+  		//如果senderType是worknote=>只要做setSenderType 不用動CsVO的caseStatus 因為那是後台內部訊息 => 沒動到CsVO 就自動不會動到updatedAt
+  			newcsmsgVO.setSenderType(CsMsgVO.Srworknote);
+  		}
+  		csmsgRepository.save(newcsmsgVO);
+  		//要把case/CsVO存回去~
+  		csRepository.save(csVO);
+  	}
+  	//TODO管理員結案button
+  	@Transactional
+  	public void backendclose(Integer csId, AdminVO adminVO){
+  		//用findById(csId去)拿出一個csVO
+  		CsVO csVO = csRepository.findById(csId).orElseThrow();
+  		//newcsmsgVO要有csId 這樣才會關聯到(因為csId 是FK)
+  		CsMsgVO newcsmsgVO = new CsMsgVO();
+  		newcsmsgVO.setAdminVO(adminVO);
+  		newcsmsgVO.setCsVO(csVO);
+  		newcsmsgVO.setMsgContent("【系統提示】此案件已由 客服專員 標記為結案。");
+  		newcsmsgVO.setSenderType(CsMsgVO.Srsystem);
+  		csmsgRepository.save(newcsmsgVO);
+  		
+  		//update csVO status+resolvedtime
+  		csVO.setCaseStatus(CsVO.SsResovled);
+  		csVO.setResolvedAt(new java.sql.Timestamp(System.currentTimeMillis()));
 
-	
-	
+  		csRepository.save(csVO);
+  	}
 //-------------------------
 //前台
 //-------------------------
@@ -76,15 +158,17 @@ public class CsService {
 		return csVO;
 	}
 //findByActiveCase
-//是找非結案的Case|| List<CsVO> findByCustomerVO_CustIdAndCaseStatusNot(Integer custId, Byte caseStatus);
-	public List<CsVO> findByActiveCases(Integer custId){
-		return csRepository.findByCustomerVO_CustIdAndCaseStatusNot(custId, (byte)3);
+//是找非結案的Case [分頁]
+	public Page<CsVO> findByActiveCases(Integer custId , int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 5 , Sort.by("caseStatus").descending()); //一頁5項
+		return csRepository.findByCustomerVO_CustIdAndCaseStatusNot(custId, CsVO.SsResovled, pageable);
 	}
 	
 //findByInactiveCase
-// 	List<CsVO> findByCustomerVO_CustIdAndCaseStatus(Integer custId, Byte caseStatus);
-	public List<CsVO> findByInactiveCases(Integer custId){
-		return csRepository.findByCustomerVO_CustIdAndCaseStatus(custId, (byte) 3);
+// 	List<CsVO> findByCustomerVO_CustIdAndCaseStatus(Integer custId, Byte caseStatus);[分頁]
+	public Page<CsVO> findByInactiveCases(Integer custId, int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 5, Sort.by("createdAt").descending()); //一頁6項
+		return csRepository.findByCustomerVO_CustIdAndCaseStatus(custId, CsVO.SsResovled, pageable);
 	}
 	
 //	前台使用者查出Msg + 不會出現 7號Worknote : List<CsMsgVO> findByCsVO_CsIdAndSenderTypeNot(Integer csId, Byte senderType);
@@ -140,49 +224,5 @@ public class CsService {
 
 		csRepository.save(csVO);
 	}
-	//後台管理員的reply 跟cust相同 只是增加senderType判斷
-	@Transactional
-	public void adminorworknotereply(CsMsgVO newcsmsgVO, Integer csId , Byte senderType) {
-		//用findById(csId去)拿出一個csVO
-		CsVO csVO = csRepository.findById(csId).orElseThrow();
-		//先拿現在的CaseStatus
-		Byte currentStatus = csVO.getCaseStatus();
-		//資安防呆 不要相信前端 如果已結案 不準存回覆
-		if(currentStatus == (byte) 3){
-        throw new RuntimeException("此案件已結案，無法新增回覆！");
-    	}
-    
-		//newcsmsgVO要有csId 這樣才會關聯到(因為csId 是FK)
-		newcsmsgVO.setCsVO(csVO);
-		//如果senderType是admin=>setSenderType + csVO.setCaseStatus
-		if(senderType == CsMsgVO.Sradmin){
-		newcsmsgVO.setSenderType(CsMsgVO.Sradmin);
-		csVO.setCaseStatus(csVO.SsReplied);
-		}else if(senderType == CsMsgVO.Srworknote){
-		//如果senderType是worknote=>只要做setSenderType 不用動CsVO的caseStatus 因為那是後台內部訊息 => 沒動到CsVO 就自動不會動到updatedAt
-			newcsmsgVO.setSenderType(CsMsgVO.Srworknote);
-		}
-		csmsgRepository.save(newcsmsgVO);
-		//要把case/CsVO存回去~
-		csRepository.save(csVO);
-	}
-	//TODO管理員結案button
-	@Transactional
-	public void backendclose(Integer csId, AdminVO adminVO){
-		//用findById(csId去)拿出一個csVO
-		CsVO csVO = csRepository.findById(csId).orElseThrow();
-		//newcsmsgVO要有csId 這樣才會關聯到(因為csId 是FK)
-		CsMsgVO newcsmsgVO = new CsMsgVO();
-		newcsmsgVO.setAdminVO(adminVO);
-		newcsmsgVO.setCsVO(csVO);
-		newcsmsgVO.setMsgContent("【系統提示】此案件已由 客服專員 標記為結案。");
-		newcsmsgVO.setSenderType(CsMsgVO.Srsystem);
-		csmsgRepository.save(newcsmsgVO);
-		
-		//update csVO status+resolvedtime
-		csVO.setCaseStatus(CsVO.SsResovled);
-		csVO.setResolvedAt(new java.sql.Timestamp(System.currentTimeMillis()));
-
-		csRepository.save(csVO);
-	}
+	
 }
