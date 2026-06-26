@@ -107,7 +107,7 @@ public class FrontendCustomerController {
                 (CustomerVO) session.getAttribute("loginCustomer");
 
         if (loginCustomer == null) {
-            return "redirect:/frontend/auth/login";
+            return "redirect:/auth/login";
         }
 
         CustomerVO db =
