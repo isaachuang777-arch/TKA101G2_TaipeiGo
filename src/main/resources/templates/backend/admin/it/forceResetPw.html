@@ -1,97 +1,188 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>強制密碼重設</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>強制密碼重設 - TaipeiGo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: Arial, sans-serif; padding: 30px; background-color: #f8f9fa; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
-        h2 { color: #dc3545; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: center; }
-        th { background-color: #343a40; color: white; }
-        .badge { background-color: #17a2b8; color: white; border-radius: 4px; padding: 4px 8px; font-size: 12px; margin: 2px; display: inline-block; }
-        .btn-search { background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; }
-        .btn-reset { background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-reset:hover { background-color: #c82333; }
-        .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #6c757d; }
-        .btn_change{
-	   background-color: #007bff; 
-    color: white; 
-    padding: 5px 10px; 
-    border: none; 
-    border-radius: 3px; 
-    cursor: pointer}
-    .btn_change a{
-    color: white; 
-    }
+        :root {
+            --primary: #0d6efd;
+            --sidebar-width: 260px;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+        }
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            background: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2236;
+        }
+        .topbar-title span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+        .content-area {
+            padding: 32px;
+            flex: 1;
+        }
+        .card-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf2;
+            margin-bottom: 20px;
+        }
+        .warning-text {
+            color: #dc3545;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <a th:href="@{/backend/admin/it/index}" class="back-link"> 回 系統管理員控制中心</a>
-    
-    <h2>強制密碼重設</h2>
-    <p>請小心使用此特權功能，重設後對方的狀態將變更為「登入後強制更改密碼」。</p>
-    <p>重設後密碼為帳號加上今天日期[格式為YYYYMMDD]</p>
+<!--side bar-->
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 
-    <hr style="border: 1px solid #eee; margin: 20px 0;">
+<div class="main-wrap">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="fa-solid fa-key me-2 text-danger"></i>
+            強制密碼重設
+            <span>/ Force Reset Password</span>
+        </div>
+    </header>
 
-    <!-- ================= 步驟 1：搜尋區塊 ================= -->
-    <div>
-        <h3>請搜尋欲重設密碼的帳號</h3>
-        <form th:action="@{/backend/admin/it/forceResetPw}" method="get">
-            <input type="text" name="keyword" th:value="${keyword}" placeholder="請輸入帳號或姓名..." 
-                   style="padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 4px;" required>
-            <button type="submit" class="btn-search">搜尋</button>
-        </form>
+    <main class="content-area">
         
-        <!-- 找不到時顯示錯誤訊息 -->
-        <p th:if="${errorMsg}" th:text="${errorMsg}" style="color: #dc3545; font-weight: bold; margin-top: 10px;"></p>
-    </div>
+        <!-- 頂部返回按鈕 -->
+        <div class="mb-3">
+            <a th:href="@{/backend/admin/it/index}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i>返回控制中心
+            </a>
+        </div>
 
-    <!-- ================= 步驟 2：結果列表 ================= -->
-    <div th:if="${adminVOList != null}">
-        <h3 style="margin-top: 40px;">請選擇需要更改密碼的管理員</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>姓名</th>
-                    <th>帳號</th>
-                    <th>擁有權限</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="admin : ${adminVOList}">
-                    <td th:text="${admin.admName}"></td>
-                    <td th:text="${admin.admAcc}"></td>
-                    
-                    <!-- 迴圈印出他擁有的所有權限名稱 (Badge 樣式) -->
-                    <td>
-                        <span th:each="per : ${admin.admPerVO}" 
-                              th:text="${per.admfuncVO.funcName}" 
-                              class="badge">
-                        </span>
-                    </td>
-                    
-                    <td>
-                        <!-- ★ 重頭戲：結合了 JS Confirm 的表單送出 ★ -->
-                    <form th:action="@{/backend/admin/it/saveForcePwtoDB}" method="post"
-                    th:data-name="${admin.admAcc}"
-                    onsubmit="return confirm('目標帳號是【' + this.getAttribute('data-name') + '】\n您確定要強制重設密碼嗎？\n(按確定後將立即生效，覆寫為預設值)');">
-                            
-                            <input type="hidden" name="admId" th:value="${admin.admId}">
-                            <button type="submit" class="btn-reset"> 強制重設</button>
-                            
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <!-- 說明與搜尋區塊 -->
+        <div class="card-box border-top border-danger border-4">
+            <h4 class="text-danger fw-bold mb-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>強制密碼重設特權操作</h4>
+            <p class="mb-1 text-muted">請小心使用此功能。重設後，該帳號的狀態將變更為「待重設密碼」，使用者必須使用預設密碼登入並立即更改密碼。</p>
+            <p class="mb-4 text-muted">預設密碼格式：<span class="badge bg-light text-dark border">帳號 + 今天日期(YYYYMMDD)</span></p>
+
+            <hr class="text-muted opacity-25">
+
+            <h5 class="fw-bold mb-3 mt-4 text-dark">請搜尋欲重設密碼的帳號</h5>
+            
+            <form th:action="@{/backend/admin/it/forceResetPw}" method="get" class="d-flex align-items-center mb-2">
+                <div class="input-group" style="max-width: 400px;">
+                    <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="輸入帳號或姓名..." required>
+                    <button class="btn btn-primary px-4" type="submit">搜尋</button>
+                </div>
+            </form>
+            
+            <!-- 找不到時顯示錯誤訊息 -->
+            <div th:if="${errorMsg}" class="alert alert-danger mt-3 d-inline-block py-2" role="alert">
+                <i class="fa-solid fa-circle-xmark me-2"></i><span th:text="${errorMsg}"></span>
+            </div>
+        </div>
+
+        <!-- 搜尋結果區塊 -->
+        <div th:if="${adminVOList != null}" class="card-box border-top border-primary border-4 mt-4">
+            <h5 class="fw-bold mb-3 text-dark">請選擇需要重設密碼的管理員</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle border">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 20%;">姓名</th>
+                            <th style="width: 25%;">帳號</th>
+                            <th>擁有權限</th>
+                            <th style="width: 15%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="admin : ${adminVOList}">
+                            <td th:text="${admin.admName}" class="fw-bold"></td>
+                            <td th:text="${admin.admAcc}" class="text-primary"></td>
+                            <td>
+                                <!-- 迴圈印出他擁有的所有權限名稱 -->
+                                <span th:if="${#lists.isEmpty(admin.admPerVO)}" class="text-muted small">無特殊權限</span>
+                                <span th:unless="${#lists.isEmpty(admin.admPerVO)}" 
+                                      th:each="per : ${admin.admPerVO}" 
+                                      class="badge bg-info text-dark me-1 mb-1"
+                                      th:text="${per.admfuncVO.funcName}">
+                                </span>
+                            </td>
+                            <td>
+                                <!--  JS Confirm 的表單送出 -->
+                                <form th:action="@{/backend/admin/it/saveForcePwtoDB}" method="post" class="m-0"
+                                      th:data-name="${admin.admAcc}"
+                                      onsubmit="return confirm('警告：目標帳號是【' + this.getAttribute('data-name') + '】\n\n您確定要強制重設密碼嗎？\n(按確定後將立即生效，覆寫為預設密碼)');">
+                                    <input type="hidden" name="admId" th:value="${admin.admId}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-arrow-rotate-left me-1"></i>強制重設
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁按鈕區塊 -->
+            <div th:if="${pageResult != null and pageResult.totalPages > 1}" class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <!-- 上一頁 -->
+                        <li class="page-item" th:classappend="${!pageResult.hasPrevious()} ? 'disabled'">
+                            <a class="page-link" th:href="@{/backend/admin/it/forceResetPw(keyword=${keyword}, page=${pageResult.number})}" tabindex="-1">上一頁</a>
+                        </li>
+                        
+                        <!-- 數字頁碼 -->
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, pageResult.totalPages)}" th:classappend="${pageResult.number + 1 == i} ? 'active'">
+                            <a class="page-link" th:href="@{/backend/admin/it/forceResetPw(keyword=${keyword}, page=${i})}" th:text="${i}">1</a>
+                        </li>
+                        
+                        <!-- 下一頁 -->
+                        <li class="page-item" th:classappend="${!pageResult.hasNext()} ? 'disabled'">
+                            <a class="page-link" th:href="@{/backend/admin/it/forceResetPw(keyword=${keyword}, page=${pageResult.number + 2})}">下一頁</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+        </div>
+    </main>
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
