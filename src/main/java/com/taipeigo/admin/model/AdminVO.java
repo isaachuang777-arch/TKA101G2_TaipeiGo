@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.Set;
 
+import org.hibernate.validator.constraints.Length;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "ADMIN")
@@ -26,12 +29,18 @@ public class AdminVO implements Serializable {
     @Column(name = "ADM_ID", updatable = false)
     private Integer admId;
 
+    @NotNull(message = "帳號不可為空")
+    @Length(min = 1, max = 20, message = "帳號長度需為1~20")
     @Column(name = "ADM_ACC")
     private String admAcc;
-
+    
+    @NotNull(message = "密碼不可為空")
+    @Length(min = 1, max = 20, message = "密碼長度需為8~20")
     @Column(name = "ADM_PW")
     private String admPw;
-
+    
+    @NotNull(message = "姓名不可為空")
+    @Length(min = 1, max = 10, message = "姓名長度需為1~10")
     @Column(name = "ADM_NAME")
     private String admName;
 
@@ -42,7 +51,7 @@ public class AdminVO implements Serializable {
     private Byte admStatus; 
 ///////////////////////////////////////
     public static final Byte StatusEnabled = 1;             // 啟用
-    public static final Byte StatusDisabled  = 0;            // 停權
+    public static final Byte StatusDisabled  = 0;            // 停用
     public static final Byte StatusForcetoChangePW = 9;     // 強制換密碼
 //////////////////////可以寫成adminVO.setAdmStatus(AdminVO.StatusEnabled);
 

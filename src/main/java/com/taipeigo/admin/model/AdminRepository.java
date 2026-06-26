@@ -2,6 +2,8 @@ package com.taipeigo.admin.model;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -29,4 +31,19 @@ public interface AdminRepository extends JpaRepository<AdminVO, Integer> {
 
     // 沒權限人數
     long countByAdmPerVOsIsEmpty();
+    
+    /* ----分頁功能以下 ----*/
+
+    // 用帳號狀態admStatus找人(分頁)
+    Page<AdminVO> findByadmStatus(Byte admStatus, Pageable pageable);
+
+    //模糊searchName/acc(分頁)
+    Page<AdminVO> findByAdmAccContainingOrAdmNameContaining(String keyword1, String keyword2, Pageable pageable);
+
+    //找出XXX權限的管理員 [分頁]
+    Page<AdminVO> findDistinctByAdmPerVOs_AdmfuncVO_FuncId(Integer funcId, Pageable pageable);
+    
+    // 找沒權限的管理員(分頁)
+    Page<AdminVO> findByAdmPerVOsIsEmpty(Pageable pageable);
+
 }

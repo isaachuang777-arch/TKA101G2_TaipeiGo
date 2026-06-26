@@ -1,156 +1,210 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>系統管理員列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統管理員列表 - TaipeiGo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 8px;
+        :root {
+            --primary: #0d6efd;
+            --sidebar-width: 260px;
         }
-    
-    /* 基礎按鈕共用樣式 */
-    .btn-toggle {
-        color: white;
-        border: none;
-        padding: 5px 12px;
-        border-radius: 15px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background-color 0.3s; /* 讓變色的瞬間有滑順的動畫過渡效果 */
-    }
-    
-    /* 啟用的綠色樣式 */
-    .btn-active {
-        background-color: #28a745;
-    }
-    
-    /* 停權的灰色樣式 */
-    .btn-inactive {
-        background-color: #6c757d;
-    }
-   button{
-	   background-color: #007bff; 
-    color: white; 
-    padding: 5px 10px; 
-    border: none; 
-    border-radius: 3px; 
-    cursor: pointer}
-    .btn_change a{
-    color: white; 
-    }
-    a{
-        text-decoration: none;
-            color: white; 
-            }
-    
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+        }
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            background: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2236;
+        }
+        .topbar-title span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+        .content-area {
+            padding: 32px;
+            flex: 1;
+        }
+        .card-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf2;
+            margin-bottom: 20px;
+        }
+        .btn-toggle {
+            transition: background-color 0.3s;
+        }
     </style>
 </head>
 <body>
-    <h2>系統管理員列表</h2>
-    <div style="margin-bottom: 20px;">
-    <a th:href="@{/backend/admin/it/index}">
-        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-        返回 系統管理員控制中心
-        </button>
-    </a>
+
+<!--side bar-->
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+<div class="main-wrap">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="fa-solid fa-users me-2" style="color:var(--primary);"></i>
+            系統管理員列表
+            <span>/ Admin List</span>
+        </div>
+    </header>
+
+    <main class="content-area">
+
+        <!-- 回上一頁與搜尋區塊 -->
+        <div class="card-box d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <a th:href="@{/backend/admin/it/index}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i>返回控制中心
+                </a>
+            </div>
+            
+            <form th:action="@{/backend/admin/it/listAll}" method="get" class="d-flex align-items-center m-0">
+                <label class="me-2 fw-bold text-nowrap">搜尋：</label>
+                <div class="input-group">
+                    <input type="text" name="keyword" class="form-control" th:value="${keyword}" placeholder="輸入帳號或姓名..." style="min-width: 200px;">
+                    <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <a th:href="@{/backend/admin/it/listAll}" class="btn btn-outline-secondary">重置</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- 訊息提示 -->
+        <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${successMsg}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMsg != null}" class="alert alert-danger" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${errorMsg}"></span>
+        </div>
+
+        <!-- 表格區塊 -->
+        <div class="card-box">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>編號</th>
+                            <th>帳號</th>
+                            <th>姓名</th>
+                            <th>到職日</th>
+                            <th>狀態</th>
+                            <th>擁有權限</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="adminVOList : ${adminVOList}">
+                            <td th:text="${adminVOList.admId}"></td>
+                            <td th:text="${adminVOList.admAcc}" class="fw-bold text-primary"></td>
+                            <td th:text="${adminVOList.admName}"></td>
+                            <td th:text="${adminVOList.hireDate}"></td>
+                            <td>
+                                <!-- 狀態顯示-->
+                                <button th:if="${adminVOList.admStatus == 1}" type="button" class="btn btn-success btn-sm rounded-pill px-3 btn-toggle"
+                                        th:onclick="'toggleStatus(' + ${adminVOList.admId} + ', 0, this)'">
+                                    <i class="fa-solid fa-circle me-1 small"></i>啟用
+                                </button>
+                                
+                                <button th:if="${adminVOList.admStatus == 0}" type="button" class="btn btn-secondary btn-sm rounded-pill px-3 btn-toggle"
+                                        th:onclick="'toggleStatus(' + ${adminVOList.admId} + ', 1, this)'">
+                                    <i class="fa-solid fa-pause me-1 small"></i>停權
+                                </button>
+                                
+                                <span th:if="${adminVOList.admStatus == 9}" class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                    <i class="fa-solid fa-hourglass-half me-1"></i>待重設密碼
+                                </span>
+                            </td>
+                            <td>
+                                <!-- 權限顯示 -->
+                                <span th:if="${#lists.isEmpty(adminVOList.admPerVO)}" class="text-danger small fw-bold">
+                                    <i class="fa-solid fa-circle-xmark me-1"></i>無權限
+                                </span>
+                                
+                                <span th:unless="${#lists.isEmpty(adminVOList.admPerVO)}"
+                                      th:each="admPerVO : ${adminVOList.admPerVO}"
+                                      class="badge bg-info text-dark me-1 mb-1">
+                                    <span th:text="${admPerVO.admfuncVO.funcName}"></span>
+                                </span>
+                            </td>
+                            <td>
+                                <a th:href="@{/backend/admin/it/updateAdmin(admId=${adminVOList.admId})}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i>修改
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁按鈕區塊 -->
+            <div th:if="${pageResult != null and pageResult.totalPages > 1}" class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <!-- 上一頁 -->
+                        <li class="page-item" th:classappend="${!pageResult.hasPrevious()} ? 'disabled'">
+                            <a class="page-link" th:href="@{/backend/admin/it/listAll(keyword=${keyword}, page=${pageResult.number})}" tabindex="-1">上一頁</a>
+                        </li>
+                        
+                        <!-- 數字頁碼 -->
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, pageResult.totalPages)}" th:classappend="${pageResult.number + 1 == i} ? 'active'">
+                            <a class="page-link" th:href="@{/backend/admin/it/listAll(keyword=${keyword}, page=${i})}" th:text="${i}">1</a>
+                        </li>
+                        
+                        <!-- 下一頁 -->
+                        <li class="page-item" th:classappend="${!pageResult.hasNext()} ? 'disabled'">
+                            <a class="page-link" th:href="@{/backend/admin/it/listAll(keyword=${keyword}, page=${pageResult.number + 2})}">下一頁</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+        </div>
+    </main>
 </div>
-    <hr>
-    
-    <form th:action="@{/backend/admin/it/listContaining}" method="get" style="margin-bottom: 20px;">
-    <label>搜尋管理員：</label>
-    <input type="text" name="keyword" placeholder="請輸入帳號或姓名..." >
-    <button type="submit">搜尋</button>    
-    <!-- 重置 -->
-    <a th:href="@{/backend/admin/it/listAll}"><button type="button">重置</button></a>
-    </form>
 
-    <div th:if="${successMsg}" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; margin-bottom: 20px; border-radius: 5px; position: relative;">
-        <span th:text="${successMsg}"></span>
-        <!-- 點擊這個叉叉，就會利用簡單的 JS 把這個 div 給隱藏起來 -->
-        <button type="button" onclick="this.parentElement.style.display='none';" style="position: absolute; right: 10px; top: 12px; background: none; border: none; cursor: pointer; font-size: 16px;">✖</button>
-    </div>
-    <div th:if="${errorMsg != null}" style="color: red;">
-        <p th:text="${errorMsg}"></p>
-    </div>
-<hr>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>管理員編號</th>
-                <th>帳號</th>
-                <th>姓名</th>
-                <th>到職日</th>
-                <th>狀態</th>
-                <th>擁有權限</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!--這裡插入listAlladmin()裡面回傳的adminVOList做回圈  -->
-            <tr th:each="adminVOList : ${adminVOList}">
-            <td th:text="${adminVOList.admId}">編號</td>
-            <td th:text="${adminVOList.admAcc}">帳號</td>
-            <td th:text="${adminVOList.admName}">姓名</td>
-            <td th:text="${adminVOList.hireDate}">到職日</td>
-                
-            <!-- 狀態顯示-->
-            <!-- 狀態顯示-->
-            <td>
-                <!-- 狀態為 1：顯示切換為 0 的按鈕 -->
-                <button th:if="${adminVOList.admStatus == 1}" type="button" class="btn-toggle btn-active"
-                        th:onclick="'toggleStatus(' + ${adminVOList.admId} + ', 0, this)'">啟用</button>
-                
-                <!-- 狀態為 0：顯示切換為 1 的按鈕 -->
-                <button th:if="${adminVOList.admStatus == 0}" type="button" class="btn-toggle btn-inactive"
-                        th:onclick="'toggleStatus(' + ${adminVOList.admId} + ', 1, this)'">停權</button>
-                
-                <!-- 狀態為 9：純顯示標籤，不可用按鈕直接切換 (必須等員工自己改密碼解鎖) -->
-                <span th:if="${adminVOList.admStatus == 9}" style="background-color: #ffc107; color: #212529; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 15px">
-                    強制重設密碼
-                </span>
-            </td>
-                
-			  <!-- 權限顯示 -->
-			    <td>
-			        <!--權限list的admPerVO是空的 -->
-			        <span th:if="${#lists.isEmpty(adminVOList.admPerVO)}" style="color: red;">
-			            -沒有權限-
-			        </span>
-			        
-			        <!-- list有東西 -->
-			        <span th:unless="${#lists.isEmpty(adminVOList.admPerVO)}"
-			              th:each="admPerVO : ${adminVOList.admPerVO}"
-			              th:text="${admPerVO.admfuncVO.funcName} + ' '">
-			        </span>
-    		</td>
-                   <td>
-                   <button> <a th:href ="@{/backend/admin/it/updateAdmin(admId=${adminVOList.admId})}">修改資料</a></button>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <hr>
-        <form th:action="@{/backend/auth/logout}" method="post">
-        <button type="submit">安全登出</button>
-    </form>
-    <script>
+<script>
 function toggleStatus(admId, newadmStatus, buttonElement) {
-    // 1. 防呆雙重確認彈窗
     let actionName = (newadmStatus === 1) ? "啟用" : "停權";
-    let confirmResult = confirm("⚠️ 確定要將此管理員的狀態更改為「" + actionName + "」嗎？");
+    let confirmResult = confirm("確定要將此管理員的狀態更改為「" + actionName + "」嗎？");
     
-    // 2. 如果使用者點擊【取消】
     if (!confirmResult) {
-        alert("💡 取消：帳號狀態更新"); // 完全照您的需求！
-        return; // 結束函式，不發送 API
+        alert("取消：帳號狀態更新"); 
+        return; 
     }
     
-    // 3. 如果點擊【確定】，開始用 Fetch 發送 API 給後端
-    // 打包資料
     const formData = new URLSearchParams();
     formData.append('admId', admId);
     formData.append('newadmStatus', newadmStatus);
@@ -159,29 +213,21 @@ function toggleStatus(admId, newadmStatus, buttonElement) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.text()) // 解析後端 @ResponseBody 回傳的字串
+    .then(response => response.text()) 
     .then(text => {
-        // 4. 後端驗證成功，開始表演「無刷新變色魔法」
         if (text === "SUCCESS") {
-            
             if(newadmStatus === 1) {
-                buttonElement.innerText = "🟢 啟用";
-                buttonElement.style.backgroundColor = "#28a745";
-                // 狀態變 1 了，把按鈕的下次任務改成 0
+                buttonElement.innerHTML = '<i class="fa-solid fa-circle me-1 small"></i>啟用';
+                buttonElement.className = "btn btn-success btn-sm rounded-pill px-3 btn-toggle";
                 buttonElement.setAttribute("onclick", `toggleStatus(${admId}, 0, this)`);
             } else {
-                buttonElement.innerText = "🔴 停權";
-                buttonElement.style.backgroundColor = "#6c757d";
-                // 狀態變 0 了，把按鈕的下次任務改成 1
+                buttonElement.innerHTML = '<i class="fa-solid fa-pause me-1 small"></i>停權';
+                buttonElement.className = "btn btn-secondary btn-sm rounded-pill px-3 btn-toggle";
                 buttonElement.setAttribute("onclick", `toggleStatus(${admId}, 1, this)`);
             }
-            
-            // 可以選擇加上一個小提示，或是偷偷顯示在畫面上方
             console.log("狀態更新成功"); 
-
         } else {
-            // 如果後端傳回 ERROR，代表發生問題 (例如沒登入)
-            alert("❌ " + text);
+            alert(text);
         }
     })
     .catch(error => {

@@ -1,39 +1,161 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>更新管理員權限</title>
-    </head>
-    <body>
-        <h2>更新管理員權限</h2>
-    <div style="margin-bottom: 20px;">
-    <a th:href="@{/backend/admin/it/permission}">
-        <button type="button" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-        返回 系統管理員權限列表
-        </button>
-    </a>
-</div>
-        <div class="profile-name" th:text="${adminVO.admName}">管理員姓名</div>
-        <div class="profile-role" th:text="'登入帳號：' + ${adminVO.admAcc}">登入帳號</div>
-        <div class="info-list">
-            <div class="info-item">
-                <span class="info-label">員工編號</span>
-                <span class="info-value" th:text="${adminVO.admId}"></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">更改權限</span>
-                <span class="info-value" style="display: flex; gap: 5px; flex-wrap: wrap; ">
-            </div>
-            <!-- 權限選擇區 -->
-		<form th:action="@{/backend/admin/it/updatepermission}"  method="post">
-		<input type="hidden" name="admId" th:value="${adminVO.admId}">
-		<th:block th:each="func : ${funcList}"> 
-		<input type="checkbox" name="funcIds" th:value="${func.funcId}" th:checked="${#lists.contains(adminVO.admPerVO.![admfuncVO.funcId], func.funcId)}">
-            <span th:text="${func.funcName}"  style="background: #e1f0fa; color: #2980b9; padding: 2px 10px; border-radius: 10px; font-size: 16px; font-weight: bold;"></span><br>
-		</th:block>
-		<br>
-				 <button type="submit" style="background-color: rgb(190, 221, 241); color: black; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;"> 確認修改</button>
-		</from>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新管理員權限 - TaipeiGo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --sidebar-width: 260px;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+        }
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            background: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2236;
+        }
+        .topbar-title span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+        .content-area {
+            padding: 32px;
+            flex: 1;
+        }
+        .card-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf2;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .custom-checkbox-btn .form-check-input {
+            display: none;
+        }
+        .custom-checkbox-btn .form-check-label {
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease-in-out;
+            background-color: #f8fafc;
+        }
+        .custom-checkbox-btn .form-check-input:checked + .form-check-label {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e3a8a;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        .custom-checkbox-btn .form-check-input:checked + .form-check-label .icon-check {
+            display: inline-block !important;
+            color: #3b82f6;
+        }
+        .custom-checkbox-btn .icon-check {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
 
-    </body>
-    </html>
+<!--side bar-->
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+<div class="main-wrap">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="fa-solid fa-user-gear me-2 text-primary"></i>
+            更新管理員權限
+            <span>/ Update Permission</span>
+        </div>
+    </header>
+
+    <main class="content-area">
+
+        <!-- 頂部按鈕 -->
+        <div class="mb-3" style="max-width: 600px; margin: 0 auto;">
+            <a th:href="@{/backend/admin/it/permission}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i>返回權限大廳
+            </a>
+        </div>
+
+        <div class="card-box border-top border-primary border-4">
+            
+            <!-- 個人資訊區塊 -->
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                    <i class="fa-solid fa-shield-check"></i>
+                </div>
+                <div>
+                    <h4 class="mb-1 fw-bold text-dark" th:text="${adminVO.admName}">管理員姓名</h4>
+                    <span class="text-muted small me-2"><i class="fa-solid fa-user me-1"></i><span th:text="${adminVO.admAcc}"></span></span>
+                    <span class="badge bg-secondary">編號：<span th:text="${adminVO.admId}"></span></span>
+                </div>
+            </div>
+
+            <!-- 權限選擇區塊 -->
+            <form th:action="@{/backend/admin/it/updatepermission}" method="post">
+                <input type="hidden" name="admId" th:value="${adminVO.admId}">
+                
+                <h5 class="mb-3 fw-bold text-dark"><i class="fa-solid fa-list-check me-2"></i>勾選要賦予的權限：</h5>
+                
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <div class="custom-checkbox-btn" th:each="func : ${funcList}">
+                        <!-- 判斷使否有此權限，有的話就預設打勾 -->
+                        <input class="form-check-input" type="checkbox" name="funcIds" th:value="${func.funcId}" th:id="'func_' + ${func.funcId}"
+                               th:checked="${#lists.contains(adminVO.admPerVO.![admfuncVO.funcId], func.funcId)}">
+                        
+                        <label class="form-check-label w-100 justify-content-between fw-bold" th:for="'func_' + ${func.funcId}">
+                            <span><i class="fa-solid fa-sitemap me-2 text-muted"></i><span th:text="${func.funcName}"></span></span>
+                            <i class="fa-solid fa-circle-check fs-5 icon-check"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4 pt-3 border-top">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa-solid fa-circle-check me-2"></i>確認修改並套用權限</button>
+                </div>
+            </form>
+            
+        </div>
+
+    </main>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

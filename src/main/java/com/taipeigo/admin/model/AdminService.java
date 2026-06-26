@@ -20,6 +20,10 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class AdminService {
 
@@ -227,5 +231,42 @@ public class AdminService {
 //============================
 	public List<AdminVO> getAdminByFuncId(Integer funcId){
 		return adminRepository.findByAdminByFuncId(funcId);
+	}
+//================================
+//分頁Service如下
+//================================
+//用admStatus找人 [分頁]
+	public Page<AdminVO> getByadmStatusByPage (Byte admStatus, int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+		return adminRepository.findByadmStatus(admStatus, pageable);
+
+	}
+//模糊searchName/acc [分頁]
+	public Page<AdminVO> getByAdmAccContainingOrAdmNameContainingBypage(String keyword, int pageNumber){
+	Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+	Page<AdminVO> pageResult = adminRepository.findByAdmAccContainingOrAdmNameContaining(keyword, keyword, pageable);
+	        
+	        //0resultmsg
+	        if(pageResult.isEmpty()) {
+	            throw new RuntimeException("找不到相關人員，請重新輸入。");
+	        }
+	        
+	        return pageResult;
+	}
+ //找出XXX權限的管理員 [分頁]
+//============================
+	public Page<AdminVO> getByAdminByFuncIdByPage(Integer funcId, Integer pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+		return adminRepository.findDistinctByAdmPerVOs_AdmfuncVO_FuncId(funcId, pageable);
+	}
+//找沒有權限的管理員 [分頁]
+	public Page<AdminVO> getByAdmPerVOisEmptyByPage(int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1, 10);
+		return adminRepository.findByAdmPerVOsIsEmpty(pageable);
+	}
+//全找管理員 [分頁]
+	public Page<AdminVO> getAllAdminBypage(int pageNumber){
+		Pageable pageable = PageRequest.of(pageNumber -1,10);
+		return adminRepository.findAll(pageable);
 	}
 }

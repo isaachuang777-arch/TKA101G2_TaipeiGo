@@ -4,6 +4,9 @@ import com.taipeigo.IndexController;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +25,10 @@ import com.taipeigo.admin.model.AdminService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/backend/admin/")
+@RequestMapping("/backend/admin")
 
 
 public class AdminController {
-    private final IndexController indexController;
-
     @Autowired
     private AdminService adminService;
     
@@ -39,53 +40,38 @@ public class AdminController {
    
 
     AdminController(IndexController indexController) {
-        this.indexController = indexController;
     }
 
 
     
-//列出全員
+//列出全員 + 分頁 + 模糊搜尋
 @GetMapping("/it/listAll")
-    public String listAlladmin(Model model, HttpSession session) {
-        //防止沒登入的看到
-        if(session.getAttribute("adminVO") == null) {
-            return "redirect:/backend/auth/login";
-        }
-        //Listall
-        List<AdminVO> adminVOList = adminService.getAllAdmin();
-        
-        //丟回前端
-        model.addAttribute("adminVOList", adminVOList);
-        
-        
-        return "backend/admin/it/listAllAdmin";
-    }
+    public String listAlladmin(Model model, HttpSession session, @RequestParam(value = "page", defaultValue = "1")  Integer page,@RequestParam(value = "keyword", required = false) String keyword ) {
 
-//列出Containing List
-@GetMapping("/it/listContaining")
-    public String listContainingadmin(Model model, HttpSession session , @RequestParam(value = "keyword", required = false) String keyword ) {
-        if (session.getAttribute("adminVO") == null) {
-            return "redirect:/backend/auth/login";
-        }
-
-        List<AdminVO> adminVOList = null;
+        Page<AdminVO> pageResult = null;
         
+        //邏輯
         try {
             if (keyword != null && !keyword.trim().isEmpty()) {
                 // 找到人
-                adminVOList = adminService.findAdminsbyContaining(keyword);
+                model.addAttribute("keyword", keyword);
+                pageResult = adminService.getByAdmAccContainingOrAdmNameContainingBypage(keyword, page);
             } else {//no
-                adminVOList = adminService.getAllAdmin();
+                pageResult = adminService.getAllAdminBypage(page);
             }
         } catch (RuntimeException e) {
             // 0resultmsg
             model.addAttribute("errorMsg", e.getMessage());
-                adminVOList = adminService.getAllAdmin();
+                pageResult = adminService.getAllAdminBypage(page);
         }
 
-        model.addAttribute("adminVOList", adminVOList);
+        //丟回前端
+        model.addAttribute("pageResult", pageResult);
+        model.addAttribute("adminVOList", pageResult.getContent());
         return "backend/admin/it/listAllAdmin";
     }
+
+
 //(update1)更新會員資料前置作業
 @GetMapping("/it/updateAdmin")
     public String updateAdmin(Model model, HttpSession session, @RequestParam("admId") Integer admId){
@@ -132,10 +118,7 @@ public class AdminController {
 //(New2)真的新增Admin
 @PostMapping("/it/createAdmin")
     public String createAdmin (AdminVO adminVO, Integer[] funcIds, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        //防呆好煩
-        if(session.getAttribute("adminVO") == null) {
-            return "redirect:/backend/auth/login";
-        }
+
         try {
             adminService.createAdmin(adminVO, funcIds);
             
@@ -146,8 +129,8 @@ public class AdminController {
             
             model.addAttribute("errorMsg", e.getMessage());
             
-                model.addAttribute("funcList", adminFuncService.getAlladmFuncs());
-                return "backend/admin/it/addAdmin";
+            model.addAttribute("funcList", adminFuncService.getAlladmFuncs());
+            return "backend/admin/it/addAdmin";
         }
     }
 
@@ -173,7 +156,7 @@ public class AdminController {
 //Admin Profile首頁
 //==========================================
 
-@GetMapping("/profile/index")
+@GetMapping({"/profile/index", "/profile", "/profile/"})
   public String showDashboard(Model model, HttpSession session) {
 	    AdminVO loginAdmin = (AdminVO) session.getAttribute("adminVO");
 	    model.addAttribute("adminVO", loginAdmin);
@@ -182,28 +165,29 @@ public class AdminController {
 // ==========================================
 // IT 管理中心首頁 (4 格卡片入口)
 // ==========================================
-@GetMapping({"/it/index","/it/"})
+@GetMapping({"/it/index","/it/","/it"})
 public String showITDashboard() {
         
     return "backend/admin/it/index";
 }
 
 // ==========================================
-// IT強制更改密碼頁面 + Containing搜查
+// IT強制更改密碼頁面 + Containing搜查 +分頁
 // ==========================================
 @GetMapping("/it/forceResetPw")
-public String showforceResetPw(Model model , @RequestParam(value = "keyword", required = false) String keyword){
+public String showforceResetPw(Model model , @RequestParam(value = "keyword", required = false) String keyword, @RequestParam(value = "page", defaultValue = "1")  Integer page){
 
     if(keyword != null && !keyword.trim().isEmpty()){
         try{
             //Containing查詢
-            List<AdminVO> searchResult = adminService.findAdminsbyContaining(keyword);
-            model.addAttribute("adminVOList", searchResult);
+            Page<AdminVO> pageResult = adminService.getByAdmAccContainingOrAdmNameContainingBypage(keyword, page);
+
+            model.addAttribute("pageResult", pageResult);
+            model.addAttribute("adminVOList", pageResult.getContent());
         }catch(RuntimeException e){
             model.addAttribute("errorMsg", e.getMessage());
         }
     }
-    
     //Keyword留在網頁
     model.addAttribute("keyword", keyword);
     
@@ -279,23 +263,26 @@ public String showforceResetPw(Model model , @RequestParam(value = "keyword", re
 @GetMapping("/it/permission")
 	public String  showPermission(
 	    @RequestParam(required = false) Integer funcId,
-	    Model model
+	    Model model,
+        @RequestParam(value = "page", defaultValue = "1")  Integer page
 	){
-	    List<AdminVO> adminList;
+	    Page<AdminVO> pageResult;
 	    //5. 新增無權限判斷 (funcId==0) =>顯示無權限者
 	    if(funcId !=null && funcId==0) {
-	    adminList = adminRepository.findByAdmPerVOsIsEmpty();
+	    pageResult = adminService.getByAdmPerVOisEmptyByPage(page);
 		}else if(funcId != null){ //1. 先判斷是要全list還是以by權限 =>顯示Admin的List
-	       adminList = adminService.getAdminByFuncId( funcId);        
+	       pageResult = adminService.getByAdminByFuncIdByPage(funcId, page);
 	    }else{ //沒輸入就代表給他全表
-	       adminList = adminService.getAllAdmin();
+	       pageResult = adminService.getAllAdminBypage(page);
 	    }
 	    //2. 顯示各權限 => FuncName
 	    List<AdmFuncVO> admFuncList = adminFuncService.getAlladmFuncs();
 	    
 	    //3. 送去前端
 	    model.addAttribute("admFuncList", admFuncList);
-	    model.addAttribute("adminList", adminList);
+	    model.addAttribute("pageResult", pageResult);
+	    model.addAttribute("adminList", pageResult.getContent());
+	    
 	    
 	    //4.前端有選哪個權限 就回傳是哪個funcId
 	    model.addAttribute("selectedfuncId", funcId);	

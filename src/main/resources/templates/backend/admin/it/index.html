@@ -1,108 +1,179 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"></html>
-<html lang="zh">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>系統管理員控制中心</title>
+    <title>系統管理員控制中心 - TaipeiGo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary: #0d6efd;
+            --sidebar-width: 260px;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6; /* 淡灰色背景，讓卡片更立體 */
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f0f4f8;
             margin: 0;
-            padding: 40px;
         }
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 40px;
-            color: #2c3e50;
-        }
-        
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px 20px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: all 0.3s ease; /* 微動畫過渡效果 */
-            border: 1px solid #e1e8ed;
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+        .topbar {
+            background: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2236;
+        }
+        .topbar-title span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+        .content-area {
+            padding: 32px;
+            flex: 1;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, #1a2236, #243653);
+            color: #fff;
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 24px rgba(26,34,54,0.18);
+        }
+        .welcome-card h2 {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .welcome-card p {
+            color: rgba(255,255,255,0.72);
+            margin-bottom: 0;
+        }
+        .quick-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 22px;
+            border: 1px solid #e8edf2;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+            transition: all .2s;
+        }
+        .quick-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.09);
+        }
+        .quick-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 150px;
+            margin-bottom: 14px;
+            font-size: 1.3rem;
         }
-        .card:hover {
-            transform: translateY(-8px); /* 向上浮起 */
-            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
-            border-color: #3498db;
+        .quick-icon.blue { background: #eff6ff; color: #3b82f6; }
+        .quick-icon.green { background: #f0fdf4; color: #22c55e; }
+        .quick-icon.orange { background: #fff7ed; color: #f97316; }
+        .quick-icon.red { background: #fff1f2; color: #ef4444; }
+        
+        .quick-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
         }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .card-desc {
-            font-size: 14px;
-            color: #7f8c8d;
-        }
-
-        .back-btn {
-            display: inline-block;
-            margin-top: 40px;
-            padding: 10px 20px;
-            background-color: #95a5a6;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        .back-btn:hover {
-            background-color: #7f8c8d;
+        .quick-desc {
+            color: #94a3b8;
+            font-size: 0.82rem;
+            margin-bottom: 0;
         }
     </style>
 </head>
 <body>
-<div class="dashboard-header">
-        <h1> 系統管理員控制中心</h1>
-        <p>後台管理員帳號與權限管理</p>
-    </div>
-    <!-- 4 格卡片區 -->
-    <div class="grid-container">
-        
-        <!-- 卡片 1：管理員列表 -->
-        <a th:href="@{/backend/admin/it/listAll}" class="card">
-            <div class="card-title">系統管理員總覽</div>
-            <div class="card-desc">檢視、搜尋與修改所有人員資料</div>
-        </a>
-        <!-- 卡片 2：新增管理員 -->
-        <a th:href="@{/backend/admin/it/addAdmin}" class="card">
-            <div class="card-title">新增系統管理員</div>
-            <div class="card-desc">為新進員工建立帳號與綁定權限</div>
-        </a>
-        <!-- 卡片 3：權限管理 -->
-        <a th:href="@{/backend/admin/it/permission}" class="card">
-            <div class="card-title">權限控制中心</div>
-            <div class="card-desc">依權限過濾名單與修改權限</div>
-        </a>
-        <!-- 卡片 4：強制密碼重設 -->
-        <a th:href="@{/backend/admin/it/forceResetPw}" class="card" >
-            <div class="card-title">強制密碼重設</div>
-            <div class="card-desc">登入後將需要重新設定密碼才能正常使用</div>
-        </a>
-    </div>
-    <div style="text-align: center;">
-        <a th:href="@{/backend/dashboard/index}" class="back-btn"> 返回後台首頁</a>
-    </div>
+
+<!--side bar-->
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+<div class="main-wrap">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="fa-solid fa-gear me-2" style="color:var(--primary);"></i>
+            系統管理員控制中心
+            <span>/ Admin IT Center</span>
+        </div>
+    </header>
+
+    <main class="content-area">
+
+        <!-- 歡迎區塊 -->
+        <section class="welcome-card">
+            <h2>IT 控制中心</h2>
+            <p>您可以在這裡管理所有後台系統管理員的帳號、權限以及密碼重設作業。</p>
+        </section>
+
+        <!-- 4 格卡片區 -->
+        <div class="row g-4 mb-4">
+            
+            <div class="col-md-6 col-lg-3">
+                <a th:href="@{/backend/admin/it/listAll}" class="quick-card">
+                    <div class="quick-icon blue"><i class="fa-solid fa-users"></i></div>
+                    <div class="quick-title">系統管理員總覽</div>
+                    <p class="quick-desc">檢視、搜尋與修改所有人員資料</p>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <a th:href="@{/backend/admin/it/addAdmin}" class="quick-card">
+                    <div class="quick-icon green"><i class="fa-solid fa-user-plus"></i></div>
+                    <div class="quick-title">新增系統管理員</div>
+                    <p class="quick-desc">為新進員工建立帳號與綁定權限</p>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <a th:href="@{/backend/admin/it/permission}" class="quick-card">
+                    <div class="quick-icon orange"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="quick-title">權限控制中心</div>
+                    <p class="quick-desc">依權限過濾名單與修改人員權限</p>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <a th:href="@{/backend/admin/it/forceResetPw}" class="quick-card">
+                    <div class="quick-icon red"><i class="fa-solid fa-key"></i></div>
+                    <div class="quick-title">強制密碼重設</div>
+                    <p class="quick-desc">登入後將需要重新設定密碼才能正常使用</p>
+                </a>
+            </div>
+            
+        </div>
+
+    </main>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

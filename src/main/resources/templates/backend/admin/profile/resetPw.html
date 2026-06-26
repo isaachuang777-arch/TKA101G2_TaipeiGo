@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6; /* 跟其他頁面統一的背景色 */
+            background-color: #f4f7f6; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,8 +18,8 @@
         body > div {
             background: white;
             border-radius: 16px;
-            padding: 40px !important; /* 加大內距讓畫面呼吸 */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* 柔和陰影 */
+            padding: 40px !important; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* 陰影 */
             border: 1px solid #e1e8ed;
             box-sizing: content-box; 
         }
@@ -72,7 +72,7 @@
 
         .btn-submit:hover {
             background-color: #2980b9;
-            transform: translateY(-2px); /* 點擊按鈕的浮起動畫 */
+            transform: translateY(-2px); 
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
 
@@ -108,7 +108,8 @@
     </style>
 </head>
 <body>
-
+<!--side bar-->
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
     <div style="width: 400px;">
     <!-- 錯誤訊息提示區 -->
     <div th:if="${errorMsg}" class="msg-error" th:text="${errorMsg}"></div>
