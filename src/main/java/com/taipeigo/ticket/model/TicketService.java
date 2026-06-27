@@ -47,6 +47,11 @@ public class TicketService {
 		return optional.orElse(null);
 	}
 
+	/* 查有上架的門票(1) */
+	public List<TicketVO> getAllEnable() {
+		return ticketRepository.findByTicketStatus(1);
+	}
+
 	/* 新增門票序號 */
 	@Transactional
 	public void generateSerials(Integer ticketId, int quantity) {

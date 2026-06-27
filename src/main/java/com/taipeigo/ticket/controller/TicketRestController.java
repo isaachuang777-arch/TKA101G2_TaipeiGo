@@ -44,7 +44,8 @@ public class TicketRestController {
         if (categoryId != null) {
             voList = ticketService.getActiveTicketsByCategory(categoryId);
         } else {
-            voList = ticketService.getAll();
+            // 只顯示有上架的門票
+            voList = ticketService.getAllEnable();
         }
 
         // dto 已處理只會顯示有已啟用的分類

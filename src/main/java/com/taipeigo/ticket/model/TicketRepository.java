@@ -9,9 +9,12 @@ public interface TicketRepository extends JpaRepository<TicketVO, Integer> {
 
     // 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1）
     @Query("SELECT DISTINCT t FROM TicketVO t " +
-           "JOIN t.ticketCategories c " +
-           "WHERE c.ticketCategoryId = :categoryId " +
-           "AND c.ticketCategoryStatus = 1 " +
-           "AND t.ticketStatus = 1")
+            "JOIN t.ticketCategories c " +
+            "WHERE c.ticketCategoryId = :categoryId " +
+            "AND c.ticketCategoryStatus = 1 " +
+            "AND t.ticketStatus = 1")
     List<TicketVO> findActiveTicketsByCategoryId(@Param("categoryId") Integer categoryId);
+
+    // 依門票狀態查詢門票 (0=未啟用(下架) 1=啟用(上架) 2=已刪除)
+    List<TicketVO> findByTicketStatus(Integer ticketStatus);
 }
