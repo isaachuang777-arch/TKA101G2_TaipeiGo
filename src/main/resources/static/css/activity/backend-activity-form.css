@@ -1,0 +1,217 @@
+/* ========================================================= */
+/* 後台一日活動表單共用樣式 (新增/修改)                           */
+/* ========================================================= */
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* --- 拖曳上傳區塊 --- */
+.upload-drop-zone {
+    border: 2px dashed #0d6efd;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-drop-zone:hover, .upload-drop-zone.dragover {
+    background-color: #e9ecef;
+    border-color: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+}
+
+.upload-drop-zone i {
+    font-size: 3rem;
+    color: #0d6efd;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.upload-drop-zone:hover i {
+    transform: translateY(-5px);
+}
+
+.upload-drop-zone h5 {
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 5px;
+}
+
+.upload-drop-zone p {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.file-input-hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* --- 圖片預覽區 --- */
+.preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.preview-item {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-item .remove-btn,
+.existing-image-item .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 12px;
+}
+
+.preview-item .remove-btn:hover,
+.existing-image-item .remove-btn:hover {
+    background: rgba(220, 53, 69, 1);
+}
+
+/* --- 原有圖片展示區 --- */
+.existing-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.existing-image-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.existing-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- 行程門票明細區塊 --- */
+.ticket-list-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #f8f9fa;
+    padding: 20px;
+}
+
+.ticket-item {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ticket-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    border-color: #0d6efd;
+}
+
+.ticket-sequence {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.ticket-select-wrapper {
+    flex-grow: 1;
+    margin-right: 15px;
+}
+
+.btn-remove-ticket {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.2s;
+}
+
+.btn-remove-ticket:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-add-ticket {
+    width: 100%;
+    border: 2px dashed #ced4da;
+    background: transparent;
+    color: #6c757d;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-add-ticket:hover {
+    border-color: #0d6efd;
+    color: #0d6efd;
+    background: rgba(13, 110, 253, 0.05);
+}

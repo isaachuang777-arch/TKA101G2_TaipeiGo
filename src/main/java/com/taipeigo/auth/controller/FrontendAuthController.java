@@ -55,7 +55,15 @@ public class FrontendAuthController {
     // 網址：GET /auth/login
     // 對應：templates/frontend/auth/login.html
     @GetMapping("/login")
-    public String showLoginPage() {
+    public String showLoginPage(
+        // 用來接收前端傳來導回網址(AJAX用的,js傳過來)
+        @RequestParam(value = "redirect", required = false) String redirect,
+        HttpSession session) {
+
+        if (redirect != null && !redirect.isEmpty()) {
+            session.setAttribute("frontendReUrl", redirect);
+        }  
+        
         return "frontend/auth/login";
     }
 

@@ -8,6 +8,7 @@
     <!-- 1. 完美對齊團隊共用的 CSS -->
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/index/heroSearch.css}">
 
     <!-- 引入 FontAwesome CDN (為了更精緻的左右箭頭圖示) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,6 +22,10 @@
     <!-- 完美套用團隊的 Header -->
     <!-- ============================== -->
     <div th:replace="~{frontend/index/header :: header}"></div>
+
+    <!-- 完美套用團隊的 Hero Search (首頁的巨大搜尋霸) -->
+    <div th:replace="~{frontend/index/heroSearch :: heroSearch}"></div>
+
     <!-- 主體內容區塊 -->
     <main class="activity-container">
 

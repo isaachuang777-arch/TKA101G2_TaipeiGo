@@ -20,6 +20,7 @@ import com.taipeigo.ticket.model.TicketVO;
 import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class ActivityService {
 
     private final ActivityRepository activityRepo;
@@ -191,7 +192,7 @@ public class ActivityService {
     // ----------------- 後臺修改 -----------------
 
     public void updateActivity(Integer activityId, ActivityVO updatedActivity,
-            List<Integer> newTicketId, MultipartFile[] newImages) {
+            List<Integer> newTicketId, MultipartFile[] newImages, List<Integer> deleteImageIds) {
 
         Optional<ActivityVO> box = activityRepo.findById(activityId);
 
@@ -288,7 +289,6 @@ public class ActivityService {
 
         if (newImages != null && newImages.length > 0 && !newImages[0].isEmpty()) {
 
-            existActivityVO.getActivityImage().clear();
 
             for (MultipartFile file : newImages) {
 
@@ -307,9 +307,36 @@ public class ActivityService {
             }
         }
 
+
+        // 刪除舊圖片
+
+        if(deleteImageIds != null && !deleteImageIds.isEmpty()){
+             // 這邊一定要用 Iterator 不然list會自動補位又用foreach的話會發生 ConcurrentModificationException 
+
+             Iterator<ActivityImageVO> imgIter = existActivityVO.getActivityImage().iterator();
+             
+             while (imgIter.hasNext()) {
+
+                ActivityImageVO img = imgIter.next();
+
+                if(deleteImageIds.contains(img.getActivityImageId())){
+                    img.setActivity(null); // 解除雙向關聯，確保 Hibernate 刪除
+                    imgIter.remove();
+                }
+                
+             }
+
+
+        }
         activityRepo.save(existActivityVO);
 
     }
+
+    // ----------------- 取得所有門票供表單選擇 -----------------
+    public List<TicketVO> getAllTickets() {
+        return ticketService.getAll();
+    }
+    
 
     // ----------------- 前台取得所有啟用中的分類 -----------------
     public List<ActivityCateVO> getAllActiveCategories() {

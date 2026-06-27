@@ -40,6 +40,14 @@ public class ActivityBackendController {
         return activityService.getAllActiveCategories();
     }
 
+    // 讓所有此 Controller 的頁面都能拿到所有門票清單 (供前端選取明細)
+    @ModelAttribute("ticketList")
+    public List<com.taipeigo.ticket.model.TicketVO> getTicketList() {
+        return activityService.getAllTickets();
+    }
+
+
+
     // 萬用查詢列表
 
     @GetMapping
@@ -99,7 +107,7 @@ public class ActivityBackendController {
             return "backend/activity/add";
         }
 
-        return "redirect:/backend/activities";
+        return "redirect:/backend/activity";
     }
 
     // 前往修改頁面
@@ -123,16 +131,20 @@ public class ActivityBackendController {
             @Valid @ModelAttribute("activityVO") ActivityVO activityVO,
             BindingResult result,
             @RequestParam(value = "ticketIds", required = false) List<Integer> ticketIds,
-            @RequestParam(value = "upFiles", required = false) MultipartFile[] images, Model model) {
+            @RequestParam(value = "upFiles", required = false) MultipartFile[] images, 
+            @RequestParam(value = "deleteImageIds", required = false) List<Integer> deleteImageIds,
+            Model model) {
 
         if (result.hasErrors()) {
 
             return "backend/activity/edit";
         }
+        
+        System.out.println("====== DEBUG: deleteImageIds received: " + deleteImageIds + " ======");
 
         try {
 
-            activityService.updateActivity(id, activityVO, ticketIds, images);
+            activityService.updateActivity(id, activityVO, ticketIds, images, deleteImageIds);
         }
 
         catch (Exception e) {
@@ -142,7 +154,7 @@ public class ActivityBackendController {
             return "backend/activity/edit";
         }
 
-        return "redirect:/backend/activities";
+        return "redirect:/backend/activity";
     }
 
 
