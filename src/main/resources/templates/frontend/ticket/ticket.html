@@ -13,6 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/ticket/ticket.css}">
+    <link rel="stylesheet" th:href="@{/css/util/pagination.css}">
 </head>
 
 <body>
@@ -84,6 +85,23 @@
                     style="grid-column: 1 / -1; text-align: center; width: 100%; font-size: 1.1rem; color: #888;">
                     目前沒有任何門票商品。
                 </div>
+            </div>
+
+            <!-- 分頁 -->
+            <div v-if="totalPages > 1" class="pagination-container">
+                <button class="page-btn prev-btn" :disabled="currentPage === 0" @click="changePage(currentPage - 1)">
+                    <i class="fa-solid fa-angle-left"></i> 上一頁
+                </button>
+
+                <button v-for="page in totalPages" :key="page" class="page-btn num-btn"
+                    :class="{ active: currentPage === page - 1 }" @click="changePage(page - 1)">
+                    {{ page }}
+                </button>
+
+                <button class="page-btn next-btn" :disabled="currentPage === totalPages - 1"
+                    @click="changePage(currentPage + 1)">
+                    下一頁 <i class="fa-solid fa-angle-right"></i>
+                </button>
             </div>
         </section>
     </main>

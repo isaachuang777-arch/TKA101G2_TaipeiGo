@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.taipeigo.customer.model.CustomerRepository;
@@ -47,9 +49,9 @@ public class TicketService {
 		return optional.orElse(null);
 	}
 
-	/* 查有上架的門票(1) */
-	public List<TicketVO> getAllEnable() {
-		return ticketRepository.findByTicketStatus(1);
+	/* 查有上架的門票(1) - 有分頁 */
+	public Page<TicketVO> getAllEnable(Pageable pageable) {
+		return ticketRepository.findByTicketStatus(1, pageable);
 	}
 
 	/* 新增門票序號 */
@@ -295,9 +297,9 @@ public class TicketService {
 		return ticketSerialRepository.findAll();
 	}
 
-	/* 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1） */
-	public List<TicketVO> getActiveTicketsByCategory(Integer categoryId) {
-		return ticketRepository.findActiveTicketsByCategoryId(categoryId);
+	/* 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1） 有分頁 */
+	public Page<TicketVO> getActiveTicketsByCategory(Integer categoryId, Pageable pageable) {
+		return ticketRepository.findActiveTicketsByCategoryId(categoryId, pageable);
 	}
 
 	/*
