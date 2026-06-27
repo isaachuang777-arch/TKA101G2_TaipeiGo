@@ -16,7 +16,8 @@ public class FrontendFilterConfig {
 
         // 需要攔截的路徑放這
         registrationBean.addUrlPatterns(
-                "/customer/*"
+                "/customer/*",
+                "/favorite/*"
         );
 
         registrationBean.setOrder(2);

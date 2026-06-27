@@ -9,6 +9,9 @@ import com.taipeigo.favorite.model.FavoriteService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import org.springframework.ui.Model;
+import com.taipeigo.favorite.dto.FavoriteDTO;
 
 @Controller
 @RequestMapping("/favorite")
@@ -19,14 +22,15 @@ public class FavoriteController {
 
     // 我的最愛頁面
     @GetMapping
-    public String showFavoritePage(HttpSession session) {
+    public String showFavoritePage(HttpSession session, Model model) {
 
         CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
 
         Integer custId = loginCustomer.getCustId();
 
-        // 之後這裡會把會員的我的最愛資料放進 model
-        // favoriteService.getFavoritesByCustId(custId);
+        List<FavoriteDTO> favoriteList = favoriteService.getFavoriteDTOByCustId(custId);
+
+        model.addAttribute("favoriteList", favoriteList);
 
         return "frontend/favorite/favorite";
     }
@@ -52,5 +56,24 @@ public class FavoriteController {
         }
 
         return "redirect:/";
+    }
+    
+    // AJAX：加入 / 取消 我的最愛
+    @PostMapping("/toggle/ajax")
+    @ResponseBody
+    public boolean toggleFavoriteAjax(
+            @RequestParam String type,
+            @RequestParam Integer id,
+            HttpSession session) {
+
+        CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
+
+        if (loginCustomer == null) {
+            return false;
+        }
+
+        Integer custId = loginCustomer.getCustId();
+
+        return favoriteService.toggleFavorite(custId, type, id);
     }
 }
