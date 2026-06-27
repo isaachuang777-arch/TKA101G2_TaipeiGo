@@ -213,4 +213,19 @@ public class TicketVO implements java.io.Serializable {
 				.count();
 	}
 
+	/* 取得已銷售的序號張數 (狀態為 2=已賣出, 3=已使用, 4=已過期) */
+	public long getSoldCount() {
+		if (this.ticketSerials == null) {
+			return 0;
+		}
+		long count = 0;
+		for (TicketSerialVO serial : this.ticketSerials) {
+			Integer status = serial.getStatus();
+			if (status != null && (status == 2 || status == 3 || status == 4)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 }

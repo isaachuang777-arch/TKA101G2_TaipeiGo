@@ -302,6 +302,11 @@ public class TicketService {
 		return ticketRepository.findActiveTicketsByCategoryId(categoryId, pageable);
 	}
 
+	/* 取得熱門門票商品 （用limit 限制筆數) */
+	public List<TicketVO> getPopularTickets(int limit) {
+		return ticketRepository.findPopularTickets(limit);
+	}
+
 	/*
 	 * 檢查當下是否過期並更新 db
 	 * 1. 當會員開啟票券時
