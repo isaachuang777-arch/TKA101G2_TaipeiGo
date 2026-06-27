@@ -13,17 +13,18 @@
     <link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/ticket/ticket.css}">
+    <link rel="stylesheet" th:href="@{/css/util/pagination.css}">
 </head>
 
 <body>
     <!-- Header -->
-	<div th:replace="~{frontend/index/header :: header}"></div>
+    <div th:replace="~{frontend/index/header :: header}"></div>
 
-	<!-- Hero Search -->
-	<div th:replace="~{frontend/index/heroSearch :: heroSearch}"></div>
+    <!-- Hero Search -->
+    <div th:replace="~{frontend/index/heroSearch :: heroSearch}"></div>
 
-    <main class="ticket-container">
-        
+    <main class="ticket-container" id="app">
+
         <section class="category-section">
             <h2 class="category-section-title">
                 <i class="fa-solid fa-ticket"></i> 門票快選
@@ -33,76 +34,81 @@
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <div class="category-scroll-container" id="categoryListContainer">
-                    <th:block th:each="ticketCategory : ${ticketCategoryListData}">
-                        <div class="category-item active">
-                            <span class="category-name" th:text="${ticketCategory.ticketCategoryName}">主題樂園</span>
-                        </div>
-                    </th:block>
+                    <!-- 全部標籤 -->
+                    <div class="category-item" :class="{ active: activeCategoryId === null }"
+                        @click="selectCategory(null)">
+                        <span class="category-name">全部</span>
+                    </div>
+                    <!-- 各分類標籤 -->
+                    <div v-for="cate in categories" :key="cate.ticketCategoryId" class="category-item"
+                        :class="{ active: activeCategoryId === cate.ticketCategoryId }"
+                        @click="selectCategory(cate.ticketCategoryId)">
+                        <span class="category-name">{{ cate.ticketCategoryName }}</span>
+                    </div>
                 </div>
                 <button type="button" class="scroll-btn right-btn" id="scrollRightBtn">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
         </section>
-		
-		<section class="ticket-section">
-            
+
+        <section class="ticket-section">
             <h2 class="section-title">熱門景點門票</h2>
-            
-            <div class="ticket-grid">
-                
-                <th:block th:each="ticket : ${ticketListData}" th:if="${ticket.ticketStatus == 1}">
-                    
-                    <div class="ticket-card" th:onclick="|location.href='@{/ticket/detail(ticketId=${ticket.ticketId})}'|">
-                        
-                        <div class="ticket-image-box">
-                            <div th:if="${#lists.isEmpty(ticket.ticketImages)}" class="no-image-placeholder">
-                                無圖片
-                            </div>
-                            
-                            <th:block th:if="${not #lists.isEmpty(ticket.ticketImages)}">
-                                <img th:if="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
-                                     th:src="${ticket.ticketImages[0].ticketImageSrc}" alt="門票封面">
-                                
-                                <img th:unless="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
-                                     th:src="@{${ticket.ticketImages[0].ticketImageSrc}}" alt="門票封面">
-                            </th:block>
-                        </div>
-                        
-                        <div class="ticket-info">
-                            <h3 class="ticket-title" th:text="${ticket.ticketName}">門票名稱</h3>
-                            
-                            <p class="ticket-desc" th:text="${ticket.ticketDescription != null ? ticket.ticketDescription : '這是一個超讚的景點體驗！'}">門票簡介</p>
-                        
-                            <div class="ticket-footer">
-                                <div><span class="ticket-tag">查看詳情</span></div>
-                                <div class="ticket-price-box">
-                                    <div class="price-wrapper">
-                                        <span class="original-price" 
-                                              th:if="${ticket.adultOriginalPrice != null}" 
-                                              th:text="'NT$ ' + ${ticket.adultOriginalPrice}">NT$ 600</span>
-                                        
-                                        <span class="current-price">
-                                            NT$ <strong th:text="${ticket.adultPrice}">550</strong> 起
-                                        </span>
-                                    </div>
+
+            <div class="ticket-grid" id="ticketGridContainer">
+                <div v-for="ticket in tickets" :key="ticket.ticketId" class="ticket-card"
+                    @click="goToDetail(ticket.ticketId)">
+
+                    <div class="ticket-image-box">
+                        <img v-if="ticket.imageUrls && ticket.imageUrls.length > 0" :src="ticket.imageUrls[0]"
+                            alt="門票封面">
+                        <div v-else class="no-image-placeholder">無圖片</div>
+                    </div>
+
+                    <div class="ticket-info">
+                        <h3 class="ticket-title">{{ ticket.ticketName }}</h3>
+                        <p class="ticket-desc">{{ ticket.ticketDescription || '' }}</p>
+                        <div class="ticket-footer">
+                            <div><span class="ticket-tag">查看詳情</span></div>
+                            <div class="ticket-price-box">
+                                <div class="price-wrapper">
+                                    <span v-if="ticket.adultOriginalPrice" class="original-price">NT$ {{
+                                        ticket.adultOriginalPrice }}</span>
+                                    <span class="current-price">NT$ <strong>{{ ticket.adultPrice }}</strong> 起</span>
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
-                    
-                </th:block>
+                </div>
 
+                <div v-if="tickets.length === 0" class="text-center text-muted py-5"
+                    style="grid-column: 1 / -1; text-align: center; width: 100%; font-size: 1.1rem; color: #888;">
+                    目前沒有任何門票商品。
+                </div>
             </div>
-            
-            <div th:if="${#lists.isEmpty(ticketListData)}" class="text-center text-muted py-5">
-                目前沒有任何門票商品。
+
+            <!-- 分頁 -->
+            <div v-if="totalPages > 1" class="pagination-container">
+                <button class="page-btn prev-btn" :disabled="currentPage === 0" @click="changePage(currentPage - 1)">
+                    <i class="fa-solid fa-angle-left"></i> 上一頁
+                </button>
+
+                <button v-for="page in totalPages" :key="page" class="page-btn num-btn"
+                    :class="{ active: currentPage === page - 1 }" @click="changePage(page - 1)">
+                    {{ page }}
+                </button>
+
+                <button class="page-btn next-btn" :disabled="currentPage === totalPages - 1"
+                    @click="changePage(currentPage + 1)">
+                    下一頁 <i class="fa-solid fa-angle-right"></i>
+                </button>
             </div>
         </section>
     </main>
-    <!-- Footer -->    
+    <!-- Footer -->
     <div th:replace="~{frontend/index/footer :: footer}"></div>
+    <!-- Vue 3  -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script th:src="@{/js/ticket/frontend/ticket.js}"></script>
 </body>
 

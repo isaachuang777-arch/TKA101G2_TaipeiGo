@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "TICKET_IMAGE")
 public class TicketImageVO implements java.io.Serializable {
@@ -22,6 +24,7 @@ public class TicketImageVO implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TICKET_ID")
+	@JsonIgnore
 	private TicketVO ticketVO;
 
 	@Column(name = "TICKET_IMAGE_SRC", length = 250)
