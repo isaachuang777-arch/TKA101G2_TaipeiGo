@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.taipeigo.ticketcategory.model.TicketCategoryVO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "TICKET")
 public class TicketVO implements java.io.Serializable {
@@ -22,7 +24,7 @@ public class TicketVO implements java.io.Serializable {
 	@Column(name = "TICKET_DESCRIPTION", length = 500)
 	private String ticketDescription;
 
-	@Column(name = "TICKET_ADDRESS", length = 50) 
+	@Column(name = "TICKET_ADDRESS", length = 50)
 	private String ticketAddress;
 
 	@Column(name = "CREATED_AT", updatable = false)
@@ -55,27 +57,24 @@ public class TicketVO implements java.io.Serializable {
 	/*
 	 * 門票圖片：當門票刪除時，圖片跟著刪除 cascade = CascadeType.ALL
 	 * orphanRemoval = true 當圖片刪除，同步在資料庫刪除該筆資料
-	*/
+	 */
 	@OneToMany(mappedBy = "ticketVO", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketImageVO> ticketImages = new ArrayList<>();
 
 	// 門票序號
 	@OneToMany(mappedBy = "ticketVO")
+	@JsonIgnore
 	private List<TicketSerialVO> ticketSerials = new ArrayList<>();
 
 	// 門票分類 (透過中介表 TICKET_CATEGORY_INFO 控制)
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-		name = "TICKET_CATEGORY_INFO", 
-		joinColumns = @JoinColumn(name = "TICKET_ID"), 
-		inverseJoinColumns = @JoinColumn(name = "TICKET_CATEGORY_ID") 
-	)
+	@JoinTable(name = "TICKET_CATEGORY_INFO", joinColumns = @JoinColumn(name = "TICKET_ID"), inverseJoinColumns = @JoinColumn(name = "TICKET_CATEGORY_ID"))
 	private List<TicketCategoryVO> ticketCategories = new ArrayList<>();
 
 	public TicketVO() {
-	
+
 	}
-	
+
 	public Integer getTicketId() {
 		return ticketId;
 	}
@@ -203,16 +202,15 @@ public class TicketVO implements java.io.Serializable {
 	public void setTicketCategories(List<TicketCategoryVO> ticketCategories) {
 		this.ticketCategories = ticketCategories;
 	}
-	
+
 	/* 取得還未被購買的序號張數 */
 	public long getAvailableSerialCount() {
-	    if (this.ticketSerials == null) {
-	        return 0;
-	    }
-	    return this.ticketSerials.stream()
-	            .filter(serial -> serial.getCustomerVO() == null) // 檢查會員物件是不是 null (代表還在)
-	            .count();
+		if (this.ticketSerials == null) {
+			return 0;
+		}
+		return this.ticketSerials.stream()
+				.filter(serial -> serial.getCustomerVO() == null) // 檢查會員物件是不是 null (代表還在)
+				.count();
 	}
 
-	
 }
