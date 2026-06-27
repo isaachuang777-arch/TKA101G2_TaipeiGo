@@ -19,6 +19,7 @@ public class TicketDTO {
     private List<String> imageUrls;
     private List<TicketCategoryDTO> categories;
     private Long availableSerialCount;
+    private Long soldCount;
 
     public TicketDTO() {
     }
@@ -61,6 +62,7 @@ public class TicketDTO {
         dto.setCategories(categories);
 
         dto.setAvailableSerialCount(vo.getAvailableSerialCount());
+        dto.setSoldCount(vo.getSoldCount());
 
         return dto;
     }
@@ -167,5 +169,13 @@ public class TicketDTO {
 
     public void setAvailableSerialCount(Long availableSerialCount) {
         this.availableSerialCount = availableSerialCount;
+    }
+
+    public Long getSoldCount() {
+        return soldCount;
+    }
+
+    public void setSoldCount(Long soldCount) {
+        this.soldCount = soldCount;
     }
 }

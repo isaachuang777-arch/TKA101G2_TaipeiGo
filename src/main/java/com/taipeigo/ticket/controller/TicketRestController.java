@@ -98,4 +98,20 @@ public class TicketRestController {
         }
         return ResponseEntity.ok(ApiResponse.success("查詢成功", dtoList));
     }
+
+    /**
+     * 取得熱門門票商品列表
+     * 預設取熱門 6 筆：/api/tickets/popular
+     * 限制筆數：/api/tickets/popular?limit=8
+     */
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<List<TicketDTO>>> getPopularTickets(
+            @RequestParam(value = "limit", defaultValue = "6") int limit) {
+        List<TicketVO> popularList = ticketService.getPopularTickets(limit);
+        List<TicketDTO> dtoList = new ArrayList<>();
+        for (TicketVO vo : popularList) {
+            dtoList.add(TicketDTO.fromEntity(vo));
+        }
+        return ResponseEntity.ok(ApiResponse.success("查詢成功", dtoList));
+    }
 }

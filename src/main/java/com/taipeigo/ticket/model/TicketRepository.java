@@ -9,14 +9,24 @@ import org.springframework.data.repository.query.Param;
 
 public interface TicketRepository extends JpaRepository<TicketVO, Integer> {
 
-    // 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1）
-    @Query("SELECT DISTINCT t FROM TicketVO t " +
-           "JOIN t.ticketCategories c " +
-           "WHERE c.ticketCategoryId = :categoryId " +
-           "AND c.ticketCategoryStatus = 1 " +
-           "AND t.ticketStatus = 1")
-    Page<TicketVO> findActiveTicketsByCategoryId(@Param("categoryId") Integer categoryId, Pageable pageable);
+       // 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1）
+       @Query("SELECT DISTINCT t FROM TicketVO t " +
+                     "JOIN t.ticketCategories c " +
+                     "WHERE c.ticketCategoryId = :categoryId " +
+                     "AND c.ticketCategoryStatus = 1 " +
+                     "AND t.ticketStatus = 1")
+       Page<TicketVO> findActiveTicketsByCategoryId(@Param("categoryId") Integer categoryId, Pageable pageable);
 
-    // 依門票狀態查詢門票 (0=未啟用(下架) 1=啟用(上架) 2=已刪除)
-    Page<TicketVO> findByTicketStatus(Integer ticketStatus, Pageable pageable);
+       // 依門票狀態查詢門票 (0=未啟用(下架) 1=啟用(上架) 2=已刪除)
+       Page<TicketVO> findByTicketStatus(Integer ticketStatus, Pageable pageable);
+
+       // 因為 JpaRepository 不支援 limit，所以改用原生 SQL 限制
+       // 依熱門程度查詢已上架門票 (依狀態為2（已售出）、3（已使用）、4（已過期）的序號數量降序排列，並用 limit 限制筆數)
+       @Query(value = "SELECT t.* FROM TICKET t " +
+                     "LEFT JOIN TICKET_SERIAL s ON t.TICKET_ID = s.TICKET_ID " +
+                     "WHERE t.TICKET_STATUS = 1 " +
+                     "GROUP BY t.TICKET_ID " +
+                     "ORDER BY SUM(CASE WHEN s.STATUS IN (2, 3, 4) THEN 1 ELSE 0 END) DESC, t.TICKET_ID ASC " +
+                     "LIMIT :limit", nativeQuery = true)
+       List<TicketVO> findPopularTickets(@Param("limit") int limit);
 }
