@@ -290,6 +290,11 @@ public class TicketService {
 		return ticketSerialRepository.findAll();
 	}
 
+	/* 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1） */
+	public List<TicketVO> getActiveTicketsByCategory(Integer categoryId) {
+		return ticketRepository.findActiveTicketsByCategoryId(categoryId);
+	}
+
 	/*
 	 * 檢查當下是否過期並更新 db
 	 * 1. 當會員開啟票券時
