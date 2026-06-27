@@ -57,7 +57,12 @@ public class FrontendLoginFilter extends OncePerRequestFilter {
 
             // 記住原本想去的頁面，之後登入成功可以導回
             HttpSession newSession = request.getSession();
-            newSession.setAttribute("frontendReUrl", requestURI);
+
+            String queryString = request.getQueryString();
+
+            String fullUrl = requestURI + (queryString != null ? "?" + queryString : "");
+
+            newSession.setAttribute("frontendReUrl", fullUrl);
 
             response.sendRedirect(request.getContextPath() + "/auth/login");
             return;

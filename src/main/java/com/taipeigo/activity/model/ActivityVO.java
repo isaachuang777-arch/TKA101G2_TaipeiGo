@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
@@ -51,6 +52,7 @@ public class ActivityVO implements Serializable {
 	private Integer activityStatus;
 
 	@OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("sequence ASC")
 	private List<ActivityDetailVO> activityDetails;
 
 	@OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -55,7 +55,7 @@ function renderCategoryCards(categories) {
         const imgSrc = cate.cateIcon ? `data:image/jpeg;base64,${cate.cateIcon}` : '/images/activity/default.png';
 
         const cardHTML = `
-            <div class="category-card" onclick="alert('你點擊了：${cate.cateName}，未來可以串接篩選功能！')">
+            <div class="category-card" onclick="window.location.href='/search?keyword=' + encodeURIComponent('${cate.cateName}')">
                 <div class="category-img-wrapper">
                     <img src="${imgSrc}" alt="${cate.cateName}" onerror="this.src='/images/activity/default.png'">
                 </div>
