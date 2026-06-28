@@ -83,7 +83,7 @@
                 <div class="title-favorite-row">
                     <h1 class="ticket-title">{{ ticket.ticketName }}</h1>
                     <button type="button" class="favorite-btn-klook" :class="{ active: isFavorite }"
-                        @click="toggleFavorite">
+                        @click="handleAddToFavorite">
                         <i :class="[ isFavorite ? 'fa-solid' : 'fa-regular', 'fa-heart' ]"></i>
                         <span>{{ isFavorite ? '已加入我的最愛' : '加入我的最愛' }}</span>
                     </button>
