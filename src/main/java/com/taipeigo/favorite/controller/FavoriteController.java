@@ -76,4 +76,23 @@ public class FavoriteController {
 
         return favoriteService.toggleFavorite(custId, type, id);
     }
+    
+    // AJAX：檢查是否已加入我的最愛
+    @GetMapping("/check")
+    @ResponseBody
+    public boolean checkFavorite(
+            @RequestParam String type,
+            @RequestParam Integer id,
+            HttpSession session) {
+
+        CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
+
+        if (loginCustomer == null) {
+            return false;
+        }
+
+        Integer custId = loginCustomer.getCustId();
+
+        return favoriteService.isFavoriteByTypeAndId(custId, type, id);
+    }
 }

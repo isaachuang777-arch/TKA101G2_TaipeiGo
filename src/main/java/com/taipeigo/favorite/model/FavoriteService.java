@@ -40,6 +40,21 @@ public class FavoriteService {
     public boolean isFavorite(Integer custId, Integer productId) {
         return favoriteRepository.existsByCustIdAndProductId(custId, productId);
     }
+    
+    // 依 type + id 判斷是否已加入我的最愛
+    public boolean isFavoriteByTypeAndId(Integer custId, String type, Integer id) {
+
+        ProductVO product = findProductByTypeAndId(type, id);
+
+        if (product == null) {
+            return false;
+        }
+
+        return favoriteRepository.existsByCustIdAndProductId(
+                custId,
+                product.getProductId()
+        );
+    }
 
     // 依 type + id 找出 PRODUCTS 對應商品
     private ProductVO findProductByTypeAndId(String type, Integer id) {
