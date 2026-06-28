@@ -99,8 +99,8 @@ public class TicketController {
     public String addTicket(ModelMap model) {
         TicketVO ticketVO = new TicketVO();
         model.addAttribute("ticketVO", ticketVO);
-        // 查出所有啟用中的門票分類， th:each="category : ${categoryList}"
-        model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+        // 查出所有沒有被刪除的門票分類， th:each="category : ${categoryList}"
+        model.addAttribute("categoryList", ticketCategoryService.getAllNotDeleted());
         // 以下是 html 路徑
         return "backend/ticket/addTicket";
     }
@@ -161,7 +161,8 @@ public class TicketController {
     public String getOne_For_Update(@RequestParam("ticketId") Integer ticketId, ModelMap model) {
         TicketVO ticketVO = ticketService.getOneTicket(ticketId);
         model.addAttribute("ticketVO", ticketVO);
-        model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+        // 查出所有沒有被刪除的門票分類， th:each="category : ${categoryList}"
+        model.addAttribute("categoryList", ticketCategoryService.getAllNotDeleted());
         return "backend/ticket/updateTicket";
     }
 
@@ -211,8 +212,8 @@ public class TicketController {
             return "backend/ticket/updateTicket";
         }
 
-        // 修改成功，回列表主頁
-        return "redirect:/backend/ticket/list";
+        // 修改成功，回門票明細頁
+        return "redirect:/backend/ticket/getOne_For_Display?ticketId=" + ticketVO.getTicketId();
     }
 
     /* 進入門票頁面 （查全部）（分頁 + 模糊搜尋） */
