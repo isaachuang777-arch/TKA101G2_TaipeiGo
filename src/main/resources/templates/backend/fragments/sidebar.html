@@ -277,7 +277,8 @@
             <span>會員管理</span>
         </a>
 
-        <details class="admin-menu">
+        <details class="admin-menu"
+         th:attr="open=${activePage == 'faq'} ? 'open' : null">
             <summary>
                 <i class="bi bi-window-sidebar"></i>
                 <span>網站管理</span>
@@ -285,19 +286,23 @@
             </summary>
 
             <div class="submenu">
-                <a href="#">
-                    <i class="bi bi-question-circle"></i>
-                    <span>FAQ管理</span>
-                </a>
-            </div>
+			    <a th:href="@{/backend/faq/list}"
+			       th:classappend="${activePage == 'faq'} ? 'active'">
+			        <i class="bi bi-question-circle"></i>
+			        <span>FAQ管理</span>
+			    </a>
+			</div>
         </details>
 
-        <details class="admin-menu">
-            <summary>
-                <i class="bi bi-ticket-perforated-fill"></i>
-                <span>商品管理</span>
-                <i class="bi bi-chevron-down arrow"></i>
-            </summary>
+        <details class="admin-menu"
+         th:attr="open=${activePage == 'ticket'
+                      or activePage == 'ticketCategory'
+                      or activePage == 'ticketSerial'} ? 'open' : null">
+		    <summary>
+		        <i class="bi bi-ticket-perforated-fill"></i>
+		        <span>商品管理</span>
+		        <i class="bi bi-chevron-down arrow"></i>
+		    </summary>
 
             <div class="submenu">
                 <a th:href="@{/backend/ticket/list}"

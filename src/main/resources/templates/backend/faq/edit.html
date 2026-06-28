@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+
+<head>
+<meta charset="UTF-8">
+<title>修改 FAQ</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#f4f7fb;
+    font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+
+.main-content{
+    margin-left:240px;
+    padding:32px;
+}
+
+.page-title{
+    font-size:30px;
+    font-weight:700;
+    margin-bottom:24px;
+}
+
+.card{
+    border:none;
+    border-radius:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.card-header{
+    background:#fff;
+    font-size:20px;
+    font-weight:600;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+<div class="main-content">
+
+    <div class="page-title">
+        <i class="bi bi-pencil-square text-warning"></i>
+        修改 FAQ
+    </div>
+
+    <div class="card">
+
+        <div class="card-header">
+		    FAQ 資訊
+		</div>
+
+        <div class="card-body">
+
+            <form th:action="@{/backend/faq/update}"
+			      th:object="${faqVO}"
+			      method="post">
+				
+				<input type="hidden" th:field="*{faqId}">
+				
+    <div class="mb-3">
+        <label class="form-label">FAQ 分類</label>
+        <select class="form-select" th:field="*{category}" required>
+            <option value="">請選擇分類</option>
+            <option value="1">訂單與付款</option>
+            <option value="2">票券使用</option>
+            <option value="3">帳號與會員</option>
+            <option value="4">活動與門票</option>
+            <option value="5">其他</option>
+        </select>
+        
+        <div class="text-danger"
+		     th:if="${#fields.hasErrors('category')}"
+		     th:errors="*{category}">
+		</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">FAQ 標題</label>
+        <input type="text"
+               class="form-control"
+               th:field="*{title}"
+               maxlength="40"
+               required>
+        <div class="text-danger"
+		     th:if="${#fields.hasErrors('title')}"
+		     th:errors="*{title}">
+		</div> 
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">FAQ 內容</label>
+        <textarea class="form-control"
+                  th:field="*{content}"
+                  rows="6"
+                  maxlength="1000"
+                  required></textarea>
+                  
+        <div class="text-danger"
+		     th:if="${#fields.hasErrors('content')}"
+		     th:errors="*{content}">
+		</div>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label">狀態</label>
+        <select class="form-select" th:field="*{status}" required>
+            <option value="1">顯示</option>
+            <option value="0">隱藏</option>
+        </select>
+        
+        <div class="text-danger"
+		     th:if="${#fields.hasErrors('status')}"
+		     th:errors="*{status}">
+		</div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            儲存修改
+        </button>
+
+        <a th:href="@{/backend/faq/list}" class="btn btn-secondary">
+            返回列表
+        </a>
+    </div>
+
+</form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
