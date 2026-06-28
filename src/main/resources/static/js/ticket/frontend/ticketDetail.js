@@ -75,15 +75,22 @@ createApp({
         const loadTicketDetails = async (ticketId) => {
             try {
                 const res = await fetch(`../api/tickets/info?ticketId=${ticketId}`);
-                if (!res.ok) throw new Error('Network response was not ok');
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    throw new Error(errorData.message || '找不到此門票商品');
+                }
                 const result = await res.json();
                 if (result.status === 'success') {
                     ticket.value = result.data;
                     document.title = `${ticket.value.ticketName} - 台北GO了沒`;
                     isLoaded.value = true;
+                } else {
+                    throw new Error(result.message || '找不到此門票商品');
                 }
             } catch (err) {
-                // console.error('載入門票詳情錯誤:', err);
+                //console.error('載入門票詳情錯誤:', err);
+                alert(err.message || '載入門票詳情錯誤');
+                window.location.href = '../ticket';
             }
         };
 
@@ -159,8 +166,10 @@ createApp({
         onMounted(() => {
             // 從 URL 解析 ticketId
             const urlParams = new URLSearchParams(window.location.search);
-            const ticketId = urlParams.get('ticketId');
+            let ticketId = urlParams.get('ticketId');
             if (ticketId) {
+                // 去除可能不小心多打的等號或空白
+                ticketId = ticketId.replace('=', '').trim();
                 loadTicketDetails(ticketId);
             }
 

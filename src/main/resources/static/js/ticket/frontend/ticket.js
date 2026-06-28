@@ -16,13 +16,15 @@ createApp({
         const loadCategories = async () => {
             try {
                 const res = await fetch('api/tickets/categories');
-                if (!res.ok) throw new Error('Network response was not ok');
+                if (!res.ok) throw new Error('無法取得門票分類');
                 const result = await res.json();
                 if (result.status === 'success') {
                     categories.value = result.data;
+                } else {
+                    throw new Error(result.message || '無法取得門票分類');
                 }
             } catch (err) {
-                // console.error('讀取分類錯誤:', err);
+                //console.error('讀取分類錯誤:', err);
             }
         };
 
@@ -34,16 +36,19 @@ createApp({
                     url += `&categoryId=${categoryId}`;
                 }
                 const res = await fetch(url);
-                if (!res.ok) throw new Error('Network response was not ok');
+                if (!res.ok) throw new Error('讀取門票列表失敗');
                 const result = await res.json();
                 if (result.status === 'success') {
                     tickets.value = result.data.data;
                     total.value = result.data.total;
                     totalPages.value = result.data.totalPages;
                     currentPage.value = result.data.currentPage;
+                } else {
+                    throw new Error(result.message || '讀取門票列表失敗');
                 }
             } catch (err) {
-                // console.error('讀取門票錯誤:', err);
+                //console.error('讀取門票錯誤:', err);
+                alert(err.message || '載入門票列表失敗，請重新整理頁面');
             }
         };
 
