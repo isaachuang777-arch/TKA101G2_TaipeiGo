@@ -55,8 +55,31 @@ createApp({
             return adultTotal + childTotal + concessionTotal;
         });
 
+        // 檢查是否已登入，若未登入則導向登入頁
+        const checkLogin = async () => {
+            try {
+                const res = await fetch('../api/auth/me');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.login) {
+                        return true;
+                    }
+                }
+            } catch (err) {
+                // console.error('檢查登入狀態失敗:', err);
+            }
+            // 未登入，提示並導向登入頁面
+            alert('請先登入會員！');
+            const currentUrl = window.location.href;
+            window.location.href = `../auth/login?redirect=${encodeURIComponent(currentUrl)}`;
+            return false;
+        };
+
         // 處理加入購物車
-        const handleAddToCart = () => {
+        const handleAddToCart = async () => {
+            const loggedIn = await checkLogin();
+            if (!loggedIn) return;
+
             if (!validateBooking()) return;
             alert(`驗證成功！\n已選擇日期：${selectedDateParam.value}\n成人票：${quantities.value.adult} 張\n兒童票：${quantities.value.child} 張\n優待票：${quantities.value.concession} 張\n總張數：${totalTicketsCount.value} 張，總金額：NT$ ${totalPriceAmount.value.toLocaleString()} 元。`);
             // TODO: 串接 API
@@ -64,11 +87,22 @@ createApp({
         };
 
         // 處理立即購買
-        const handleBuyNow = () => {
+        const handleBuyNow = async () => {
+            const loggedIn = await checkLogin();
+            if (!loggedIn) return;
+
             if (!validateBooking()) return;
             alert(`驗證成功！\n已選擇日期：${selectedDateParam.value}\n成人票：${quantities.value.adult} 張\n兒童票：${quantities.value.child} 張\n優待票：${quantities.value.concession} 張\n總張數：${totalTicketsCount.value} 張，總金額：NT$ ${totalPriceAmount.value.toLocaleString()} 元。`);
             // TODO: 串接 API
+            // addToFavorite
+        };
 
+        // 處理加入我的最愛
+        const handleAddToFavorite = async () => {
+            const loggedIn = await checkLogin();
+            if (!loggedIn) return;
+
+            // TODO: 串接 API
         };
 
         // 載入單筆門票詳細資料
@@ -84,6 +118,10 @@ createApp({
                     ticket.value = result.data;
                     document.title = `${ticket.value.ticketName} - 台北GO了沒`;
                     isLoaded.value = true;
+
+                    // TODO: 檢查使用者是否已登入，若已登入則查詢其是否收藏了此商品
+
+
                 } else {
                     throw new Error(result.message || '找不到此門票商品');
                 }
@@ -117,9 +155,12 @@ createApp({
         };
 
         // 加入我的最愛
-        const toggleFavorite = () => {
+        const addToFavorite = () => {
             isFavorite.value = !isFavorite.value;
-            // TODO: 串接我的最愛 API
+
+            // TODO  TODO: 串接我的最愛 API
+
+
         };
 
         // 日期切換
@@ -220,15 +261,17 @@ createApp({
             threeDaysLaterLabel,
             totalTicketsCount,
             totalPriceAmount,
+            checkLogin,
             openLightbox,
             closeLightbox,
             changeSlide,
             currentSlide,
-            toggleFavorite,
+            addToFavorite,
             selectQuickDate,
             changeQty,
             handleAddToCart,
-            handleBuyNow
+            handleBuyNow,
+            handleAddToFavorite
         };
     }
 }).mount('#app');
