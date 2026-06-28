@@ -212,8 +212,8 @@ public class TicketController {
             return "backend/ticket/updateTicket";
         }
 
-        // 修改成功，回列表主頁
-        return "redirect:/backend/ticket/list";
+        // 修改成功，回門票明細頁
+        return "redirect:/backend/ticket/getOne_For_Display?ticketId=" + ticketVO.getTicketId();
     }
 
     /* 進入門票頁面 （查全部）（分頁 + 模糊搜尋） */
