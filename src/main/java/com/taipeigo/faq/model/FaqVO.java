@@ -28,22 +28,35 @@ public class FaqVO implements Serializable {
 	private Integer faqId;
 	
 	@NotNull(message = "請輸入主題")
+	@Length(max = 40, message = "主題40字以內")
 	@Column(name = "TITLE")
 	private String title;
+	
+	@NotNull(message = "請選擇FAQ分類")
+	@Column(name = "CATEGORY")
+	private Byte category;
 	
 	@NotNull(message = "請輸入內容")
 	@Length(min = 1, max = 1000, message = "內容1000字以內")
 	@Column(name = "CONTENT")
 	private String content;
 	
-	@NotNull
+	@NotNull(message = "請選擇狀態")
 	@Column(name = "STATUS")
 	//0=隱藏, 1=顯示
 	private Byte status;
 	
 	@UpdateTimestamp
-	@Column(name = "CREATE_TIME", updatable = false)
+	@Column(name = "CREATE_TIME")
 	private java.sql.Timestamp createTime;
+
+	public Byte getCategory() {
+		return category;
+	}
+
+	public void setCategory(Byte category) {
+		this.category = category;
+	}
 
 	public Integer getFaqId() {
 		return faqId;
