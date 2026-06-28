@@ -79,8 +79,9 @@ public class TicketRestController {
     @GetMapping("/info")
     public ResponseEntity<ApiResponse<TicketDTO>> getTicketById(@RequestParam("ticketId") Integer ticketId) {
         TicketVO ticketVO = ticketService.getOneTicket(ticketId);
-        if (ticketVO == null) {
-            return ResponseEntity.status(404).body(ApiResponse.error("找不到該門票商品"));
+        // 如果找不到該門票或商品已下架(status != 1)，回傳 404
+        if (ticketVO == null || ticketVO.getTicketStatus() != 1) {
+            return ResponseEntity.status(404).body(ApiResponse.error("找不到該門票商品或商品已下架"));
         }
         return ResponseEntity.ok(ApiResponse.success("查詢成功", TicketDTO.fromEntity(ticketVO)));
     }
