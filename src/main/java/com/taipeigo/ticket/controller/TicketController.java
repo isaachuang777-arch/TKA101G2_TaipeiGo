@@ -3,6 +3,7 @@ package com.taipeigo.ticket.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -31,12 +32,37 @@ public class TicketController {
     @Autowired
     private TicketCategoryService ticketCategoryService;
     
-    /* 進入門票頁面 （查全部）*/
+    /* 進入門票頁面 （查全部）[分頁 + 模糊搜尋] */
     @GetMapping("list")
-    public String listAllTicket(ModelMap model) {
-        List<TicketVO> list = ticketService.getAll();
+    public String listAllTicket(
+            ModelMap model,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        Page<TicketVO> pageResult;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            model.addAttribute("keyword", keyword.trim());
+            pageResult = ticketService.searchTicketsByPage(keyword.trim(), page);
+        } else {
+            pageResult = ticketService.getAllTicketsByPage(page);
+        }
+
+        // 計算全域統計資訊 (總門票商品數、上架中、已下架)
+        List<TicketVO> allTicketsList = ticketService.getAll();
+        long totalCount = allTicketsList.size();
+        long activeCount = allTicketsList.stream().filter(vo -> vo.getTicketStatus() == 1).count();
+        long inactiveCount = allTicketsList.stream().filter(vo -> vo.getTicketStatus() == 0).count();
+
         model.addAttribute("activePage", "ticket");
-        model.addAttribute("ticketListData", list);
+        model.addAttribute("pageResult", pageResult);
+        model.addAttribute("ticketListData", pageResult.getContent());
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("activeCount", activeCount);
+        model.addAttribute("inactiveCount", inactiveCount);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageResult.getTotalPages());
+
         return "backend/ticket/listAllTicket";
     }
     

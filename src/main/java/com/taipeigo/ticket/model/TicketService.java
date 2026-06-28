@@ -44,6 +44,18 @@ public class TicketService {
 		return ticketRepository.findAll();
 	}
 
+	// 撈出所有門票 （分頁）
+	public Page<TicketVO> getAllTicketsByPage(int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10); // 一頁 10 筆
+		return ticketRepository.findAllTickets(pageable);
+	}
+
+	// 模糊搜尋門票 (搜尋門票名稱或分類名稱) （分頁）
+	public Page<TicketVO> searchTicketsByPage(String keyword, int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10); // 一頁 10 筆
+		return ticketRepository.searchTickets(keyword, pageable);
+	}
+
 	public TicketVO getOneTicket(Integer ticketId) {
 		Optional<TicketVO> optional = ticketRepository.findById(ticketId);
 		return optional.orElse(null);
