@@ -44,6 +44,18 @@ public class TicketService {
 		return ticketRepository.findAll();
 	}
 
+	// 撈出所有門票 （分頁）
+	public Page<TicketVO> getAllTicketsByPage(int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10); // 一頁 10 筆
+		return ticketRepository.findAllTickets(pageable);
+	}
+
+	// 模糊搜尋門票 (搜尋門票名稱或分類名稱) （分頁）
+	public Page<TicketVO> searchTicketsByPage(String keyword, int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10); // 一頁 10 筆
+		return ticketRepository.searchTickets(keyword, pageable);
+	}
+
 	public TicketVO getOneTicket(Integer ticketId) {
 		Optional<TicketVO> optional = ticketRepository.findById(ticketId);
 		return optional.orElse(null);
@@ -295,6 +307,18 @@ public class TicketService {
 	/* 取得所有門票序號 */
 	public List<TicketSerialVO> getAllTicketSerial() {
 		return ticketSerialRepository.findAll();
+	}
+
+	// 撈出所有門票序號 （分頁）
+	public Page<TicketSerialVO> getAllTicketSerialsByPage(int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10);
+		return ticketSerialRepository.findAllSerials(pageable);
+	}
+
+	// 模糊搜尋門票序號 (搜尋序號、商品名稱、會員名稱) （分頁）
+	public Page<TicketSerialVO> searchTicketSerialsByPage(String keyword, int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10);
+		return ticketSerialRepository.searchSerials(keyword, pageable);
 	}
 
 	/* 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1） 有分頁 */

@@ -2,15 +2,16 @@
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>台北GO了沒</title>
+	<title>台北GO了沒</title>
 
-<link rel="stylesheet" th:href="@{/css/index/header.css}">
-<link rel="stylesheet" th:href="@{/css/index/heroSearch.css}">
-<link rel="stylesheet" th:href="@{/css/index/footer.css}">
-<link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
+	<link rel="stylesheet" th:href="@{/css/index/header.css}">
+	<link rel="stylesheet" th:href="@{/css/index/heroSearch.css}">
+	<link rel="stylesheet" th:href="@{/css/index/footer.css}">
+	<link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
+	<link rel="stylesheet" th:href="@{/css/ticket/ticket.css}">
 </head>
 
 <body>
@@ -20,14 +21,46 @@
 
 	<!-- Hero Search -->
 	<div th:replace="~{frontend/index/heroSearch :: heroSearch}"></div>
-	
-<!--<div th:replace="~{frontend/index/heroBanner :: heroBanner}"></div> -->
-	
+
+	<!--<div th:replace="~{frontend/index/heroBanner :: heroBanner}"></div> -->
+
 	<!-- 首頁內容 -->
 	<main>
 		<section class="home-section">
 			<h2>熱門景點</h2>
-			<p>商品相關</p>
+			<div class="ticket-grid" id="ticketGridContainer">
+				<div th:each="ticket : ${popularTickets}" class="ticket-card"
+					th:onclick="|location.href='@{/ticket/detail(ticketId=${ticket.ticketId})}'|">
+
+					<div class="ticket-image-box">
+						<img th:if="${ticket.ticketImages != null and !#lists.isEmpty(ticket.ticketImages)}"
+							th:src="${ticket.ticketImages[0].ticketImageSrc}" alt="門票封面">
+						<div th:unless="${ticket.ticketImages != null and !#lists.isEmpty(ticket.ticketImages)}"
+							class="no-image-placeholder">無圖片</div>
+					</div>
+
+					<div class="ticket-info">
+						<h3 class="ticket-title" th:text="${ticket.ticketName}">門票名稱</h3>
+						<p class="ticket-desc" th:text="${ticket.ticketDescription}"></p>
+						<div class="ticket-footer">
+							<div><span class="ticket-tag">查看詳情</span></div>
+							<div class="ticket-price-box">
+								<div class="price-wrapper">
+									<span th:if="${ticket.adultOriginalPrice != null}" class="original-price"
+										th:text="'NT$ ' + ${ticket.adultOriginalPrice}">NT$ 150</span>
+									<span class="current-price">NT$ <strong th:text="${ticket.adultPrice}">100</strong>
+										起</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${#lists.isEmpty(popularTickets)}" class="text-center text-muted py-5"
+					style="grid-column: 1 / -1; text-align: center; width: 100%; font-size: 1.1rem; color: #888;">
+					目前沒有任何門票商品。
+				</div>
+			</div>
 		</section>
 
 		<section class="home-section">
@@ -39,8 +72,8 @@
 
 	<!-- Footer -->
 	<div th:replace="~{frontend/index/footer :: footer}"></div>
-	
-	<!-- JS引入 -->
+
+	<!-- 輪播JS引入 -->
 	<script th:src="@{/js/heroBanner.js}"></script>
 	<script th:src="@{/js/index/header.js}"></script>
 </body>

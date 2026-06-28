@@ -2,6 +2,8 @@ package com.taipeigo.ticket.model;
 
 import java.util.Date;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +11,20 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface TicketSerialRepository extends JpaRepository<TicketSerialVO, Integer> {
+
+    // 撈出所有門票序號 （分頁）
+    @Query("SELECT s FROM TicketSerialVO s ORDER BY s.ticketSerialId DESC")
+    Page<TicketSerialVO> findAllSerials(Pageable pageable);
+
+    // 模糊搜尋門票序號 (搜尋序號、商品名稱、會員名稱) （分頁）
+    @Query("SELECT DISTINCT s FROM TicketSerialVO s " +
+           "LEFT JOIN s.ticketVO t " +
+           "LEFT JOIN s.customerVO c " +
+           "WHERE s.serialNumber LIKE concat('%', :keyword, '%') " +
+           "OR t.ticketName LIKE concat('%', :keyword, '%') " +
+           "OR c.custName LIKE concat('%', :keyword, '%') " +
+           "ORDER BY s.ticketSerialId DESC")
+    Page<TicketSerialVO> searchSerials(@Param("keyword") String keyword, Pageable pageable);
 
     // 檢查該筆序號是否已存在在資料庫
     boolean existsBySerialNumber(String serialNumber);

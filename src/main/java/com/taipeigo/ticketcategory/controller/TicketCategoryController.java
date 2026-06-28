@@ -2,6 +2,7 @@ package com.taipeigo.ticketcategory.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -20,12 +21,37 @@ public class TicketCategoryController {
     @Autowired
     TicketCategoryService ticketCategoryService;
 
-    /* 進入票券種類列表頁面 (查全部未被刪除) */
+    /* 進入票券種類列表頁面 (查全部未被刪除) (分頁 + 搜尋) */
     @GetMapping("list")
-    public String listAllCategory(ModelMap model) {
-        List<TicketCategoryVO> list = ticketCategoryService.getAllNotDeleted();
+    public String listAllCategory(
+            ModelMap model,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        Page<TicketCategoryVO> pageResult;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            model.addAttribute("keyword", keyword.trim());
+            pageResult = ticketCategoryService.searchByName(keyword.trim(), page);
+        } else {
+            pageResult = ticketCategoryService.getNotDeletedWithPage(page);
+        }
+
+        // 計算 總分類數、啟用數、未啟用數
+        List<TicketCategoryVO> allNotDeletedList = ticketCategoryService.getAllNotDeleted();
+        long totalCount = allNotDeletedList.size();
+        long activeCount = allNotDeletedList.stream().filter(vo -> vo.getTicketCategoryStatus() == 1).count();
+        long inactiveCount = allNotDeletedList.stream().filter(vo -> vo.getTicketCategoryStatus() == 0).count();
+
         model.addAttribute("activePage", "ticketCategory");
-        model.addAttribute("ticketCategoryListData", list);
+        model.addAttribute("pageResult", pageResult);
+        model.addAttribute("ticketCategoryListData", pageResult.getContent());
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("activeCount", activeCount);
+        model.addAttribute("inactiveCount", inactiveCount);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageResult.getTotalPages());
+
         return "backend/ticketCategory/listAllTicketCategory";
     }
 
