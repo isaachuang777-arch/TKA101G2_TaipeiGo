@@ -1,38 +1,34 @@
+/* ========================= 購物車資料 ========================= */
+let cartData = [];
 
-//fetch("/frontend/cart/queryCart")
-
-/* ========================= 假資料========================= */
-let cartData = [
-    {
-        productId: 1,
-        productName: "九份老街一日遊",
-        productPrice: 1500,
-        productQuantity: 2,
-        expiryDate: "2026-07-05",
-        imageUrl: "https://picsum.photos/400/250?random=1"
-    },
-    {
-        productId: 2,
-        productName: "台北101觀景台門票",
-        productPrice: 600,
-        productQuantity: 1,
-        expiryDate: "2026-07-10",
-        imageUrl: "https://picsum.photos/400/250?random=2"
-    }
-];
-
-
-/* ========================= 頁面初始化========================= */
+/* ========================= 頁面初始化 ========================= */
 document.addEventListener("DOMContentLoaded", function () {
-    renderCart();
-    document.getElementById("clearCartBtn").addEventListener("click", clearCart);
+    loadCart();
+    document.getElementById("clearCartBtn")
+        .addEventListener("click", clearCart);
 
+    document.getElementById("checkoutBtn")
+        .addEventListener("click", checkout);
 });
 
+/* ========================= 讀取購物車 ========================= */
+async function loadCart() {
+    try {
+        const response = await fetch("/frontend/cart/queryCartDetail");
+        if (!response.ok) {
+            throw new Error("讀取購物車失敗");
+        }
+        cartData = await response.json();
+        renderCart();
+    } catch (error) {
+        console.error(error);
+        alert("購物車資料載入失敗");
+    }
+}
 
-/* ========================= 渲染購物車========================= */
+/* ========================= 渲染 ========================= */
 function renderCart() {
-    const container =  document.getElementById("cartContainer");
+    const container = document.getElementById("cartContainer");
     container.innerHTML = "";
     if (cartData.length === 0) {
         container.innerHTML = `
@@ -46,119 +42,182 @@ function renderCart() {
     }
 
     cartData.forEach((item, index) => {
-        const subtotal =
-            item.productPrice *
-            item.productQuantity;
         container.innerHTML += `
-
-            <div class="cart-item">
-                <div class="cart-content">
-                    <img  src="${item.imageUrl}" class="product-image">
-                    <div class="product-info">
-                        <div class="product-name"> ${item.productName}  </div>
-                        <div class="product-date">  使用日期：  ${item.expiryDate}  </div>
-                        <div class="product-price"> NT$ ${item.productPrice.toLocaleString()}  </div>
-                    </div>
-                </div>
-
-                <div class="cart-footer">
-                    <div class="quantity-area">
-                        <button class="quantity-btn"  onclick="minusQuantity(${index})"> -  </button>
-                        <span class="quantity-value"> ${item.productQuantity} </span>
-                        <button class="quantity-btn"  onclick="plusQuantity(${index})">  + </button>
-                        <button class="delete-btn"  onclick="removeItem(${index})"> 刪除 </button>
-                    </div>
-					
-                    <div class="subtotal">
-                        NT$ ${subtotal.toLocaleString()}
-                    </div>
+        <div class="cart-item">
+            <div class="cart-content">
+                <img src="${item.imageUrl}" class="product-image">
+                <div class="product-info">
+                    <div class="product-name">  ${item.productName} </div>
+                    <div class="product-date">  使用日期：${item.expiryDate} </div>
+                    <div class="product-price"> NT$ ${item.price.toLocaleString()} </div>
                 </div>
             </div>
+            <div class="cart-footer">
+                <div class="quantity-area">
+                    <button class="quantity-btn"  onclick="minusQuantity(${index})"> - </button>
+                    <span class="quantity-value">  ${item.quantity} </span>
+                    <button class="quantity-btn"  onclick="plusQuantity(${index})"> +  </button>
+                    <button class="delete-btn" onclick="removeItem(${index})">  刪除 </button>
+                </div>
+                <div class="subtotal"> NT$ ${item.subtotal.toLocaleString()}</div>
+            </div>
+
+        </div>
+
         `;
     });
-
     updateSummary();
 }
 
+/* ========================= + ========================= */
+async function plusQuantity(index) {
+    const item = cartData[index];
+    item.quantity++;
 
-/* ========================= 增加數量========================= */
-function plusQuantity(index) {
-    cartData[index].productQuantity++;
-    renderCart();
-    console.log("呼叫 updateCart API");
+    const cart = {
+        productId: item.productId,
+        productType: item.productType,
+        expiryDate: item.expiryDate,
+        spec: item.spec,
+        productQuantity: item.quantity
+    };
+
+    const response = await fetch("/frontend/cart/updateCart", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cart)
+    });
+
+    if (response.ok) {
+        await loadCart();
+        if (typeof loadCartCount === "function") {
+            loadCartCount();
+        }
+    } else {
+        alert("更新失敗");
+    }
 }
 
 
-/* ========================減少數量========================= */
-function minusQuantity(index) {
-    if (cartData[index].productQuantity <= 1) {
+/* ========================= - ========================= */
+async function minusQuantity(index) {
+    const item = cartData[index];
+
+    if (item.quantity <= 1) {
         return;
     }
-    cartData[index].productQuantity--;
-    renderCart();
-    console.log("呼叫 updateCart API");
+
+    item.quantity--;
+    const cart = {
+        productId: item.productId,
+        productType: item.productType,
+        expiryDate: item.expiryDate,
+        spec: item.spec,
+        productQuantity: item.quantity
+    };
+
+    const response = await fetch("/frontend/cart/updateCart", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cart)
+    });
+
+    if (response.ok) {
+        await loadCart();
+        if (typeof loadCartCount === "function") {
+            loadCartCount();
+        }
+    } else {
+        alert("更新失敗");
+    }
 }
 
-
-/* ========================= 刪除單一商品========================= */
-
-function removeItem(index) {
-    const confirmDelete =confirm("確定要刪除此商品嗎？");
-    if (!confirmDelete) {
+/* ========================= 刪除 ========================= */
+async function removeItem(index) {
+    if (!confirm("確定要刪除此商品嗎？")) {
         return;
     }
 
-    cartData.splice(index, 1);
-    renderCart();
-    console.log("呼叫 removeCartProduct API");
+    const item = cartData[index];
+    const cart = {
+        productId: item.productId,
+        productType: item.productType,
+        expiryDate: item.expiryDate,
+        spec: item.spec
+    };
+
+    const response = await fetch("/frontend/cart/removeCartProduct", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cart)
+    });
+
+    if (response.ok) {
+        await loadCart();
+        if (typeof loadCartCount === "function") {
+            loadCartCount();
+        }
+    } else {
+        alert("刪除失敗");
+    }
 }
 
-
-/* =========================  清空購物車========================= */
-function clearCart() {
-    const confirmDelete =
-        confirm("確定要清空購物車嗎？");
-    if (!confirmDelete) {
+/* ========================= 清空購物車 ========================= */
+async function clearCart() {
+    if (!confirm("確定要清空購物車嗎？")) {
         return;
     }
-
-    cartData = [];
-    renderCart();
-    console.log("呼叫 clearCart API");
+    const response = await fetch("/frontend/cart/clearCart", {
+        method: "DELETE"
+    });
+    if (response.ok) {
+        await loadCart();
+        if (typeof loadCartCount === "function") {
+            loadCartCount();
+        }
+        alert("購物車已清空");
+    } else {
+        alert("清空失敗");
+    }
 }
 
-
-/* =========================
-   更新摘要
-========================= */
+/* ========================= 更新摘要 ========================= */
 function updateSummary() {
     let totalCount = 0;
     let totalAmount = 0;
-
     cartData.forEach(item => {
-        totalCount += item.productQuantity;
-        totalAmount +=item.productPrice *item.productQuantity;
+        totalCount += item.quantity;
+        totalAmount += item.subtotal;
     });
-    document.getElementById("totalCount") .textContent = totalCount;
-    document.getElementById("totalAmount").textContent ="NT$ " + totalAmount.toLocaleString();
+    document.getElementById("totalCount").textContent = totalCount;
+    document.getElementById("totalAmount").textContent = "NT$ " + totalAmount.toLocaleString();
+
 }
 
+/* ========================= 前往結帳 ========================= */
+async function checkout() {
+    if (cartData.length === 0) {
+        alert("購物車沒有商品");
+        return;
+    }
 
-/* ========================= 前往結帳========================= */
-document.addEventListener("DOMContentLoaded", function () {
-    const checkoutBtn =document.getElementById("checkoutBtn");
-    checkoutBtn.addEventListener("click", function () {
-        if (cartData.length === 0) {
-            alert("購物車沒有商品");
-            return;
-        }
-        console.log("呼叫 checkout API");
-
-        // location.href="/frontend/order/checkout";
+    if (!confirm("確認送出訂單？")) {
+        return;
+    }
+    const response = await fetch("/frontend/checkout", {
+        method: "POST"
     });
-});
 
-
-
-
-
+    if (response.ok) {
+        alert("訂單建立成功");
+        location.href = "/frontend/customer/orders";
+    } else {
+        alert("結帳失敗");
+    }
+}

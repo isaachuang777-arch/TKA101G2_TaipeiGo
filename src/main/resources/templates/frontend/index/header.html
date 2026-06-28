@@ -13,9 +13,9 @@
         <div class="nav-right">
             <a th:href="@{/favorite}" class="nav-link">❤️ 我的最愛 </a>
 			<a th:href="@{/frontend/cart/shoppingCart}" class="nav-link cart-link">
-		    <span class="cart-icon">🛒</span>
-		    <span class="cart-text">購物車</span>
-			<span id="cartCount" class="cart-badge"></span>	
+		   		<span class="cart-icon">🛒</span>
+		    	<span class="cart-text">購物車</span>
+				<span id="cartCount" class="cart-badge"></span>	
 			</a>
 				
             <!-- 未登入 -->
@@ -46,21 +46,6 @@
         </div>
     </nav>
 </header>
-<script>
-document.addEventListener("DOMContentLoaded", async function () {
-    try {
-        const response = await fetch("/frontend/cart/count");
-        const count = await response.json();
-        const badge = document.getElementById("cartCount");
-        if (count > 0) {
-            badge.textContent = count;
-        } else {
-            badge.style.display = "none";
-        }
-    } catch (error) {
-        console.log(error);
-    }
-});
-</script>
+
 </body>
 </html>
