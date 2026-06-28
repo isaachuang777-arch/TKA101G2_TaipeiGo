@@ -30,12 +30,11 @@ public class FrontendLoginFilter extends OncePerRequestFilter {
             return;
         }
 
-        // ===================
-        // 前台登入、註冊、驗證信不用強登
-        // ===================
+        // 前台登入、註冊、驗證信、登入狀態查詢 API 不需強制登入
         if (requestURI.contains("/auth/login")
                 || requestURI.contains("/auth/register")
-                || requestURI.contains("/auth/verify")) {
+                || requestURI.contains("/auth/verify")
+                || requestURI.contains("/api/auth/me")) {
 
             filterChain.doFilter(request, response);
             return;
