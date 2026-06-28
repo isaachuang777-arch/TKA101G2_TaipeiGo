@@ -2,12 +2,15 @@ package com.taipeigo.cart.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.taipeigo.customer.model.CustomerVO;
+import com.taipeigo.product.dto.CartItemDTO;
+import com.taipeigo.product.model.ProductCartFacade;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -16,8 +19,10 @@ public class CartService {
 
 	@Autowired(required = false)
 	private RedisTemplate<String, Object> redisTemplate;
-
 	
+	@Autowired
+	private ProductCartFacade productCartFacade;
+
 /*===============insertCart======新增購物車====================================================*/
 	public void insertCart(CartVO cartVO, HttpSession session) {
 		CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
@@ -47,9 +52,12 @@ public class CartService {
 			/*** 先預設沒有找到""一樣""的商品，就進入for迴圈，最後再透過把found = true 示意已經完成更改後break出去 **/
 			boolean found = false;
 			for (CartVO item : cartList) {
-				/** 如果VO的productId跟Request進來的CartVO的productId一樣"且"票券日期(ExpiryDate)一樣 */
-				if (item.getProductId().equals(cartVO.getProductId())
-						&& item.getExpiryDate().equals(cartVO.getExpiryDate())) 
+				/** 如果VO的productId跟Request進來的CartVO的productId一樣"且"票券日期(ExpiryDate)一樣 "且"商品類型一樣(ACTIVITY,TICKET) "且"票種一樣*/
+				if (Objects.equals(item.getProductId(), cartVO.getProductId())
+						&& Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+						&& Objects.equals(item.getProductType(), cartVO.getProductType())
+						&& Objects.equals(item.getSpec(), cartVO.getSpec()))
+			
 				{
 					/** 就直接數量(ProductQuantity)往上加 */
 					item.setProductQuantity(item.getProductQuantity() + cartVO.getProductQuantity());
@@ -82,8 +90,10 @@ public class CartService {
 
 		boolean found = false;
 		for (CartVO item : cartList) {
-			if (item.getProductId().equals(cartVO.getProductId())
-					&& item.getExpiryDate().equals(cartVO.getExpiryDate())) 
+			if (Objects.equals(item.getProductId(), cartVO.getProductId())
+					&& Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+					&& Objects.equals(item.getProductType(), cartVO.getProductType())
+					&& Objects.equals(item.getSpec(), cartVO.getSpec())) 
 			{
 				item.setProductQuantity(item.getProductQuantity() + cartVO.getProductQuantity());
 				found = true;
@@ -120,7 +130,8 @@ public class CartService {
 		session.removeAttribute("tempCart");
 		System.out.println("tempCart已同步到Redis");
 	}
-
+	
+/*===============queryCart=======搜尋購物車內容===================================================*/
 	public List<CartVO> queryCart(HttpSession session) {
 		CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
 
@@ -159,8 +170,10 @@ public class CartService {
 			/**當obj不是空的時，要判斷是否商品是不是一樣，如果是一樣的東西，我就直接更新數字*/
 			List<CartVO> cartList = (List<CartVO>) obj;
 			for (CartVO item : cartList) {
-				if (item.getProductId().equals(cartVO.getProductId())
-						&& item.getExpiryDate().equals(cartVO.getExpiryDate())) 
+				if (Objects.equals(item.getProductId(), cartVO.getProductId())
+						&& Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+						&& Objects.equals(item.getProductType(), cartVO.getProductType())
+						&& Objects.equals(item.getSpec(), cartVO.getSpec())) 
 				{
 					item.setProductQuantity(cartVO.getProductQuantity());
 					break;
@@ -178,8 +191,10 @@ public class CartService {
 		}
 		List<CartVO> cartList =(List<CartVO>) obj;
 		for (CartVO item : cartList) {
-		    if (item.getProductId().equals(cartVO.getProductId())
-		            && item.getExpiryDate().equals(cartVO.getExpiryDate())) 
+		    if (Objects.equals(item.getProductId(), cartVO.getProductId())
+		    		&& Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+		    		&& Objects.equals(item.getProductType(), cartVO.getProductType())
+		    		&& Objects.equals(item.getSpec(), cartVO.getSpec())) 
 		    {
 		        item.setProductQuantity(cartVO.getProductQuantity());
 		        break;
@@ -207,8 +222,10 @@ public class CartService {
 			/**整組JSON包成cartList(Redis)，透過for迴圈去把整包分組(i==>第i組)**/
 			for(int i =0 ; i < cartList.size(); i++) {
 				CartVO item = cartList.get(i);
-				if(item.getProductId().equals(cartVO.getCustId()) &&
-						item.getExpiryDate().equals(cartVO.getExpiryDate())) 
+				if(Objects.equals(item.getProductId(), cartVO.getProductId())
+						&& Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+						&& Objects.equals(item.getProductType(), cartVO.getProductType())
+						&& Objects.equals(item.getSpec(), cartVO.getSpec())) 
 				{
 					cartList.remove(i);
 					break;
@@ -219,9 +236,24 @@ public class CartService {
 			System.out.println("Redis購物車刪除成功~");
 			return;	
 		}
-		
-		
-		
+		Object obj = session.getAttribute("tempCart");
+		if (obj == null) {
+		    return;
+		}
+
+		List<CartVO> cartList = (List<CartVO>) obj;
+		for (int i = 0; i < cartList.size(); i++) {
+		    CartVO item = cartList.get(i);
+		    if (Objects.equals(item.getProductId(), cartVO.getProductId())
+		    		&& Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+		    		&& Objects.equals(item.getProductType(), cartVO.getProductType())
+		    		&& Objects.equals(item.getSpec(), cartVO.getSpec())) {
+		        cartList.remove(i);
+		        break;
+		    }
+		}
+		session.setAttribute("tempCart", cartList);
+		System.out.println("Session購物車刪除成功");		
 	}
 
 	
@@ -245,30 +277,38 @@ public class CartService {
 	
 /*===============countCart======Header小icon計算購物車商品數====================================================*/
 	public Integer countCart(HttpSession session) {
-	    CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
-	    /**已登入**/
-	    if(customer != null) {
-	    	Integer custId = customer.getCustId();
-	    	String key = "cart:" + custId;
-	    	Object obj = redisTemplate.opsForValue().get(key);
-	    	if(obj == null) {
-	    		return 0 ;
-	    	}
-	    	
-	    	List<CartVO> cartList = (List<CartVO>)obj;
-	    	return cartList.size();
-	    	
-	    }
-	    /**未登入**/
-	    Object obj = session.getAttribute("tempCart");
-	    if(obj == null) {
-	    	return 0;
-	    }
-	    List<CartVO> cartList =  (List<CartVO>)obj;
-	    return cartList.size();
+		 List<CartVO> cartList = queryCart(session);
+		    Integer total = 0;
+		    for (CartVO item : cartList) {
+		        total += item.getProductQuantity();
+		    }
+		    return total;
 	}
 
 	
+/*===============queryCartItem=======查詢完整購物車資料(顯示給前端畫面)===================================================*/
+	public List<CartItemDTO> queryCartItem(HttpSession session) {
+		/* 呼叫queryCart(session)方法，
+		 * 先從Redis 或 Session 拿到購物車資料 */
+		List<CartVO> cartList  = queryCart(session);
+		/* 準備一個DTO List裝資料 */
+		List<CartItemDTO> cartDTOList = new ArrayList<>();
+		for (CartVO vo : cartList ) {
+			CartItemDTO dto = productCartFacade.getCartItemInfo(
+					vo.getProductType(), 
+					vo.getProductId(),
+					vo.getProductQuantity(), 
+					vo.getSpec());
+
+			if (dto != null) {
+				dto.setProductType(vo.getProductType());
+				dto.setSpec(vo.getSpec());
+				dto.setExpiryDate(vo.getExpiryDate());
+				cartDTOList.add(dto);
+			}
+		}
+		return cartDTOList;
+	}
 	
 	
 	
