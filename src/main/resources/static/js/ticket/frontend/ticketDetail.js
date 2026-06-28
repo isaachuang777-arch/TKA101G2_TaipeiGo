@@ -97,12 +97,36 @@ createApp({
             // addToFavorite
         };
 
-        // 處理加入我的最愛
+        // 處理加入我的最愛 (切換我的最愛狀態)
         const handleAddToFavorite = async () => {
             const loggedIn = await checkLogin();
             if (!loggedIn) return;
 
-            // TODO: 串接 API
+            try {
+                const res = await fetch(`../favorite/toggle/ajax?type=TICKET&id=${ticket.value.ticketId}`, {
+                    method: 'POST'
+                });
+                if (res.ok) {
+                    isFavorite.value = await res.json();
+                } else {
+                    alert('操作失敗，請稍後再試');
+                }
+            } catch (err) {
+                alert('操作失敗，請稍後再試');
+            }
+        };
+
+        // 判斷此門票是否在該會員的收藏清單中
+        const checkFavorite = async (ticketId) => {
+            // 此 api 裡就有方法判斷是否有登入，不用額外處理判斷 
+            try {
+                const res = await fetch(`../favorite/check?type=TICKET&id=${ticketId}`);
+                if (res.ok) {
+                    isFavorite.value = await res.json();
+                }
+            } catch (err) {
+                // console.error('檢查收藏失敗:', err);
+            }
         };
 
         // 載入單筆門票詳細資料
@@ -119,7 +143,8 @@ createApp({
                     document.title = `${ticket.value.ticketName} - 台北GO了沒`;
                     isLoaded.value = true;
 
-                    // TODO: 檢查使用者是否已登入，若已登入則查詢其是否收藏了此商品
+                    // 檢查使用者是否已登入，若已登入則查詢其是否收藏了此商品
+                    await checkFavorite(ticketId);
 
 
                 } else {
@@ -154,14 +179,7 @@ createApp({
             slideIndex.value = idx;
         };
 
-        // 加入我的最愛
-        const addToFavorite = () => {
-            isFavorite.value = !isFavorite.value;
 
-            // TODO  TODO: 串接我的最愛 API
-
-
-        };
 
         // 日期切換
         const selectQuickDate = (type) => {
@@ -266,7 +284,6 @@ createApp({
             closeLightbox,
             changeSlide,
             currentSlide,
-            addToFavorite,
             selectQuickDate,
             changeQty,
             handleAddToCart,
