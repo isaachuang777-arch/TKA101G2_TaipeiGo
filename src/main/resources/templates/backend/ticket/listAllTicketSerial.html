@@ -55,7 +55,7 @@
             </div>
 
             <!-- Stats Row -->
-            <div class="row stats-row g-3" th:if="${not #lists.isEmpty(ticketSerialListData)}">
+            <div class="row stats-row g-3" th:if="${totalCount > 0}">
                 <div class="col-md-4">
                     <div class="stat-card">
                         <div class="stat-icon blue">
@@ -63,7 +63,7 @@
                         </div>
                         <div>
                             <div class="stat-label">總門票序號數</div>
-                            <div class="stat-value" th:text="${#lists.size(ticketSerialListData)}">
+                            <div class="stat-value" th:text="${totalCount}">
                                 0
                             </div>
                         </div>
@@ -77,7 +77,7 @@
                         </div>
                         <div>
                             <div class="stat-label">庫存中 / 可販售</div>
-                            <div class="stat-value" th:text="${#lists.size(ticketSerialListData.?[status == 1])}">
+                            <div class="stat-value" th:text="${stockCount}">
                                 0
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                         </div>
                         <div>
                             <div class="stat-label">已售出 / 使用中</div>
-                            <div class="stat-value" th:text="${#lists.size(ticketSerialListData.?[status == 2])}">
+                            <div class="stat-value" th:text="${soldCount}">
                                 0
                             </div>
                         </div>
@@ -105,13 +105,24 @@
                     <div class="table-card-title">
                         <i class="bi bi-list-ol me-1" style="color:var(--primary);"></i>
                         門票序號列表
-                        <span th:text="${'共 ' + #lists.size(ticketSerialListData) + ' 筆'}"></span>
+                        <span th:text="${'共 ' + pageResult.totalElements + ' 筆'}"></span>
                     </div>
 
-                    <div class="search-bar">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="searchInput" placeholder="搜尋序號、商品、會員..." class="form-control">
-                    </div>
+                    <form th:action="@{/backend/ticket/serialList}" method="get"
+                        class="search-bar d-flex align-items-center gap-1" style="max-width: 320px;">
+                        <div style="position: relative; flex-grow: 1;">
+                            <i class="bi bi-search"
+                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+                            <input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋序號、商品、會員..."
+                                class="form-control"
+                                style="padding-left: 32px; border-radius: 8px; height: 36px; font-size: 0.85rem;">
+                        </div>
+                        <button class="btn btn-primary btn-sm" type="submit"
+                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px;">搜尋</button>
+                        <a th:if="${keyword != null and keyword != ''}" th:href="@{/backend/ticket/serialList}"
+                            class="btn btn-outline-secondary btn-sm"
+                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px; display: inline-flex; align-items: center; white-space: nowrap;">重置</a>
+                    </form>
                 </div>
 
                 <div class="table-responsive">
@@ -143,7 +154,7 @@
 
                             <tr th:each="serial, iterStat : ${ticketSerialListData}">
                                 <td class="text-center" style="color:#94a3b8; font-size:0.8rem;"
-                                    th:text="${iterStat.index + 1}"></td>
+                                    th:text="${currentPage * 10 + iterStat.index + 1}"></td>
                                 <td class="text-center text-muted" th:text="${serial.ticketSerialId}"></td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -234,10 +245,39 @@
                     </table>
                 </div>
 
-                <div class="table-footer" th:if="${not #lists.isEmpty(ticketSerialListData)}">
+                <div class="table-footer" th:if="${totalPages > 0}">
                     <div class="table-footer-info">
-                        共 <span th:text="${#lists.size(ticketSerialListData)}"></span> 筆序號
+                        共 <span th:text="${pageResult.totalElements}"></span> 筆資料，
+                        第 <span th:text="${currentPage + 1}"></span> 頁 /
+                        共 <span th:text="${totalPages}"></span> 頁
                     </div>
+
+                    <nav th:if="${totalPages > 1}">
+                        <ul class="pagination pagination-sm mb-0">
+                            <!-- 上一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=${currentPage - 1})}">
+                                    上一頁
+                                </a>
+                            </li>
+
+                            <!-- 數字頁碼 -->
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:text="${i + 1}"
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=${i})}"></a>
+                            </li>
+
+                            <!-- 下一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=${currentPage + 1})}">
+                                    下一頁
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </main>
@@ -245,22 +285,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        const searchInput = document.getElementById('searchInput');
-
-        if (searchInput) {
-            searchInput.addEventListener('input', function () {
-                const keyword = this.value.toLowerCase();
-                const rows = document.querySelectorAll('#serialTable tbody tr');
-
-                rows.forEach(row => {
-                    if (row.querySelector('.empty-state')) return;
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(keyword) ? '' : 'none';
-                });
-            });
-        }
-    </script>
 
 </body>
 

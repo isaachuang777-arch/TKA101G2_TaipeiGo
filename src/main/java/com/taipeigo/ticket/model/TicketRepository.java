@@ -29,4 +29,16 @@ public interface TicketRepository extends JpaRepository<TicketVO, Integer> {
                      "ORDER BY SUM(CASE WHEN s.STATUS IN (2, 3, 4) THEN 1 ELSE 0 END) DESC, t.TICKET_ID ASC " +
                      "LIMIT :limit", nativeQuery = true)
        List<TicketVO> findPopularTickets(@Param("limit") int limit);
+
+       // 撈出所有門票 （分頁）
+       @Query(value = "from TicketVO order by ticketId asc")
+       Page<TicketVO> findAllTickets(Pageable pageable);
+
+       // 模糊搜尋門票 (搜尋門票名稱或分類名稱) （分頁）
+       @Query("SELECT DISTINCT t FROM TicketVO t " +
+                     "LEFT JOIN t.ticketCategories c " +
+                     "WHERE t.ticketName LIKE concat('%', :keyword, '%') " +
+                     "OR c.ticketCategoryName LIKE concat('%', :keyword, '%') " +
+                     "ORDER BY t.ticketId ASC")
+       Page<TicketVO> searchTickets(@Param("keyword") String keyword, Pageable pageable);
 }

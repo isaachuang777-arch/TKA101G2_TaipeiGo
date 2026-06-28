@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,200 +10,222 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/ticketCategory/ticketCategoryList.css}">
     <style>
-      
+
     </style>
 </head>
 
 <body>
 
-<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 
-<div class="main-wrap">
+    <div class="main-wrap">
 
-    <header class="topbar">
-        <div class="topbar-title">
-            <i class="bi bi-ticket-perforated me-2" style="color:var(--primary);"></i>
-            門票分類管理
-            <span>/ 分類列表</span>
-        </div>
+        <header class="topbar">
+            <div class="topbar-title">
+                <i class="bi bi-ticket-perforated me-2" style="color:var(--primary);"></i>
+                門票分類管理
+                <span>/ 分類列表</span>
+            </div>
 
-        <a class="btn-add" th:href="@{/backend/ticketCategory/addTicketCategory}">
-            <i class="bi bi-plus-lg"></i>
-            新增門票分類
-        </a>
-    </header>
+            <a class="btn-add" th:href="@{/backend/ticketCategory/addTicketCategory}">
+                <i class="bi bi-plus-lg"></i>
+                新增門票分類
+            </a>
+        </header>
 
-    <main class="content-area">
+        <main class="content-area">
 
-        <div class="alert-success-custom" th:if="${success}">
-            <i class="bi bi-check-circle-fill"></i>
-            <span th:text="${success}"></span>
-        </div>
+            <div class="alert-success-custom" th:if="${success}">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${success}"></span>
+            </div>
 
-        <!-- Stats Row -->
-        <div class="row stats-row g-3" th:if="${not #lists.isEmpty(ticketCategoryListData)}">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="bi bi-ticket-perforated-fill"></i>
+            <!-- Stats Row -->
+            <div class="row stats-row g-3" th:if="${totalCount > 0}">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-ticket-perforated-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">總分類數</div>
+                            <div class="stat-value" th:text="${totalCount}">
+                                0
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="stat-label">總分類數</div>
-                        <div class="stat-value"
-                             th:text="${#lists.size(ticketCategoryListData)}">
-                            0
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">啟用分類</div>
+                            <div class="stat-value" th:text="${activeCount}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">未啟用分類</div>
+                            <div class="stat-value" th:text="${inactiveCount}">
+                                0
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="bi bi-check-circle-fill"></i>
+            <div class="table-card">
+                <div class="table-card-header">
+                    <div class="table-card-title">
+                        <i class="bi bi-list-ul me-1" style="color:var(--primary);"></i>
+                        分類列表
+                        <span th:text="${'共 ' + pageResult.totalElements + ' 筆'}"></span>
                     </div>
-                    <div>
-                        <div class="stat-label">啟用分類</div>
-                        <div class="stat-value"
-                             th:text="${#lists.size(ticketCategoryListData.?[ticketCategoryStatus == 1])}">
-                            0
+
+                    <form th:action="@{/backend/ticketCategory/list}" method="get"
+                        class="search-bar d-flex align-items-center gap-1" style="max-width: 320px;">
+                        <div style="position: relative; flex-grow: 1;">
+                            <i class="bi bi-search"
+                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+                            <input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋分類名稱..."
+                                class="form-control"
+                                style="padding-left: 32px; border-radius: 8px; height: 36px; font-size: 0.85rem;">
                         </div>
+                        <button class="btn btn-primary btn-sm" type="submit"
+                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px;">搜尋</button>
+                        <a th:if="${keyword != null and keyword != ''}" th:href="@{/backend/ticketCategory/list}"
+                            class="btn btn-outline-secondary btn-sm"
+                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px; display: inline-flex; align-items: center; white-space: nowrap;">重置</a>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table custom-table" id="categoryTable">
+                        <thead>
+                            <tr>
+                                <th width="10%">#</th>
+                                <th width="25%">門票分類編號</th>
+                                <th width="35%">門票分類名稱</th>
+                                <th width="15%">狀態</th>
+                                <th width="15%" style="text-align:center;">操作</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:if="${ticketCategoryListData == null or ticketCategoryListData.isEmpty()}">
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <div>目前沒有任何門票分類資料</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:each="vo, iterStat : ${ticketCategoryListData}">
+                                <td style="color:#94a3b8; font-size:0.8rem;"
+                                    th:text="${currentPage * 10 + iterStat.index + 1}"></td>
+                                <td th:text="${vo.ticketCategoryId}"></td>
+                                <td>
+                                    <span class="fw-bold" style="color:#1e293b;"
+                                        th:text="${vo.ticketCategoryName}"></span>
+                                </td>
+                                <td>
+                                    <span th:if="${vo.ticketCategoryStatus == 1}" class="status-badge status-active">
+                                        <span class="status-dot"></span>
+                                        啟用
+                                    </span>
+
+                                    <span th:if="${vo.ticketCategoryStatus == 0}" class="status-badge status-inactive">
+                                        <span class="status-dot"></span>
+                                        未啟用
+                                    </span>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <div style="display:flex; gap:6px; justify-content:center;">
+                                        <form th:action="@{/backend/ticketCategory/getOne_For_Update}" method="post"
+                                            style="margin:0;">
+                                            <input type="hidden" name="ticketCategoryId"
+                                                th:value="${vo.ticketCategoryId}">
+                                            <button type="submit" class="action-btn btn-edit" title="修改">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </form>
+
+                                        <form th:action="@{/backend/ticketCategory/delete}" method="post"
+                                            style="margin:0;" onsubmit="return confirmDelete(this);">
+                                            <input type="hidden" name="ticketCategoryId"
+                                                th:value="${vo.ticketCategoryId}">
+                                            <button type="submit" class="action-btn btn-delete" title="刪除">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer" th:if="${totalPages > 0}">
+                    <div class="table-footer-info">
+                        共 <span th:text="${pageResult.totalElements}"></span> 筆資料，
+                        第 <span th:text="${currentPage + 1}"></span> 頁 /
+                        共 <span th:text="${totalPages}"></span> 頁
                     </div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="bi bi-x-circle-fill"></i>
-                    </div>
-                    <div>
-                        <div class="stat-label">未啟用分類</div>
-                        <div class="stat-value"
-                             th:text="${#lists.size(ticketCategoryListData.?[ticketCategoryStatus == 0])}">
-                            0
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-card">
-            <div class="table-card-header">
-                <div class="table-card-title">
-                    <i class="bi bi-list-ul me-1" style="color:var(--primary);"></i>
-                    分類列表
-                    <span th:text="${'共 ' + #lists.size(ticketCategoryListData) + ' 筆'}"></span>
-                </div>
-
-                <div class="search-bar">
-                    <i class="bi bi-search"></i>
-                    <input type="text" id="searchInput" placeholder="搜尋分類名稱..." class="form-control">
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table custom-table" id="categoryTable">
-                    <thead>
-                    <tr>
-                        <th width="10%">#</th>
-                        <th width="25%">門票分類編號</th>
-                        <th width="35%">門票分類名稱</th>
-                        <th width="15%">狀態</th>
-                        <th width="15%" style="text-align:center;">操作</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <tr th:if="${ticketCategoryListData == null or ticketCategoryListData.isEmpty()}">
-                        <td colspan="5">
-                            <div class="empty-state">
-                                <i class="bi bi-inbox"></i>
-                                <div>目前沒有任何門票分類資料</div>
-
-                                <a class="btn-add mt-3 d-inline-flex" th:href="@{/backend/ticketCategory/addTicketCategory}">
-                                    <i class="bi bi-plus-lg"></i>
-                                    新增第一筆門票分類
+                    <!-- 分頁 -->
+                    <nav th:if="${totalPages > 1}">
+                        <ul class="pagination pagination-sm mb-0">
+                            <!-- 上一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/ticketCategory/list(keyword=${keyword}, page=${currentPage - 1})}">
+                                    上一頁
                                 </a>
-                            </div>
-                        </td>
-                    </tr>
+                            </li>
 
-                    <tr th:each="vo, iterStat : ${ticketCategoryListData}">
-                        <td style="color:#94a3b8; font-size:0.8rem;" th:text="${iterStat.index + 1}"></td>
-                        <td th:text="${vo.ticketCategoryId}"></td>
-                        <td>
-                            <span class="fw-bold" style="color:#1e293b;" th:text="${vo.ticketCategoryName}"></span>
-                        </td>
-                        <td>
-                            <span th:if="${vo.ticketCategoryStatus == 1}"
-                                  class="status-badge status-active">
-                                <span class="status-dot"></span>
-                                啟用
-                            </span>
-                            
-                            <span th:if="${vo.ticketCategoryStatus == 0}"
-                                  class="status-badge status-inactive">
-                                <span class="status-dot"></span>
-                                未啟用
-                            </span>
-                        </td>
+                            <!-- 數字頁碼 -->
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:text="${i + 1}"
+                                    th:href="@{/backend/ticketCategory/list(keyword=${keyword}, page=${i})}"></a>
+                            </li>
 
-                        <td style="text-align:center;">
-                            <div style="display:flex; gap:6px; justify-content:center;">
-                                <form th:action="@{/backend/ticketCategory/getOne_For_Update}" method="post" style="margin:0;">
-                                    <input type="hidden" name="ticketCategoryId" th:value="${vo.ticketCategoryId}">
-                                    <button type="submit" class="action-btn btn-edit" title="修改">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                </form>
-
-                                <form th:action="@{/backend/ticketCategory/delete}" method="post" style="margin:0;"
-                                      onsubmit="return confirmDelete(this);">
-                                    <input type="hidden" name="ticketCategoryId" th:value="${vo.ticketCategoryId}">
-                                    <button type="submit" class="action-btn btn-delete" title="刪除">
-                                        <i class="bi bi-trash3"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="table-footer" th:if="${not #lists.isEmpty(ticketCategoryListData)}">
-                <div class="table-footer-info">
-                    共 <span th:text="${#lists.size(ticketCategoryListData)}"></span> 筆資料
+                            <!-- 下一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/ticketCategory/list(keyword=${keyword}, page=${currentPage + 1})}">
+                                    下一頁
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
-        </div>
 
-    </main>
-</div>
+        </main>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    const searchInput = document.getElementById('searchInput');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            const keyword = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#categoryTable tbody tr');
-
-            rows.forEach(row => {
-                if (row.querySelector('.empty-state')) return;
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(keyword) ? '' : 'none';
-            });
-        });
-    }
-
-    function confirmDelete(el) {
-        return confirm('確定要刪除此門票分類嗎？此操作無法復原。');
-    }
-</script>
+    <script>
+        function confirmDelete(el) {
+            return confirm('確定要刪除此門票分類嗎？此操作無法復原。');
+        }
+    </script>
 
 </body>
+
 </html>
