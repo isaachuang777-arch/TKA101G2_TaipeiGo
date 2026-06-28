@@ -112,7 +112,7 @@
                                                th:id="'cate-' + ${category.ticketCategoryId}">
                                         <label class="form-check-label text-dark" 
                                                th:for="'cate-' + ${category.ticketCategoryId}" 
-                                               th:text="${category.ticketCategoryName}">分類</label>
+                                               th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">分類</label>
                                     </div>
                                     <div th:if="${#lists.isEmpty(categoryList)}" class="text-muted small">
                                         <i class="bi bi-info-circle me-1"></i>請先至門票分類管理建立分類資料。

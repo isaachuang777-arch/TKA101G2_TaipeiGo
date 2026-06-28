@@ -3,7 +3,9 @@
     --sidebar-width: 260px;
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Noto Sans TC', sans-serif;
@@ -72,7 +74,7 @@ body {
     border-radius: 18px;
     padding: 28px 32px;
     margin-bottom: 24px;
-    box-shadow: 0 8px 24px rgba(26,34,54,0.18);
+    box-shadow: 0 8px 24px rgba(26, 34, 54, 0.18);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -91,7 +93,7 @@ body {
     height: 70px;
     border-radius: 12px;
     object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
 }
 
@@ -102,7 +104,7 @@ body {
 }
 
 .profile-sub {
-    color: rgba(255,255,255,0.72);
+    color: rgba(255, 255, 255, 0.72);
     font-size: 0.9rem;
 }
 
@@ -110,8 +112,8 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     color: #fff;
     border-radius: 10px;
     padding: 8px 14px;
@@ -123,7 +125,7 @@ body {
     background: #fff;
     border-radius: 14px;
     border: 1px solid #e8edf2;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     overflow: hidden;
     height: 100%;
 }
@@ -210,6 +212,11 @@ body {
     display: inline-block;
 }
 
+.category-badge.disabled {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
 /* 票價卡片區塊 */
 .price-card-group {
     background: #fcfdfe;
@@ -268,7 +275,9 @@ body {
     border: 2px solid transparent;
     transition: border .15s;
 }
-.thumb-gallery-img:hover, .thumb-gallery-img.active {
+
+.thumb-gallery-img:hover,
+.thumb-gallery-img.active {
     border-color: var(--primary);
 }
 
@@ -355,7 +364,17 @@ body {
 }
 
 @media (max-width: 768px) {
-    .main-wrap { margin-left: 0; }
-    .info-row { flex-direction: column; align-items: flex-start; gap: 4px; }
-    .info-label { width: auto; }
+    .main-wrap {
+        margin-left: 0;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .info-label {
+        width: auto;
+    }
 }
