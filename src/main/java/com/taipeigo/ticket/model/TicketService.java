@@ -308,9 +308,31 @@ public class TicketService {
 	}
 
 	/*
-	 * 檢查當下是否過期並更新 db
-	 * 1. 當會員開啟票券時
-	 * 2. 搜尋該序號時
+	 * 檢查已售出門票序號是否過期並更新 db
+	 * 檢查時機
+	 * 1.當會員開啟票券時
+	 * 2.搜尋該序號時
+	 * 3.後台查詢序號列表時
 	 */
+	@Transactional
+	public void checkAndUpdateExpiry(TicketSerialVO serial) {
+		// 狀態是已售出且未過期（status=2），檢查是否過期，若過期則更新狀態為過期（status=4）
+		if (serial != null && serial.getStatus() == 2 && serial.getExpiryDate() != null) {
+			if (serial.getExpiryDate().before(new Timestamp(System.currentTimeMillis()))) {
+				serial.setStatus(4); // 設定已過期
+				ticketSerialRepository.save(serial);
+			}
+		}
+	}
+
+	/* 更新多筆序號 */
+	@Transactional
+	public void checkAndUpdateExpiryList(List<TicketSerialVO> serialList) {
+		if (serialList != null) {
+			for (TicketSerialVO serial : serialList) {
+				checkAndUpdateExpiry(serial);
+			}
+		}
+	}
 
 }
