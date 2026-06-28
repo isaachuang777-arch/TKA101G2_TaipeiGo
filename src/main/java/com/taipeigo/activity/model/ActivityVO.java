@@ -71,6 +71,16 @@ public class ActivityVO implements Serializable {
 	@Transient
 	private Integer concessionPrice;
 
+	@Transient
+	public List<Integer> getSelectedCateIds() {
+		if (activityCateInfoVO == null || activityCateInfoVO.isEmpty()) {
+			return java.util.Collections.emptyList();
+		}
+		return activityCateInfoVO.stream()
+				.map(info -> info.getActivityCate().getActivityCateId())
+				.collect(java.util.stream.Collectors.toList());
+	}
+
 	public ActivityVO() {
 	}
 

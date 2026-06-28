@@ -125,6 +125,19 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                                             <option value="0" th:selected="${activityVO.activityStatus == 0}">已下架</option>
                                         </select>
                                     </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">活動類別標籤</label>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="form-check" th:each="cate : ${activityCateList}">
+                                                <input class="form-check-input" type="checkbox" name="cateIds" 
+                                                       th:value="${cate.activityCateId}" 
+                                                       th:id="'cate_' + ${cate.activityCateId}"
+                                                       th:checked="${#lists.contains(activityVO.selectedCateIds, cate.activityCateId)}">
+                                                <label class="form-check-label" th:for="'cate_' + ${cate.activityCateId}" th:text="${cate.cateName}"></label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- 右半部：圖片與行程明細 -->

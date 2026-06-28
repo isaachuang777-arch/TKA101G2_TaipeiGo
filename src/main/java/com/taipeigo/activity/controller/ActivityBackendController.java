@@ -91,6 +91,7 @@ public class ActivityBackendController {
             BindingResult result,
             @RequestParam(value = "ticketIds", required = false) List<Integer> ticketIds,
             @RequestParam(value = "upFiles", required = false) MultipartFile[] images,
+            @RequestParam(value = "cateIds", required = false) List<Integer> cateIds,
             Model model) {
 
         if (result.hasErrors()) {
@@ -99,7 +100,7 @@ public class ActivityBackendController {
         }
 
         try {
-            activityService.addActivity(activityVO, ticketIds, images);
+            activityService.addActivity(activityVO, ticketIds, images, cateIds);
         } catch (Exception e) {
 
             model.addAttribute("errorMessage", "新增失敗" + e.getMessage());
@@ -133,6 +134,7 @@ public class ActivityBackendController {
             @RequestParam(value = "ticketIds", required = false) List<Integer> ticketIds,
             @RequestParam(value = "upFiles", required = false) MultipartFile[] images, 
             @RequestParam(value = "deleteImageIds", required = false) List<Integer> deleteImageIds,
+            @RequestParam(value = "cateIds", required = false) List<Integer> cateIds,
             Model model) {
 
         if (result.hasErrors()) {
@@ -144,7 +146,7 @@ public class ActivityBackendController {
 
         try {
 
-            activityService.updateActivity(id, activityVO, ticketIds, images, deleteImageIds);
+            activityService.updateActivity(id, activityVO, ticketIds, images, deleteImageIds, cateIds);
         }
 
         catch (Exception e) {
