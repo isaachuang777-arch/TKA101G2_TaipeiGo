@@ -100,7 +100,7 @@ public class ActivityService {
 
     // ----------------- 後臺新增 -----------------
 
-    public void addActivity(ActivityVO activity, List<Integer> ticketIds, MultipartFile[] images) {
+    public void addActivity(ActivityVO activity, List<Integer> ticketIds, MultipartFile[] images, List<Integer> cateIds) {
 
         // 組合一日活動
 
@@ -123,9 +123,27 @@ public class ActivityService {
 
         activity.setActivityDetails(details);
 
+        // 處理活動類別標籤
+        if (cateIds != null && !cateIds.isEmpty()) {
+            List<ActivityCateInfoVO> cateInfoList = new ArrayList<>();
+            for (Integer cateId : cateIds) {
+                ActivityCateVO cateProxy = new ActivityCateVO();
+                cateProxy.setActivityCateId(cateId);
+
+                ActivityCateInfoVO infoVO = new ActivityCateInfoVO();
+                infoVO.setActivity(activity);
+                infoVO.setActivityCate(cateProxy);
+
+                cateInfoList.add(infoVO);
+            }
+            activity.setActivityCateInfoVO(cateInfoList);
+        }
+
         // 處理多張圖片上傳
 
         List<ActivityImageVO> imgList = new ArrayList<>();
+
+        System.out.println("====== DEBUG: addActivity received images length: " + (images != null ? images.length : "null") + " ======");
 
         if (images != null && images.length > 0 && !images[0].isEmpty()) {
 
@@ -141,6 +159,7 @@ public class ActivityService {
                     imageVO.setActivityImageSrc(fileUrl);
 
                     imgList.add(imageVO);
+                    System.out.println("====== DEBUG: Saved image: " + fileUrl + " ======");
 
                 }
             }
@@ -175,7 +194,7 @@ public class ActivityService {
 
             String extension = originalName.substring(originalName.lastIndexOf("."));
 
-            String newFileName = System.currentTimeMillis() + extension;
+            String newFileName = java.util.UUID.randomUUID().toString() + extension;
 
             File dest = new File(getUploadDir() + newFileName);
 
@@ -192,7 +211,7 @@ public class ActivityService {
     // ----------------- 後臺修改 -----------------
 
     public void updateActivity(Integer activityId, ActivityVO updatedActivity,
-            List<Integer> newTicketId, MultipartFile[] newImages, List<Integer> deleteImageIds) {
+            List<Integer> newTicketId, MultipartFile[] newImages, List<Integer> deleteImageIds, List<Integer> cateIds) {
 
         Optional<ActivityVO> box = activityRepo.findById(activityId);
 
@@ -328,6 +347,30 @@ public class ActivityService {
 
 
         }
+
+        // 修改活動類別標籤
+        List<ActivityCateInfoVO> oldCateInfoList = existActivityVO.getActivityCateInfoVO();
+        if (oldCateInfoList == null) {
+            oldCateInfoList = new ArrayList<>();
+            existActivityVO.setActivityCateInfoVO(oldCateInfoList);
+        } else {
+            // 清空舊的標籤 (因為有 orphanRemoval = true，Hibernate 會自動刪除對應的資料庫記錄)
+            oldCateInfoList.clear();
+        }
+
+        if (cateIds != null && !cateIds.isEmpty()) {
+            for (Integer cateId : cateIds) {
+                ActivityCateVO cateProxy = new ActivityCateVO();
+                cateProxy.setActivityCateId(cateId);
+
+                ActivityCateInfoVO infoVO = new ActivityCateInfoVO();
+                infoVO.setActivity(existActivityVO);
+                infoVO.setActivityCate(cateProxy);
+
+                oldCateInfoList.add(infoVO);
+            }
+        }
+
         activityRepo.save(existActivityVO);
 
     }

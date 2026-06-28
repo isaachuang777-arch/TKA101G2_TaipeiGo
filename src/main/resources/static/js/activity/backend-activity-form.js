@@ -38,6 +38,9 @@ function initDragAndDrop() {
     
     if (!dropZone || !fileInput || !previewContainer) return;
 
+    // 用來儲存所有選取的檔案
+    let selectedFiles = [];
+
     // 處理拖曳事件視覺回饋
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => {
@@ -55,11 +58,15 @@ function initDragAndDrop() {
         }, false);
     });
 
+    // 處理點擊觸發 file input
+    dropZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
     // 處理檔案放置
     dropZone.addEventListener('drop', (e) => {
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-            fileInput.files = files; // 將拖曳的檔案賦值給 input
             handleFiles(files);
         }
     });
@@ -70,14 +77,31 @@ function initDragAndDrop() {
     });
 
     function handleFiles(files) {
-        previewContainer.innerHTML = ''; // 清空預覽
-        
         if (files.length === 0) return;
 
-        // 轉換為 Array 並遍歷
-        Array.from(files).forEach((file, index) => {
-            if (!file.type.match('image.*')) return; // 只處理圖片
+        // 將新選擇的檔案加入到陣列中
+        Array.from(files).forEach(file => {
+            if (file.type.match('image.*')) {
+                selectedFiles.push(file);
+            }
+        });
 
+        updateFileInput();
+        renderPreviews();
+    }
+
+    // 更新 input[type="file"] 的 files (使用 DataTransfer)
+    function updateFileInput() {
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+    }
+
+    // 渲染預覽畫面
+    function renderPreviews() {
+        previewContainer.innerHTML = ''; // 清空重新渲染
+        
+        selectedFiles.forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function (e) {
                 const previewItem = document.createElement('div');
@@ -89,12 +113,13 @@ function initDragAndDrop() {
                     </button>
                 `;
                 
-                // 綁定移除按鈕 (注意：移除單一檔案在原生的 input[type="file"] 比較複雜，
-                // 這裡實作簡易版：點擊移除時，清空整個 input 要求重選，以確保資料正確性)
-                previewItem.querySelector('.remove-btn').addEventListener('click', function() {
-                    fileInput.value = ''; // 清空選擇
-                    previewContainer.innerHTML = ''; // 清空預覽
-                    alert('已清空所選圖片，請重新選擇或拖曳。');
+                // 綁定移除單張圖片按鈕
+                previewItem.querySelector('.remove-btn').addEventListener('click', function(event) {
+                    event.stopPropagation(); // 避免觸發 dropZone 點擊
+                    const idx = parseInt(this.getAttribute('data-index'));
+                    selectedFiles.splice(idx, 1); // 移除該檔案
+                    updateFileInput();
+                    renderPreviews(); // 重新渲染
                 });
 
                 previewContainer.appendChild(previewItem);

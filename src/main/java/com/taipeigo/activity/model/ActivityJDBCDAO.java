@@ -133,7 +133,7 @@ public class ActivityJDBCDAO {
 
         for (ActivityVO act : list) {
 
-            String imgSql = "SELECT ACTIVITY_IMAGE_SRC FROM ACTIVITY_IMAGE WHERE ACTIVITY_ID = ? LIMIT 1";
+            String imgSql = "SELECT ACTIVITY_IMAGE_SRC FROM ACTIVITY_IMAGE WHERE ACTIVITY_ID = ?";
 
             // jdbcTemplate 執行這段 SQL，回傳一個img的字串清單
 
@@ -143,10 +143,11 @@ public class ActivityJDBCDAO {
 
                 List<ActivityImageVO> imgList = new ArrayList<>();
 
-                ActivityImageVO imgVO = new ActivityImageVO();
-
-                imgVO.setActivityImageSrc(imgs.get(0));
-                imgList.add(imgVO);
+                for (String imgSrc : imgs) {
+                    ActivityImageVO imgVO = new ActivityImageVO();
+                    imgVO.setActivityImageSrc(imgSrc);
+                    imgList.add(imgVO);
+                }
 
                 act.setActivityImage(imgList);
             }
