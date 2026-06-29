@@ -235,11 +235,15 @@ public class TicketController {
         // 檢查過期狀態 + 更新 DB
         ticketService.checkAndUpdateExpiryList(pageResult.getContent());
 
-        // 計算總門票序號數、庫存中、已售出
+        // 計算總門票序號數、庫存中、已售出、已使用、已過期、已下架、已作廢
         List<TicketSerialVO> allSerialsList = ticketService.getAllTicketSerial();
         long totalCount = allSerialsList.size();
         long stockCount = allSerialsList.stream().filter(vo -> vo.getStatus() == 1).count();
         long soldCount = allSerialsList.stream().filter(vo -> vo.getStatus() == 2).count();
+        long usedCount = allSerialsList.stream().filter(vo -> vo.getStatus() == 3).count();
+        long expiredCount = allSerialsList.stream().filter(vo -> vo.getStatus() == 4).count();
+        long offMarketCount = allSerialsList.stream().filter(vo -> vo.getStatus() == 5).count();
+        long invalidCount = allSerialsList.stream().filter(vo -> vo.getStatus() == 6).count();
 
         model.addAttribute("activePage", "ticketSerial");
         model.addAttribute("pageResult", pageResult);
@@ -247,6 +251,10 @@ public class TicketController {
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("stockCount", stockCount);
         model.addAttribute("soldCount", soldCount);
+        model.addAttribute("usedCount", usedCount);
+        model.addAttribute("expiredCount", expiredCount);
+        model.addAttribute("offMarketCount", offMarketCount);
+        model.addAttribute("invalidCount", invalidCount);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pageResult.getTotalPages());
 

@@ -96,6 +96,11 @@ body {
     color: #f97316;
 }
 
+.stat-icon.red {
+    background: #fff1f2;
+    color: #dc2626;
+}
+
 .stat-label {
     font-size: 0.78rem;
     color: #94a3b8;
