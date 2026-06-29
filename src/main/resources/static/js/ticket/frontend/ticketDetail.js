@@ -180,11 +180,35 @@ createApp({
 
         // 處理立即購買
         const handleBuyNow = async () => {
+            if (!validateBooking()) return;
+
+            // 先把物件塞進 session storage (用 isBuyNow: true 去判斷要不要直接跳轉到結帳頁面)
+            sessionStorage.setItem('pendingCart', JSON.stringify({
+                ticketId: ticket.value.ticketId,
+                quantities: { ...quantities.value },
+                selectedDateParam: selectedDateParam.value,
+                isBuyNow: true
+            }));
+
+            // 接著檢查有沒有登入 (未登入會並導向登入頁)
             const loggedIn = await checkLogin();
             if (!loggedIn) return;
 
-            if (!validateBooking()) return;
-            // TODO: 串接 API
+            // 以下是有登入
+            // 檢查庫存，不夠的話就直接返回
+            const totalCount = quantities.value.adult + quantities.value.child + quantities.value.concession;
+            const hasStock = await checkStock(ticket.value.ticketId, totalCount);
+            if (!hasStock) return;
+
+            // 打加入購物車api 接著清理暫存後跳轉到結帳頁面
+            const items = prepareBookingItems();
+            const success = await addToCart(items);
+            if (success) {
+                sessionStorage.removeItem('pendingCart');
+                window.location.href = '/frontend/checkout';
+            } else {
+                alert('處理失敗，請稍後再試');
+            }
         };
 
         // 處理加入我的最愛 (切換我的最愛狀態)
@@ -252,6 +276,10 @@ createApp({
                 const items = prepareBookingItems();
                 const success = await addToCart(items);
                 if (success) {
+                    if (pendingCart.isBuyNow) {
+                        window.location.href = '/frontend/checkout';
+                        return;
+                    }
                     alert('成功加入購物車');
                     // 將畫面上的數量歸零
                     quantities.value.adult = 0;
