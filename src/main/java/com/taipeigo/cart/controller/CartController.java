@@ -51,7 +51,6 @@ public class CartController {
 	    return "OK";
 	}
 /*______★☆★★☆★★☆★★☆★☆★☆測試資料*/
-
 	@GetMapping("/shoppingCart")
 	public String shoppingCart(HttpSession session, Model model) {
 		/** 進入購物車前，先判斷是否登入，若未登入，就跳轉至登入頁 **/

@@ -18,58 +18,31 @@
     <div th:replace="~{frontend/index/header :: header}"></div>
 
     <div class="cart-page">
-
         <div class="cart-title">
             <h1>我的購物車</h1>
             <p>確認您選擇的旅遊商品</p>
         </div>
 
         <div class="cart-layout">
-
             <!-- 左側商品區 -->
             <div class="cart-left">
-
                 <div id="cartContainer">
-
                     <!-- JS 動態產生 -->
-
                 </div>
-
             </div>
 
             <!-- 右側摘要 -->
             <div class="cart-right">
-
                 <div class="summary-card">
-
                     <h2>訂單摘要</h2>
-
-                    <div class="summary-row">
-                        <span>商品數量</span>
-                        <span id="totalCount">0</span>
-                    </div>
-
-                    <div class="summary-row">
-                        <span>總金額</span>
-                        <span id="totalAmount">NT$0</span>
-                    </div>
-
+                    <div class="summary-row"> <span>商品數量</span> <span id="totalCount">0</span></div>
+                    <div class="summary-row"><span>總金額</span> <span id="totalAmount">NT$0</span></div>
                     <hr>
-
-                    <button id="checkoutBtn" class="checkout-btn">
-                        前往結帳
-                    </button>
-
-                    <button id="clearCartBtn" class="clear-btn">
-                        清空購物車
-                    </button>
-
+                    <button id="checkoutBtn" class="checkout-btn"> 前往結帳 </button>
+                    <button id="clearCartBtn" class="clear-btn"> 清空購物車</button>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <script th:src="@{/js/cart/shoppingCart.js}"></script>

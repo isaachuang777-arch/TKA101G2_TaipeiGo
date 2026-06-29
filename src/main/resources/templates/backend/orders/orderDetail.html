@@ -278,11 +278,6 @@
                 <div class="info-row">
                     <span class="info-label">訂單狀態：</span>
                     <select name="orderStatus">
-                        <option value="處理中"
-                            th:selected="${details[0].ordersVO.orderStatus == '處理中'}">
-                            處理中
-                        </option>
-
                         <option value="已完成" th:selected="${details[0].ordersVO.orderStatus == '已完成'}">已完成</option>
                         <option value="已取消" th:selected="${details[0].ordersVO.orderStatus == '已取消'}">已取消</option>
                     </select>
@@ -291,9 +286,8 @@
                 <div class="info-row">
                     <span class="info-label">付款狀態：</span>
                     <select name="paymentStatus">
-                        <option value="未付款"th:selected="${details[0].ordersVO.paymentStatus == '未付款'}">未付款</option>
                         <option value="已付款"th:selected="${details[0].ordersVO.paymentStatus == '已付款'}">已付款</option>
-                        <option value="退款"th:selected="${details[0].ordersVO.paymentStatus == '退款'}">退款</option>
+                        <option value="已退款"th:selected="${details[0].ordersVO.paymentStatus == '已退款'}">已退款</option>
                     </select>
                 </div>
 
