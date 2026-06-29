@@ -1,0 +1,89 @@
+<style>
+summary {
+    background-color: #f05a28; 
+    color: white; 
+    padding: 10px 15px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    margin-bottom: 10px; 
+}
+        #container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+</style>
+<H1 ><center>常見問題</center></H1>
+<div id="container"></div>
+<script>
+    //API網址
+     const apiUrl = '/FAQ/api/all'; 
+
+	//fetch(API).然後function是 return json格式
+    fetch(apiUrl).then(function(response) {
+            return response.json(); 
+            
+        }).then(function(faqList) {
+			//先做各個分類的空列陣
+           let groupedFaqs ={
+       		   "訂單與付款":[],
+       		   "票券使用":[],
+       		   "帳號與會員":[],
+       		   "活動與門票":[],
+        		"其他":[]
+			};
+			//做對照表
+        const categoryMap = {
+            1: "訂單與付款",
+            2: "票券使用",
+            3: "帳號與會員",
+            4: "活動與門票",
+            5: "其他"
+        };
+	//分類Loop
+	for (let i =0;i< faqList.length;i++){
+		//拿出faq
+		let faq = faqList[i];
+		//拿出分類的值
+		let catNum = faq.category;
+		//依對照表找到對應的陣列  分類名字 = 對照表[數字//用DB傳來的]
+		let categoryName= categoryMap[catNum];
+		//防呆 怕後端傳來6是會報錯 
+		//把faq塞進陣列
+		if(categoryName){
+			groupedFaqs[categoryName].push(faq);
+		}
+		}
+	//空白的Html
+	let htmlContent = '';
+	//用分類名字(categoryName)來loop 各已分類好的faq(groupedFaqs)
+	for(let categoryName in groupedFaqs){
+		//先把分類名字放進div 
+		htmlContent +=`
+		<div class ="faqcatblock">
+		<h3>${categoryName}</h3>
+		`;
+		//在分類裡的Faq
+		let faqsInCategory = groupedFaqs[categoryName];
+		
+		//用Loop把faq拿出來
+		for(let j = 0; j<faqsInCategory.length;j++){
+			let faq = faqsInCategory[j];
+			
+			//寫Html
+			htmlContent += 
+				` 
+				<details>
+				<summary>${faq.title}</summary>
+				<p>${faq.content}</p>
+				</details>
+				`;
+		}
+		htmlContent += `</div>`;
+	}
+	//放到一個叫container的id 
+        document.getElementById('container').innerHTML = htmlContent;
+    }).catch(function(error) {
+        console.log("發生錯誤了：", error);
+    });
+</script>

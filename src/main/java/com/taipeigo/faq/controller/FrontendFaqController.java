@@ -30,5 +30,8 @@ public class FrontendFaqController {
 		model.addAttribute("faqVO", faqVO);
 		return "frontend/faq/faq";
 }
-
+@GetMapping("/api")
+public String showfaqapipage(Model model) {
+	return "frontend/faq/api";
+}
 }

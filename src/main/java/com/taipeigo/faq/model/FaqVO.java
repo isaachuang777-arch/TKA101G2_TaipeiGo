@@ -35,6 +35,7 @@ public class FaqVO implements Serializable {
 	@NotNull(message = "請選擇FAQ分類")
 	@Column(name = "CATEGORY")
 	private Byte category;
+	//1=訂單與付款，2=票券使用，3=帳號與會員，4=活動與門票，5=其他
 	
 	@NotNull(message = "請輸入內容")
 	@Length(min = 1, max = 1000, message = "內容1000字以內")
