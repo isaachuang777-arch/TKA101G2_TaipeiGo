@@ -82,6 +82,7 @@ body {
 .stat-icon.blue { background: #eff6ff; color: #3b82f6; }
 .stat-icon.green { background: #f0fdf4; color: #22c55e; }
 .stat-icon.orange { background: #fff7ed; color: #f97316; }
+.stat-icon.red { background: #fff1f2; color: #dc2626; }
 
 .stat-label {
     font-size: 0.78rem;

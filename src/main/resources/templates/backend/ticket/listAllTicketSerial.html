@@ -9,18 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/ticket/backend/listAllTicket.css}">
-    <style>
-        .serial-code {
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 700;
-            background-color: #f8fafc;
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-            letter-spacing: 0.5px;
-            color: #1e293b;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/ticket/backend/listAllTicketSerial.css}">
 </head>
 
 <body>
@@ -55,46 +44,81 @@
             </div>
 
             <!-- Stats Row -->
-            <div class="row stats-row g-3" th:if="${totalCount > 0}">
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-icon blue">
-                            <i class="bi bi-upc-scan"></i>
-                        </div>
-                        <div>
-                            <div class="stat-label">總門票序號數</div>
-                            <div class="stat-value" th:text="${totalCount}">
-                                0
-                            </div>
-                        </div>
+            <div class="stats-grid" th:if="${totalCount > 0}">
+                <!-- 總門票序號 -->
+                <div class="stat-card-mini theme-total">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-upc-scan"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">總門票序號</div>
+                        <div class="stat-value-mini" th:text="${totalCount}">0</div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="bi bi-box-seam-fill"></i>
-                        </div>
-                        <div>
-                            <div class="stat-label">庫存中 / 可販售</div>
-                            <div class="stat-value" th:text="${stockCount}">
-                                0
-                            </div>
-                        </div>
+                <!-- 庫存中 / 可販售 (status = 1) -->
+                <div class="stat-card-mini theme-stock">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">在庫</div>
+                        <div class="stat-value-mini" th:text="${stockCount}">0</div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-icon orange">
-                            <i class="bi bi-bag-check-fill"></i>
-                        </div>
-                        <div>
-                            <div class="stat-label">已售出 / 使用中</div>
-                            <div class="stat-value" th:text="${soldCount}">
-                                0
-                            </div>
-                        </div>
+                <!-- 已售出 / 未使用 (status = 2) -->
+                <div class="stat-card-mini theme-sold">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-bag-check-fill"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">售出</div>
+                        <div class="stat-value-mini" th:text="${soldCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 已使用 (status = 3) -->
+                <div class="stat-card-mini theme-used">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">已使用</div>
+                        <div class="stat-value-mini" th:text="${usedCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 已過期 (status = 4) -->
+                <div class="stat-card-mini theme-expired">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">過期</div>
+                        <div class="stat-value-mini" th:text="${expiredCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 已下架 (status = 5) -->
+                <div class="stat-card-mini theme-off">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-dash-circle"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">下架</div>
+                        <div class="stat-value-mini" th:text="${offMarketCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 已作廢 (status = 6) -->
+                <div class="stat-card-mini theme-invalid">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-x-octagon-fill"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">作廢</div>
+                        <div class="stat-value-mini" th:text="${invalidCount}">0</div>
                     </div>
                 </div>
             </div>
@@ -136,8 +160,8 @@
                                 <th width="10%">購買會員</th>
                                 <th width="10%" class="text-center">關聯訂單</th>
                                 <th width="12%">使用期限</th>
-                                <th width="8%" class="text-center">狀態</th>
-                                <th style="min-width: 150px;" class="text-center">操作</th>
+                                <th style="min-width: 85px;" class="text-center">狀態</th>
+                                <th style="min-width: 85px;" class="text-center">操作</th>
                             </tr>
                         </thead>
 
@@ -197,13 +221,13 @@
                                     <span th:if="${serial.status == 2}" class="status-badge"
                                         style="background:#eff6ff; color:#3b82f6;">
                                         <span class="status-dot" style="background:#3b82f6;"></span>
-                                        已售出
+                                        售出
                                     </span>
 
                                     <!-- status == 3: 已使用 -->
                                     <span th:if="${serial.status == 3}" class="status-badge"
-                                        style="background:#f0fdf4; color:#16a34a;">
-                                        <span class="status-dot" style="background:#16a34a;"></span>
+                                        style="background:#f5f3ff; color:#7c3aed;">
+                                        <span class="status-dot" style="background:#7c3aed;"></span>
                                         已使用
                                     </span>
 
@@ -211,20 +235,20 @@
                                     <span th:if="${serial.status == 4}" class="status-badge"
                                         style="background:#fff7ed; color:#ea580c;">
                                         <span class="status-dot" style="background:#ea580c;"></span>
-                                        已過期
+                                        過期
                                     </span>
 
                                     <!-- status == 5: 已下架 -->
                                     <span th:if="${serial.status == 5}" class="status-badge status-inactive">
                                         <span class="status-dot"></span>
-                                        已下架
+                                        下架
                                     </span>
 
                                     <!-- status == 6: 已作廢 -->
                                     <span th:if="${serial.status == 6}" class="status-badge"
                                         style="background:#f1f5f9; color:#64748b;">
                                         <span class="status-dot" style="background:#64748b;"></span>
-                                        已作廢
+                                        作廢
                                     </span>
                                 </td>
                                 <td class="text-center">
@@ -233,7 +257,7 @@
                                         method="post" class="d-inline" style="margin:0;"
                                         onsubmit="return confirm('確定要將此門票序號下架嗎？');">
                                         <input type="hidden" name="ticketSerialId" th:value="${serial.ticketSerialId}">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger px-3 py-1"
+                                        <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1"
                                             style="border-radius: 6px; font-size: 13px; font-weight: 500;">
                                             <i class="bi bi-dash-circle me-1"></i>下架
                                         </button>

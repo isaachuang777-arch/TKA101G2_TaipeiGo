@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,274 +13,312 @@
 
 <body>
 
-<div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
 
-<div class="main-wrap">
+    <div class="main-wrap">
 
-    <header class="topbar">
-        <div class="topbar-title">
-            <i class="bi bi-ticket-perforated-fill me-2" style="color:var(--primary);"></i>
-            門票商品管理
-            <span>/ 商品列表</span>
-        </div>
+        <header class="topbar">
+            <div class="topbar-title">
+                <i class="bi bi-ticket-perforated-fill me-2" style="color:var(--primary);"></i>
+                門票商品管理
+                <span>/ 商品列表</span>
+            </div>
 
-        <a class="btn-add" th:href="@{/backend/ticket/addTicket}">
-            <i class="bi bi-plus-lg"></i>
-            新增門票商品
-        </a>
-    </header>
+            <a class="btn-add" th:href="@{/backend/ticket/addTicket}">
+                <i class="bi bi-plus-lg"></i>
+                新增門票商品
+            </a>
+        </header>
 
-    <main class="content-area">
+        <main class="content-area">
 
-        <div class="alert-success-custom" th:if="${success}">
-            <i class="bi bi-check-circle-fill"></i>
-            <span th:text="${success}"></span>
-        </div>
+            <div class="alert-success-custom" th:if="${success}">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${success}"></span>
+            </div>
 
-        <!-- Stats Row -->
-        <div class="row stats-row g-3" th:if="${totalCount > 0}">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="bi bi-ticket-perforated-fill"></i>
+            <!-- Stats Row -->
+            <div class="row stats-row g-3" th:if="${totalCount > 0}">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-ticket-perforated-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">總門票商品</div>
+                            <div class="stat-value" th:text="${totalCount}">
+                                0
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="stat-label">總門票商品</div>
-                        <div class="stat-value"
-                             th:text="${totalCount}">
-                            0
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">上架中</div>
+                            <div class="stat-value" th:text="${activeCount}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">已下架</div>
+                            <div class="stat-value" th:text="${inactiveCount}">
+                                0
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="bi bi-cloud-arrow-up-fill"></i>
+            <div class="table-card">
+                <div class="table-card-header">
+                    <div class="table-card-title">
+                        <i class="bi bi-list-ul me-1" style="color:var(--primary);"></i>
+                        門票商品列表
+                        <span th:text="${'共 ' + pageResult.totalElements + ' 筆'}"></span>
                     </div>
-                    <div>
-                        <div class="stat-label">上架中</div>
-                        <div class="stat-value"
-                             th:text="${activeCount}">
-                            0
+
+                    <form th:action="@{/backend/ticket/list}" method="get"
+                        class="search-bar d-flex align-items-center gap-1" style="max-width: 320px;">
+                        <div style="position: relative; flex-grow: 1;">
+                            <i class="bi bi-search"
+                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+                            <input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋門票名稱、分類..."
+                                class="form-control"
+                                style="padding-left: 32px; border-radius: 8px; height: 36px; font-size: 0.85rem;">
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="bi bi-cloud-arrow-down-fill"></i>
-                    </div>
-                    <div>
-                        <div class="stat-label">已下架</div>
-                        <div class="stat-value"
-                             th:text="${inactiveCount}">
-                            0
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-card">
-            <div class="table-card-header">
-                <div class="table-card-title">
-                    <i class="bi bi-list-ul me-1" style="color:var(--primary);"></i>
-                    門票商品列表
-                    <span th:text="${'共 ' + pageResult.totalElements + ' 筆'}"></span>
+                        <button class="btn btn-primary btn-sm" type="submit"
+                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px;">搜尋</button>
+                        <a th:if="${keyword != null and keyword != ''}" th:href="@{/backend/ticket/list}"
+                            class="btn btn-outline-secondary btn-sm"
+                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px; display: inline-flex; align-items: center; white-space: nowrap;">重置</a>
+                    </form>
                 </div>
 
-                <form th:action="@{/backend/ticket/list}" method="get" class="search-bar d-flex align-items-center gap-1" style="max-width: 320px;">
-                    <div style="position: relative; flex-grow: 1;">
-                        <i class="bi bi-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
-                        <input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋門票名稱、分類..." class="form-control" style="padding-left: 32px; border-radius: 8px; height: 36px; font-size: 0.85rem;">
-                    </div>
-                    <button class="btn btn-primary btn-sm" type="submit" style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px;">搜尋</button>
-                    <a th:if="${keyword != null and keyword != ''}" th:href="@{/backend/ticket/list}" class="btn btn-outline-secondary btn-sm" style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px; display: inline-flex; align-items: center; white-space: nowrap;">重置</a>
-                </form>
-            </div>
+                <div class="table-responsive">
+                    <table class="table custom-table" id="ticketTable">
+                        <thead>
+                            <tr>
+                                <th width="5%" class="text-center">#</th>
+                                <th width="28%">門票商品名稱與描述</th>
+                                <th width="12%">所屬分類</th>
+                                <th width="15%">地址</th>
+                                <th width="10%" class="text-center">可用庫存</th>
+                                <th width="15%" class="text-end">票種 售價 (原價)</th>
+                                <th width="8%" class="text-center">狀態</th>
+                                <th width="7%" class="text-center">操作</th>
+                            </tr>
+                        </thead>
 
-            <div class="table-responsive">
-                <table class="table custom-table" id="ticketTable">
-                    <thead>
-                    <tr>
-                        <th width="5%" class="text-center">#</th>
-                        <th width="28%">門票商品名稱與描述</th>
-                        <th width="12%">所屬分類</th>
-                        <th width="15%">地址</th>
-                        <th width="10%" class="text-center">可用庫存</th>
-                        <th width="15%" class="text-end">票種 售價 (原價)</th>
-                        <th width="8%" class="text-center">狀態</th>
-                        <th width="7%" class="text-center">操作</th>
-                    </tr>
-                    </thead>
+                        <tbody>
+                            <tr th:if="${ticketListData == null or ticketListData.isEmpty()}">
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <div>目前沒有任何門票商品資料</div>
 
-                    <tbody>
-                    <tr th:if="${ticketListData == null or ticketListData.isEmpty()}">
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <i class="bi bi-inbox"></i>
-                                <div>目前沒有任何門票商品資料</div>
+                                        <a class="btn-add mt-3 d-inline-flex" th:href="@{/backend/ticket/addTicket}">
+                                            <i class="bi bi-plus-lg"></i>
+                                            新增第一筆門票商品
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
 
-                                <a class="btn-add mt-3 d-inline-flex" th:href="@{/backend/ticket/addTicket}">
-                                    <i class="bi bi-plus-lg"></i>
-                                    新增第一筆門票商品
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                            <tr th:each="ticket, iterStat : ${ticketListData}">
+                                <td class="text-center" style="color:#94a3b8; font-size:0.8rem;"
+                                    th:text="${currentPage * 10 + iterStat.index + 1}"></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div th:if="${#lists.isEmpty(ticket.ticketImages)}"
+                                            class="no-image-placeholder me-3">
+                                            無圖片
+                                        </div>
 
-                    <tr th:each="ticket, iterStat : ${ticketListData}">
-                        <td class="text-center" style="color:#94a3b8; font-size:0.8rem;" th:text="${currentPage * 10 + iterStat.index + 1}"></td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div th:if="${#lists.isEmpty(ticket.ticketImages)}" class="no-image-placeholder me-3">
-                                    無圖片
-                                </div>
-                                
-                                <th:block th:if="${not #lists.isEmpty(ticket.ticketImages)}">
-                                    <img th:if="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
-                                         th:src="${ticket.ticketImages[0].ticketImageSrc}" 
-                                         class="me-3 ticket-cover shadow-sm" alt="網路封面">
-                                    
-                                    <img th:unless="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}" 
-                                         th:src="@{${ticket.ticketImages[0].ticketImageSrc}}" 
-                                         class="me-3 ticket-cover shadow-sm" alt="本機封面">
-                                </th:block>
-                                
-                                <div>
-                                    <div class="fw-bold text-dark mb-1" th:text="${ticket.ticketName}">門票名稱</div>
-                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 180px;" th:text="${ticket.ticketDescription}">描述...</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex flex-wrap gap-1">
-                                <span th:each="category : ${ticket.ticketCategories}" 
-                                      th:class="${category.ticketCategoryStatus == 1 ? 'category-badge' : 'category-badge disabled'}" 
-                                      th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">景點</span>
-                                <span th:if="${#lists.isEmpty(ticket.ticketCategories)}" class="text-muted small">未分類</span>
-                            </div>
-                        </td>
-                        <td class="text-muted small" th:text="${ticket.ticketAddress}">地址</td>
-                        <td class="text-center">
-                            <div class="d-flex align-items-center justify-content-center gap-2">
-                                <span class="text-dark fw-bold" th:text="${ticket.availableSerialCount}">0</span>
-                                <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" 
-                                        data-bs-toggle="modal" th:data-bs-target="'#generateSerialsModal' + ${ticket.ticketId}" 
-                                        style="border-radius: 6px; font-size: 11px; height: 20px; line-height: 18px;">
-                                    ＋ 新增
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-end">
-                            <div class="mb-1">
-                                <span class="ticket-type-label me-1">成人</span>
-                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.adultOriginalPrice}">$0</span>
-                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.adultPrice}">$0</span>
-                            </div>
-                            <div class="mb-1">
-                                <span class="ticket-type-label me-1">兒童</span>
-                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.childOriginalPrice}">$0</span>
-                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.childPrice}">$0</span>
-                            </div>
-                            <div>
-                                <span class="ticket-type-label me-1">優待</span>
-                                <span class="text-decoration-line-through text-muted small" th:text="'$' + ${ticket.concessionOriginalPrice}">$0</span>
-                                <span class="fw-bold text-danger ms-1" th:text="'$' + ${ticket.concessionPrice}">$0</span>
-                            </div>
-                        </td>
-                        <td class="text-center">
-                            <span th:if="${ticket.ticketStatus == 1}" class="status-badge status-active">
-                                <span class="status-dot"></span>
-                                上架中
-                            </span>
-                            
-                            <span th:if="${ticket.ticketStatus == 0}" class="status-badge status-inactive">
-                                <span class="status-dot"></span>
-                                已下架
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <div class="d-flex justify-content-center gap-1">
-                                <a th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticket.ticketId})}" class="action-btn btn-view" title="查看門票詳情">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                
-                                <form th:action="@{/backend/ticket/getOne_For_Update}" method="post" class="d-inline" style="margin:0;">
-                                    <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
-                                    <button type="submit" class="action-btn btn-edit" title="編輯門票">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                </form>
-                            </div>
+                                        <th:block th:if="${not #lists.isEmpty(ticket.ticketImages)}">
+                                            <img th:if="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}"
+                                                th:src="${ticket.ticketImages[0].ticketImageSrc}"
+                                                class="me-3 ticket-cover shadow-sm" alt="網路封面">
 
-                            <!-- Restock Modal -->
-                            <div class="modal fade" th:id="'generateSerialsModal' + ${ticket.ticketId}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-sm">
-                                    <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none;">
-                                        <form th:action="@{/backend/ticket/generateSerials}" method="post">
+                                            <img th:unless="${#strings.startsWith(ticket.ticketImages[0].ticketImageSrc, 'http')}"
+                                                th:src="@{${ticket.ticketImages[0].ticketImageSrc}}"
+                                                class="me-3 ticket-cover shadow-sm" alt="本機封面">
+                                        </th:block>
+
+                                        <div>
+                                            <div class="fw-bold text-dark mb-1" th:text="${ticket.ticketName}">門票名稱
+                                            </div>
+                                            <small class="text-muted text-truncate d-inline-block"
+                                                style="max-width: 180px;"
+                                                th:text="${ticket.ticketDescription}">描述...</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                 <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <th:block th:each="category : ${ticket.ticketCategories}">
+                                            <span th:if="${category.ticketCategoryStatus != 2}"
+                                                th:class="${category.ticketCategoryStatus == 1 ? 'category-badge' : 'category-badge disabled'}"
+                                                th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">景點</span>
+                                        </th:block>
+                                        <span th:if="${#lists.isEmpty(ticket.ticketCategories?.?[ticketCategoryStatus != 2])}"
+                                            class="text-muted small">未分類</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted small" th:text="${ticket.ticketAddress}">地址</td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <span class="text-dark fw-bold"
+                                            th:text="${ticket.availableSerialCount}">0</span>
+                                        <button type="button" class="btn btn-sm btn-outline-success py-0 px-2"
+                                            data-bs-toggle="modal"
+                                            th:data-bs-target="'#generateSerialsModal' + ${ticket.ticketId}"
+                                            style="border-radius: 6px; font-size: 11px; height: 20px; line-height: 18px;">
+                                            ＋ 新增
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <div class="mb-1">
+                                        <span class="ticket-type-label me-1">成人</span>
+                                        <span class="text-decoration-line-through text-muted small"
+                                            th:text="'$' + ${ticket.adultOriginalPrice}">$0</span>
+                                        <span class="fw-bold text-danger ms-1"
+                                            th:text="'$' + ${ticket.adultPrice}">$0</span>
+                                    </div>
+                                    <div class="mb-1">
+                                        <span class="ticket-type-label me-1">兒童</span>
+                                        <span class="text-decoration-line-through text-muted small"
+                                            th:text="'$' + ${ticket.childOriginalPrice}">$0</span>
+                                        <span class="fw-bold text-danger ms-1"
+                                            th:text="'$' + ${ticket.childPrice}">$0</span>
+                                    </div>
+                                    <div>
+                                        <span class="ticket-type-label me-1">優待</span>
+                                        <span class="text-decoration-line-through text-muted small"
+                                            th:text="'$' + ${ticket.concessionOriginalPrice}">$0</span>
+                                        <span class="fw-bold text-danger ms-1"
+                                            th:text="'$' + ${ticket.concessionPrice}">$0</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span th:if="${ticket.ticketStatus == 1}" class="status-badge status-active">
+                                        <span class="status-dot"></span>
+                                        上架
+                                    </span>
+
+                                    <span th:if="${ticket.ticketStatus == 0}" class="status-badge status-inactive">
+                                        <span class="status-dot"></span>
+                                        下架
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticket.ticketId})}"
+                                            class="action-btn btn-view" title="查看門票詳情">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <form th:action="@{/backend/ticket/getOne_For_Update}" method="post"
+                                            class="d-inline" style="margin:0;">
                                             <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
-                                            <div class="modal-header" style="background: #f8fafc; border-bottom: 1px solid var(--border);">
-                                                <h6 class="modal-title fw-bold text-start">新增門票序號</h6>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body p-3">
-                                                <label class="form-label small fw-bold text-secondary mb-1">新增張數</label>
-                                                <input type="number" name="quantity" class="form-control form-control-sm text-center" value="10" min="1" max="500" required>
-                                            </div>
-                                            <div class="modal-footer p-2" style="background: #f8fafc; border-top: 1px solid var(--border);">
-                                                <button type="button" class="btn btn-sm btn-link text-muted text-decoration-none small" data-bs-dismiss="modal">取消</button>
-                                                <button type="submit" class="btn btn-sm btn-success px-3" style="border-radius: 6px;">新增</button>
-                                            </div>
+                                            <button type="submit" class="action-btn btn-edit" title="編輯門票">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
                                         </form>
                                     </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
 
-            <div class="table-footer" th:if="${totalPages > 0}">
-                <div class="table-footer-info">
-                    共 <span th:text="${pageResult.totalElements}"></span> 筆資料，
-                    第 <span th:text="${currentPage + 1}"></span> 頁 /
-                    共 <span th:text="${totalPages}"></span> 頁
+                                    <!-- Restock Modal -->
+                                    <div class="modal fade" th:id="'generateSerialsModal' + ${ticket.ticketId}"
+                                        tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                                            <div class="modal-content"
+                                                style="border-radius: 14px; overflow: hidden; border: none;">
+                                                <form th:action="@{/backend/ticket/generateSerials}" method="post">
+                                                    <input type="hidden" name="ticketId" th:value="${ticket.ticketId}">
+                                                    <div class="modal-header"
+                                                        style="background: #f8fafc; border-bottom: 1px solid var(--border);">
+                                                        <h6 class="modal-title fw-bold text-start">新增門票序號</h6>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body p-3">
+                                                        <label
+                                                            class="form-label small fw-bold text-secondary mb-1">新增張數</label>
+                                                        <input type="number" name="quantity"
+                                                            class="form-control form-control-sm text-center" value="10"
+                                                            min="1" max="500" required>
+                                                    </div>
+                                                    <div class="modal-footer p-2"
+                                                        style="background: #f8fafc; border-top: 1px solid var(--border);">
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-link text-muted text-decoration-none small"
+                                                            data-bs-dismiss="modal">取消</button>
+                                                        <button type="submit" class="btn btn-sm btn-success px-3"
+                                                            style="border-radius: 6px;">新增</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <nav th:if="${totalPages > 1}">
-                    <ul class="pagination pagination-sm mb-0">
-                        <!-- 上一頁 -->
-                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                            <a class="page-link" th:href="@{/backend/ticket/list(keyword=${keyword}, page=${currentPage - 1})}">
-                                上一頁
-                            </a>
-                        </li>
+                <div class="table-footer" th:if="${totalPages > 0}">
+                    <div class="table-footer-info">
+                        共 <span th:text="${pageResult.totalElements}"></span> 筆資料，
+                        第 <span th:text="${currentPage + 1}"></span> 頁 /
+                        共 <span th:text="${totalPages}"></span> 頁
+                    </div>
 
-                        <!-- 數字頁碼 -->
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
-                            <a class="page-link" th:text="${i + 1}" th:href="@{/backend/ticket/list(keyword=${keyword}, page=${i})}"></a>
-                        </li>
+                    <nav th:if="${totalPages > 1}">
+                        <ul class="pagination pagination-sm mb-0">
+                            <!-- 上一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/ticket/list(keyword=${keyword}, page=${currentPage - 1})}">
+                                    上一頁
+                                </a>
+                            </li>
 
-                        <!-- 下一頁 -->
-                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{/backend/ticket/list(keyword=${keyword}, page=${currentPage + 1})}">
-                                下一頁
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                            <!-- 數字頁碼 -->
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:text="${i + 1}"
+                                    th:href="@{/backend/ticket/list(keyword=${keyword}, page=${i})}"></a>
+                            </li>
+
+                            <!-- 下一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/ticket/list(keyword=${keyword}, page=${currentPage + 1})}">
+                                    下一頁
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

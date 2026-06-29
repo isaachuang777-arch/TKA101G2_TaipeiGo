@@ -90,14 +90,15 @@
                             <div class="info-row">
                                 <div class="info-label">所屬分類</div>
                                 <div class="info-value">
-                                    <div class="d-flex flex-wrap gap-1">
-                                        <span th:each="category : *{ticketCategories}"
-                                            th:class="${category.ticketCategoryStatus == 1 ? 'category-badge' : 'category-badge disabled'}"
-                                            th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">景點
-                                        </span>
-                                        <span th:if="${#lists.isEmpty(ticketVO.ticketCategories)}"
-                                            class="text-muted small">未分類</span>
-                                    </div>
+                                     <div class="d-flex flex-wrap gap-1">
+                                         <th:block th:each="category : *{ticketCategories}">
+                                             <span th:if="${category.ticketCategoryStatus != 2}"
+                                                 th:class="${category.ticketCategoryStatus == 1 ? 'category-badge' : 'category-badge disabled'}"
+                                                 th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">景點</span>
+                                         </th:block>
+                                         <span th:if="${#lists.isEmpty(ticketVO.ticketCategories?.?[ticketCategoryStatus != 2])}"
+                                             class="text-muted small">未分類</span>
+                                     </div>
                                 </div>
                             </div>
 
@@ -109,15 +110,15 @@
                             </div>
 
                             <div class="info-row">
-                                <div class="info-label">上架狀態</div>
+                                <div class="info-label">門票狀態</div>
                                 <div class="info-value">
                                     <span th:if="*{ticketStatus == 1}" class="status-badge status-active">
                                         <span class="status-dot"></span>
-                                        上架中
+                                        上架
                                     </span>
                                     <span th:if="*{ticketStatus == 0}" class="status-badge status-inactive">
                                         <span class="status-dot"></span>
-                                        已下架
+                                        下架
                                     </span>
                                 </div>
                             </div>

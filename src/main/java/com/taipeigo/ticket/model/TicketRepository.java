@@ -34,11 +34,11 @@ public interface TicketRepository extends JpaRepository<TicketVO, Integer> {
        @Query(value = "from TicketVO order by ticketId asc")
        Page<TicketVO> findAllTickets(Pageable pageable);
 
-       // 模糊搜尋門票 (搜尋門票名稱或分類名稱) （分頁）
+       // 模糊搜尋門票 (搜尋門票名稱或分類名稱) （分頁）（不會顯示已被刪除門票分類的結果）
        @Query("SELECT DISTINCT t FROM TicketVO t " +
                      "LEFT JOIN t.ticketCategories c " +
                      "WHERE t.ticketName LIKE concat('%', :keyword, '%') " +
-                     "OR c.ticketCategoryName LIKE concat('%', :keyword, '%') " +
+                     "OR (c.ticketCategoryName LIKE concat('%', :keyword, '%') AND c.ticketCategoryStatus != 2) " +
                      "ORDER BY t.ticketId ASC")
        Page<TicketVO> searchTickets(@Param("keyword") String keyword, Pageable pageable);
 }
