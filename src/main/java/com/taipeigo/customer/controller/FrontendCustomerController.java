@@ -257,7 +257,10 @@ public class FrontendCustomerController {
 
             // 更新 Session
             session.setAttribute("loginCustomer", db);
-
+            
+            // 讓本次畫面也使用更新後的會員資料
+            model.addAttribute("loginCustomer", db);
+            
             model.addAttribute("successMessage", "個人資料更新成功");
 
         } catch (Exception e) {
