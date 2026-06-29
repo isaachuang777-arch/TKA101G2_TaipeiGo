@@ -72,7 +72,90 @@ createApp({
             alert('請先登入會員！');
             const currentUrl = window.location.href;
             window.location.href = `../auth/login?redirect=${encodeURIComponent(currentUrl)}`;
-            return false;
+        };
+
+        // 檢查庫存是否足夠
+        const checkStock = async (ticketId, quantity) => {
+            try {
+                const stockRes = await fetch(`/api/tickets/checkStock?ticketId=${ticketId}&quantity=${quantity}`);
+                if (stockRes.ok) {
+                    const stockData = await stockRes.json();
+                    if (stockData.status === 'success') {
+                        if (stockData.data) {
+                            return true;
+                        } else {
+                            alert('庫存不足，無法加入購物車');
+                            return false;
+                        }
+                    }
+                }
+                alert('檢查庫存失敗，請稍後再試');
+                return false;
+            } catch (err) {
+                alert('檢查庫存發生錯誤，請稍後再試');
+                return false;
+            }
+        };
+
+        // 呼叫 API 將商品加入購物車
+        const addToCart = async (items) => {
+            try {
+                let allSuccess = true;
+                for (const item of items) {
+                    const res = await fetch('/frontend/cart/insertCart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(item)
+                    });
+                    if (res.ok) {
+                        const resultText = await res.text();
+                        if (resultText !== 'success') {
+                            allSuccess = false;
+                        }
+                    } else {
+                        allSuccess = false;
+                    }
+                }
+                return allSuccess;
+            } catch (err) {
+                // console.error('加入購物車發生錯誤:', err);
+                return false;
+            }
+        };
+
+        // 整理已選擇的門票資料
+        const prepareBookingItems = () => {
+            const items = [];
+            if (quantities.value.adult > 0) {
+                items.push({
+                    productId: ticket.value.ticketId,
+                    productQuantity: quantities.value.adult,
+                    expiryDate: `${selectedDateParam.value}T23:59:59`,
+                    productType: 'TICKET',
+                    spec: 'ADULT'
+                });
+            }
+            if (quantities.value.child > 0) {
+                items.push({
+                    productId: ticket.value.ticketId,
+                    productQuantity: quantities.value.child,
+                    expiryDate: `${selectedDateParam.value}T23:59:59`,
+                    productType: 'TICKET',
+                    spec: 'CHILD'
+                });
+            }
+            if (quantities.value.concession > 0) {
+                items.push({
+                    productId: ticket.value.ticketId,
+                    productQuantity: quantities.value.concession,
+                    expiryDate: `${selectedDateParam.value}T23:59:59`,
+                    productType: 'TICKET',
+                    spec: 'CONCESSION'
+                });
+            }
+            return items;
         };
 
         // 處理加入購物車
@@ -81,9 +164,30 @@ createApp({
             if (!loggedIn) return;
 
             if (!validateBooking()) return;
-            alert(`驗證成功！\n已選擇日期：${selectedDateParam.value}\n成人票：${quantities.value.adult} 張\n兒童票：${quantities.value.child} 張\n優待票：${quantities.value.concession} 張\n總張數：${totalTicketsCount.value} 張，總金額：NT$ ${totalPriceAmount.value.toLocaleString()} 元。`);
-            // TODO: 串接 API
 
+            // 檢查庫存是否足夠
+            const hasStock = await checkStock(ticket.value.ticketId, totalTicketsCount.value);
+            if (!hasStock) return;
+
+            // 整理已選擇的門票資料
+            const items = prepareBookingItems();
+
+            // 呼叫 API 將商品加入購物車
+            const success = await addToCart(items);
+            if (success) {
+                alert('成功加入購物車');
+                // 重置畫面上數量
+                quantities.value.adult = 0;
+                quantities.value.child = 0;
+                quantities.value.concession = 0;
+
+                // 更新 header 購物車數量
+                if (typeof loadCartCount === "function") {
+                    loadCartCount();
+                }
+            } else {
+                alert('加入購物車失敗，請稍後再試');
+            }
         };
 
         // 處理立即購買
@@ -92,9 +196,7 @@ createApp({
             if (!loggedIn) return;
 
             if (!validateBooking()) return;
-            alert(`驗證成功！\n已選擇日期：${selectedDateParam.value}\n成人票：${quantities.value.adult} 張\n兒童票：${quantities.value.child} 張\n優待票：${quantities.value.concession} 張\n總張數：${totalTicketsCount.value} 張，總金額：NT$ ${totalPriceAmount.value.toLocaleString()} 元。`);
             // TODO: 串接 API
-            // addToFavorite
         };
 
         // 處理加入我的最愛 (切換我的最愛狀態)
