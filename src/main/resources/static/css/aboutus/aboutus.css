@@ -1,0 +1,192 @@
+.aboutus-main {
+    background-color: #fff;
+    color: #333;
+    font-family: "Microsoft JhengHei", sans-serif;
+    position: relative;
+    min-height: calc(100vh - 72px);
+}
+
+.aboutus-content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Unified Top Background (Fixes the white gap) */
+.aboutus-top-bg {
+    background-color: #f9f9f9;
+    padding: 6rem 0 5rem;
+}
+
+/* Hero Section */
+.aboutus-hero {
+    text-align: center;
+}
+
+.aboutus-hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.aboutus-hero p {
+    font-size: 18px;
+    color: #666;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+/* Metrics Section */
+.aboutus-metrics-section {
+    margin-top: 4rem;
+}
+
+.aboutus-metrics {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.aboutus-metric-box {
+    text-align: center;
+    padding: 30px 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    min-width: 220px;
+    max-width: 300px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.aboutus-metric-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.aboutus-metric-box h3 {
+    font-size: 48px;
+    color: #f05a28; /* TaipeiGO Primary */
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+.aboutus-metric-box p {
+    font-size: 18px;
+    color: #555;
+    font-weight: bold;
+}
+
+/* Common Section Title */
+.aboutus-section-title {
+    font-size: 32px;
+    margin-bottom: 40px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Guarantees Section */
+.aboutus-guarantees {
+    background-color: #fff;
+    padding: 5rem 0;
+}
+
+.aboutus-guarantees-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.aboutus-guarantee-card {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    border: 1px solid #eaeaea;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.aboutus-guarantee-card:hover {
+    box-shadow: 0 15px 30px rgba(240, 90, 40, 0.08);
+    border-color: rgba(240, 90, 40, 0.2);
+    transform: translateY(-5px);
+}
+
+.aboutus-guarantee-card h4 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: 700;
+}
+
+.aboutus-guarantee-card p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Reviews Section */
+.aboutus-reviews {
+    padding: 5rem 0;
+    background: #fafafa;
+}
+
+.aboutus-reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.aboutus-review-card {
+    background: #fff;
+    padding: 35px 30px;
+    border-radius: 16px;
+    border-left: 5px solid #f05a28;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+}
+
+.aboutus-review-text {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.aboutus-review-author {
+    font-size: 14px;
+    color: #888;
+    text-align: right;
+}
+
+.aboutus-review-author strong {
+    color: #333;
+}
+
+/* Apple-style Scroll Reveal Animation */
+.reveal-item {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.reveal-item.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Optional sequential delays for elements in a row */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+
+@media (max-width: 768px) {
+    .aboutus-top-bg { padding: 4rem 0 3rem; }
+    .aboutus-hero h1 { font-size: 32px; }
+    .aboutus-metric-box { min-width: 100%; }
+}
