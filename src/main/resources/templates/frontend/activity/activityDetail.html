@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh-tw.js"></script>
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/index/header.css}">
+    <link rel="stylesheet" th:href="@{/css/index/footer.css}">
     <link rel="stylesheet" th:href="@{/css/activity/activityDetail.css}">
 </head>
 
@@ -153,11 +153,12 @@
                     共 <span style="color: #ff5b00; font-size: 20px;">NT$ <span id="totalPriceAmount">0</span></span> 元
                 </div>
                 <div class="action-buttons-group" style="display: flex; gap: 12px; align-items: center; position: relative; z-index: 11;">
+                    <span id="bookingErrorMsg" style="color: #ff4d4f; font-size: 14px; font-weight: bold; margin-right: 8px; opacity: 0; transition: opacity 0.8s ease-in-out; pointer-events: none;"></span>
                     <!-- 正常模式：可點擊的按鈕 -->
                     <th:block th:if="${param.preview == null || param.preview[0] != 'true'}">
-                        <a href="#" id="addToCartBtn" class="btn-cart" onclick="return validateBooking(event)" 
+                        <a href="#" id="addToCartBtn" class="btn-cart" onclick="return validateBooking(event, 'cart')" 
                            style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #fff; color: #ff5b00; border: 1px solid #ff5b00; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box;">加入購物車</a>
-                        <a href="#" id="bookingBtn" class="btn-booking" onclick="return validateBooking(event)" 
+                        <a href="#" id="bookingBtn" class="btn-booking" onclick="return validateBooking(event, 'buyNow')" 
                            style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #ff5b00; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box; border: 1px solid #ff5b00;">立即購買</a>
                     </th:block>
 
@@ -208,6 +209,11 @@
         <div th:replace="~{frontend/index/footer :: footer}"></div>
     </th:block>
 
+    <script th:inline="javascript">
+        const contextPath = /*[[@{/}]]*/ '/';
+        const isUserLoggedIn = /*[[${session.loginCustomer != null}]]*/ false;
+    </script>
+    <script th:src="@{/js/index/header.js}"></script>
     <script th:src="@{/js/activity/activityDetail.js}"></script>
 </body>
 

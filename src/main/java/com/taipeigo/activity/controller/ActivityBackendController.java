@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.taipeigo.activity.model.ActivityCateService;
+import com.taipeigo.activity.model.ActivityCateVO;
 import com.taipeigo.activity.model.ActivityService;
 import com.taipeigo.activity.model.ActivityVO;
 
@@ -27,11 +30,13 @@ import jakarta.validation.Valid;
 public class ActivityBackendController {
 
     private final ActivityService activityService;
+    private final ActivityCateService activeCate;
 
     @Autowired
-    public ActivityBackendController(ActivityService activityService) {
+    public ActivityBackendController(ActivityService activityService, ActivityCateService activeCate) {
 
         this.activityService = activityService;
+        this.activeCate = activeCate;
     }
 
     // 讓所有此 Controller 的頁面都能拿到 activityCateList (為了左側搜尋欄下拉選單)
@@ -179,5 +184,49 @@ public class ActivityBackendController {
             }
             
         }
+
+    
+    // 分類管理的 AJAX 跟 API 
+
+    @GetMapping("api/cate/list")
+    @ResponseBody
+    public ResponseEntity<List<ActivityCateVO>> getAllcateAPI(){
+
+        List<ActivityCateVO> list = activeCate.getAllCategories();
+        return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/api/cate/save")
+    @ResponseBody
+    public ResponseEntity<?> saveCateAPI(@Valid @RequestBody ActivityCateVO cate, BindingResult result){
+
+        if(result.hasErrors()){
+
+            String errorMsg = result.getFieldError().getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMsg);
+        }
+
+        ActivityCateVO savedCate = activeCate.saveCategory(cate);
+        return ResponseEntity.ok(savedCate);
+    }
+
+    @PostMapping("/api/cate/toggle/{id}")
+    @ResponseBody
+    public ResponseEntity<?> toggleCateAPI (@PathVariable("id") Integer id){
+
+        ActivityCateVO updatedCate = activeCate.toggleCateStatus(id);
+
+        if(updatedCate == null) {
+
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updatedCate);
+    }
+
+
+
+
+
 
 }

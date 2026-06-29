@@ -131,9 +131,14 @@ body {
             
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="h4 mb-0 fw-bold">所有活動</h2>
-                <a th:href="@{/backend/activity/add}" class="btn btn-primary shadow-sm">
-                    <i class="bi bi-plus-lg me-1"></i> 新增活動
-                </a>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary shadow-sm me-2" onclick="openCategoryModal()">
+                        <i class="bi bi-tags me-1"></i> 管理分類標籤
+                    </button>
+                    <a th:href="@{/backend/activity/add}" class="btn btn-primary shadow-sm">
+                        <i class="bi bi-plus-lg me-1"></i> 新增活動
+                    </a>
+                </div>
             </div>
 
             <div class="row">
@@ -328,6 +333,31 @@ body {
       </div>
     </div>
 
+    <!-- 分類管理 Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header bg-light py-3">
+            <h5 class="modal-title fs-6 fw-bold text-dark"><i class="bi bi-tags-fill me-2 text-primary"></i>管理活動分類</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0" style="max-height: 50vh; overflow-y: auto;">
+            <!-- 分類列表 -->
+            <ul class="list-group list-group-flush" id="categoryListContainer">
+                <li class="list-group-item text-center text-muted py-4">載入中...</li>
+            </ul>
+          </div>
+          <div class="modal-footer bg-light d-flex flex-column align-items-start p-3">
+            <div class="input-group w-100">
+                <input type="text" class="form-control" id="newCategoryName" placeholder="輸入新分類名稱...">
+                <button class="btn btn-primary px-4 fw-bold" type="button" onclick="saveCategory(null)"><i class="bi bi-plus-lg me-1"></i>新增</button>
+            </div>
+            <div id="categoryErrorMsg" class="text-danger small mt-2 w-100 fw-bold" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 核心 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/activity/backend-list.js}"></script>
@@ -350,16 +380,148 @@ body {
         // 處理翻頁的函數
         function goToPage(pageNumber) {
             let pageInput = document.getElementById('pageInput');
-            
-            // 1. 把藏在 form 裡面的隱藏欄位值，改成目標頁碼
             pageInput.value = pageNumber;
-            
-            // 2. 「只有在點擊分頁按鈕時」，動態賦予它 name="page" 讓它可以被送出去
             pageInput.name = 'page';
-            
-            // 3. 直接送出整個搜尋表單 (保留所有搜尋條件)
             document.getElementById('searchForm').submit();
         }
+
+        // ==========================================
+        // 分類管理 Modal 邏輯
+        // ==========================================
+        const categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
+
+        function openCategoryModal() {
+            document.getElementById('categoryErrorMsg').style.display = 'none';
+            document.getElementById('newCategoryName').value = '';
+            loadCategories();
+            categoryModal.show();
+        }
+
+        // 載入所有分類
+        function loadCategories() {
+            const container = document.getElementById('categoryListContainer');
+            container.innerHTML = '<li class="list-group-item text-center text-muted py-4"><div class="spinner-border text-primary spinner-border-sm me-2"></div>載入中...</li>';
+
+            fetch('/backend/activity/api/cate/list')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        container.innerHTML = '<li class="list-group-item text-center text-muted py-4">目前無任何分類</li>';
+                        return;
+                    }
+
+                    container.innerHTML = '';
+                    data.forEach(cate => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center py-3';
+                        li.innerHTML = `
+                            <div class="d-flex align-items-center flex-grow-1 me-3">
+                                <input type="text" class="form-control border-0 bg-transparent fw-bold" 
+                                       id="cateInput-${cate.activityCateId}" value="${cate.cateName}" 
+                                       onchange="saveCategory(${cate.activityCateId}, this.value, ${cate.isActive})"
+                                       title="點擊編輯名稱，修改完點擊空白處自動儲存">
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span id="cateBadge-${cate.activityCateId}" class="badge ${cate.isActive === 1 ? 'bg-success' : 'bg-secondary'} me-3">
+                                    ${cate.isActive === 1 ? '上架中' : '已停用'}
+                                </span>
+                                <div class="form-check form-switch m-0 d-flex align-items-center" title="切換上架狀態">
+                                    <input class="form-check-input mt-0 fs-5" style="cursor: pointer; margin-left: 0;" type="checkbox" role="switch" 
+                                           ${cate.isActive === 1 ? 'checked' : ''} 
+                                           onchange="toggleCategoryStatus(${cate.activityCateId})">
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching categories:', error);
+                    container.innerHTML = '<li class="list-group-item text-center text-danger py-4">載入失敗，請稍後再試</li>';
+                });
+        }
+
+        // 新增或修改分類
+        function saveCategory(id, nameValue = null, isActive = 1) {
+            const errorMsgEl = document.getElementById('categoryErrorMsg');
+            errorMsgEl.style.display = 'none';
+
+            let cateName = '';
+            if (id === null) {
+                // 新增模式
+                const inputEl = document.getElementById('newCategoryName');
+                cateName = inputEl.value.trim();
+                if (!cateName) return; // 空白不送出
+            } else {
+                // 修改模式
+                cateName = nameValue.trim();
+                if (!cateName) {
+                    loadCategories(); // 如果使用者清空，則重新載入還原
+                    return;
+                }
+            }
+
+            const payload = { cateName: cateName, isActive: isActive };
+            if (id !== null) payload.activityCateId = id;
+
+            fetch('/backend/activity/api/cate/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (id === null) {
+                    document.getElementById('newCategoryName').value = ''; // 清空新增框
+                }
+                loadCategories(); // 重新載入列表
+            })
+            .catch(error => {
+                errorMsgEl.textContent = error.message;
+                errorMsgEl.style.display = 'block';
+                if (id !== null) {
+                    loadCategories(); // 修改失敗還原文字
+                }
+            });
+        }
+
+        // 切換分類啟用狀態
+        function toggleCategoryStatus(id) {
+            fetch('/backend/activity/api/cate/toggle/' + id, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('狀態切換失敗');
+                return response.json();
+            })
+            .then(data => {
+                // 成功後，不重新載入全部列表，只針對當前的 Badge 改變顏色與文字，這樣就不會閃爍！
+                const badgeEl = document.getElementById('cateBadge-' + id);
+                if (badgeEl) {
+                    if (data.isActive === 1) {
+                        badgeEl.className = 'badge bg-success me-3';
+                        badgeEl.textContent = '上架中';
+                    } else {
+                        badgeEl.className = 'badge bg-secondary me-3';
+                        badgeEl.textContent = '已停用';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                loadCategories(); // 只有切換失敗（遇到 Bug 時）才重新載入以還原 Switch 狀態
+            });
+        }
+        
+        // Modal 關閉時，如果分類有變動，重新整理頁面以更新側邊的「搜尋分類下拉選單」
+        document.getElementById('categoryModal').addEventListener('hidden.bs.modal', function () {
+            window.location.reload();
+        });
     </script>
 </body>
 </html>

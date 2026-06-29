@@ -187,6 +187,18 @@ function showSlides(n) {
 function toggleFavorite(event, button) {
     event.stopPropagation();
     
+    if (typeof isUserLoggedIn !== 'undefined' && !isUserLoggedIn) {
+        const pendingAction = {
+            action: 'favorite',
+            activityId: typeof activityId !== 'undefined' ? activityId : null
+        };
+        sessionStorage.setItem('pendingActivityAction', JSON.stringify(pendingAction));
+        
+        const currentUrl = window.location.pathname + window.location.search;
+        window.location.href = contextPath + "auth/login?redirect=" + encodeURIComponent(currentUrl);
+        return;
+    }
+    
     button.classList.toggle('active');
     const icon = button.querySelector('i');
     
@@ -299,19 +311,180 @@ function updateTotalAndPrice() {
 }
 
 // 點擊預訂與購物車時的防呆驗證
-function validateBooking(event) {
+function validateBooking(event, action = 'cart', isAutoTrigger = false) {
+    const errorMsgSpan = document.getElementById('bookingErrorMsg');
+    if (errorMsgSpan) {
+        // 先重置透明度，但不清空文字，避免排版跳動
+        errorMsgSpan.style.opacity = '0';
+    }
+
     const total = parseInt(document.getElementById('totalTicketsCount').innerText) || 0;
     if (total === 0) {
-        alert("請至少選擇一個方案並增加數量！");
+        if (!isAutoTrigger) {
+            if (errorMsgSpan) {
+                errorMsgSpan.style.color = '#ff4d4f';
+                errorMsgSpan.innerText = "請至少選擇一個方案並增加數量";
+                errorMsgSpan.style.opacity = '1';
+            } else {
+                alert("請至少選擇一個方案並增加數量！");
+            }
+        }
         return false;
     }
     
     if (!selectedDateParam) {
-        alert("請選擇預計啟用日期！");
+        if (!isAutoTrigger) {
+            if (errorMsgSpan) {
+                errorMsgSpan.style.color = '#ff4d4f';
+                errorMsgSpan.innerText = "請選擇預計啟用日期";
+                errorMsgSpan.style.opacity = '1';
+            } else {
+                alert("請選擇預計啟用日期！");
+            }
+        }
         return false;
     }
 
-    // 未來此處串接加入購物車 API
-    alert(`成功！\n活動 ID：${activityId}\n日期：${selectedDateParam}\n總票數：${total}張`);
+    if (typeof isUserLoggedIn !== 'undefined' && !isUserLoggedIn) {
+        const pendingAction = {
+            action: action,
+            activityId: typeof activityId !== 'undefined' ? activityId : null,
+            selectedDateParam: selectedDateParam,
+            qtyAdult: document.getElementById('qtyAdult') ? document.getElementById('qtyAdult').value : 0,
+            qtyChild: document.getElementById('qtyChild') ? document.getElementById('qtyChild').value : 0,
+            qtyConcession: document.getElementById('qtyConcession') ? document.getElementById('qtyConcession').value : 0
+        };
+        sessionStorage.setItem('pendingActivityAction', JSON.stringify(pendingAction));
+        
+        const currentUrl = window.location.pathname + window.location.search;
+        window.location.href = contextPath + "auth/login?redirect=" + encodeURIComponent(currentUrl);
+        return false;
+    }
+
+    // 這裡我們要把選擇的票種，逐一發送給後端加入購物車
+    const specs = [
+        { type: "ADULT", qty: parseInt(document.getElementById('qtyAdult') ? document.getElementById('qtyAdult').value : 0) || 0 },
+        { type: "CHILD", qty: parseInt(document.getElementById('qtyChild') ? document.getElementById('qtyChild').value : 0) || 0 },
+        { type: "CONCESSION", qty: parseInt(document.getElementById('qtyConcession') ? document.getElementById('qtyConcession').value : 0) || 0 }
+    ];
+
+    let successCount = 0;
+    
+    // 透過 Promise.all 確保所有發送都完成
+    const promises = specs
+        .filter(specInfo => specInfo.qty > 0)
+        .map(specInfo => {
+            const cartVO = {
+                productId: activityId,
+                productType: 'ACTIVITY', // 告訴後端這是活動
+                productQuantity: specInfo.qty,
+                spec: specInfo.type, // ADULT, CHILD, 或 CONCESSION
+                // Spring Boot 的 LocalDateTime 通常需要 ISO 格式的字串 (YYYY-MM-DDTHH:mm:ss)
+                expiryDate: selectedDateParam + "T00:00:00" 
+            };
+
+            return fetch(contextPath + 'frontend/cart/insertCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cartVO)
+            }).then(response => {
+                if (response.ok) {
+                    successCount++;
+                } else {
+                    console.error("加入購物車失敗: " + specInfo.type);
+                }
+            });
+        });
+
+    Promise.all(promises).then(() => {
+        if (successCount > 0) {
+            if (action === 'buyNow') {
+                window.location.href = contextPath + "frontend/cart/shoppingCart"; 
+            } else {
+                if (errorMsgSpan) {
+                    errorMsgSpan.style.color = '#10b981'; // 綠色
+                    errorMsgSpan.innerText = "已將選取的方案加入購物車";
+                    errorMsgSpan.style.opacity = '1';
+                    
+                    // 3 秒後自動隱藏成功訊息
+                    setTimeout(() => {
+                        errorMsgSpan.style.opacity = '0';
+                        // 等待動畫結束後清空文字 (0.8s = 800ms)
+                        setTimeout(() => {
+                            if (errorMsgSpan.style.opacity === '0') {
+                                errorMsgSpan.innerText = '';
+                            }
+                        }, 800);
+                    }, 3000);
+                } else {
+                    alert(`已將選取的方案加入購物車`);
+                }
+                
+                if (typeof loadCartCount === 'function') {
+                    loadCartCount();
+                }
+            }
+        } else {
+            if (errorMsgSpan) {
+                errorMsgSpan.style.color = '#ff4d4f';
+                errorMsgSpan.innerText = "加入購物車時發生錯誤，請稍後再試！";
+                errorMsgSpan.style.opacity = '1';
+            } else {
+                alert("加入購物車時發生錯誤，請稍後再試！");
+            }
+        }
+    }).catch(error => {
+        console.error("發生錯誤:", error);
+        alert("網路錯誤，無法加入購物車");
+    });
+
     return false; // 暫時防止 a 連結跳轉
 }
+
+// 自動執行登入前的未完成操作
+window.addEventListener('DOMContentLoaded', () => {
+    if (typeof isUserLoggedIn !== 'undefined' && isUserLoggedIn) {
+        const pendingStr = sessionStorage.getItem('pendingActivityAction');
+        if (pendingStr) {
+            try {
+                const pendingAction = JSON.parse(pendingStr);
+                
+                // 確認這真的是同一個活動，以免跑到別的活動頁面觸發
+                if (pendingAction.activityId === (typeof activityId !== 'undefined' ? activityId : null)) {
+                    
+                    if (pendingAction.action === 'favorite') {
+                        const favBtn = document.querySelector('.favorite-btn-klook');
+                        if (favBtn) {
+                            toggleFavorite(new Event('click'), favBtn);
+                        }
+                    } 
+                    else if (pendingAction.action === 'booking' || pendingAction.action === 'cart' || pendingAction.action === 'buyNow') {
+                        // 恢復狀態
+                        selectedDateParam = pendingAction.selectedDateParam;
+                        if (document.getElementById('openCalendarBtn')) {
+                            document.getElementById('openCalendarBtn').innerText = selectedDateParam;
+                        }
+                        
+                        if (document.getElementById('qtyAdult')) document.getElementById('qtyAdult').value = pendingAction.qtyAdult;
+                        if (document.getElementById('qtyChild')) document.getElementById('qtyChild').value = pendingAction.qtyChild;
+                        if (document.getElementById('qtyConcession')) document.getElementById('qtyConcession').value = pendingAction.qtyConcession;
+                        
+                        updateTotalAndPrice();
+                        
+                        // 延遲一點點執行，確保畫面已經更新完畢
+                        setTimeout(() => {
+                            validateBooking(new Event('click'), pendingAction.action === 'booking' ? 'cart' : pendingAction.action, true);
+                        }, 500);
+                    }
+                }
+            } catch (e) {
+                console.error("解析 pendingActivityAction 失敗", e);
+            } finally {
+                // 不管成功失敗都清掉，避免無限循環
+                sessionStorage.removeItem('pendingActivityAction');
+            }
+        }
+    }
+});

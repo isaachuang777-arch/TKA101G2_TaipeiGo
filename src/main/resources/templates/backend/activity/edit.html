@@ -50,6 +50,29 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
 }
 .topbar-title { font-size: 1.1rem; font-weight: 700; color: #1a2236; }
 .content-area { padding: 32px 40px 32px 80px; flex: 1; }
+
+.custom-tag-btn {
+    border: 1px dashed #9ca3af;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    color: #4b5563;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    margin: 0;
+    font-weight: 500;
+    font-size: 14px;
+    display: inline-block;
+}
+.custom-tag-btn:hover {
+    background-color: #f3f4f6;
+}
+.btn-check:checked + .custom-tag-btn {
+    background-color: #e0f2fe;
+    border-color: #38bdf8;
+    color: #0284c7;
+    border-style: dashed;
+}
 </style>
 </head>
 <body>
@@ -71,7 +94,13 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
         <div class="content-area">
             
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="h4 mb-0 fw-bold">修改活動</h2>
+                <div class="d-flex align-items-center">
+                    <h2 class="h4 mb-0 fw-bold me-2">修改活動</h2>
+                    <div class="form-check form-switch mb-0 d-flex align-items-center ms-3">
+                        <input class="form-check-input fs-5 m-0" style="cursor: pointer;" type="checkbox" role="switch" id="statusSwitch" th:checked="${activityVO.activityStatus == 1}">
+                        <label th:class="'form-check-label ms-2 fw-bold mb-0 ' + (${activityVO.activityStatus == 1} ? 'text-primary' : 'text-secondary')" style="cursor: pointer; padding-top: 2px;" for="statusSwitch" id="statusLabel" th:text="${activityVO.activityStatus == 1} ? '上架中' : '已下架'"></label>
+                    </div>
+                </div>
                 <a th:href="@{/backend/activity}" class="btn btn-outline-secondary shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i> 返回列表
                 </a>
@@ -91,91 +120,37 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                             
                             <!-- 隱藏的 ID 欄位 -->
                             <input type="hidden" name="activityId" th:value="${activityVO.activityId}">
+                            <!-- 隱藏的狀態欄位 -->
+                            <input type="hidden" name="activityStatus" id="hiddenActivityStatus" th:value="${activityVO.activityStatus != null ? activityVO.activityStatus : 0}">
 
                             <div class="row g-4">
+                                <!-- 左半部：基本資訊 -->
                                 <!-- 左半部：基本資訊 -->
                                 <div class="col-md-6">
                                     <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-info-circle me-2 text-primary"></i>基本資訊</h5>
                                     
-                                    <div class="mb-3">
-                                        <label for="activityName" class="form-label">活動名稱 <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="activityName" name="activityName" th:value="${activityVO.activityName}" required>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="activityName" class="form-label">活動名稱 <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="activityName" name="activityName" th:value="${activityVO.activityName}" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="expiryDate" class="form-label">可使用天數 <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="expiryDate" name="expiryDate" th:value="${activityVO.expiryDate}" min="1" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="discount" class="form-label">折扣金額 <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="discount" name="discount" th:value="${activityVO.discount}" min="0" required>
+                                        </div>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label for="activityDesc" class="form-label">活動描述</label>
                                         <textarea class="form-control" id="activityDesc" name="activityDesc" rows="4" th:text="${activityVO.activityDesc}"></textarea>
                                     </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-6 mb-3">
-                                            <label for="expiryDate" class="form-label">有效天數 <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="expiryDate" name="expiryDate" th:value="${activityVO.expiryDate}" min="1" required>
-                                        </div>
-                                        <div class="col-6 mb-3">
-                                            <label for="discount" class="form-label">折扣金額 <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="discount" name="discount" th:value="${activityVO.discount}" min="0" required>
-                                        </div>
-                                    </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">上下架狀態</label>
-                                        <select class="form-select" name="activityStatus">
-                                            <option value="1" th:selected="${activityVO.activityStatus == 1}">上架中</option>
-                                            <option value="0" th:selected="${activityVO.activityStatus == 0}">已下架</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">活動類別標籤</label>
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <div class="form-check" th:each="cate : ${activityCateList}">
-                                                <input class="form-check-input" type="checkbox" name="cateIds" 
-                                                       th:value="${cate.activityCateId}" 
-                                                       th:id="'cate_' + ${cate.activityCateId}"
-                                                       th:checked="${#lists.contains(activityVO.selectedCateIds, cate.activityCateId)}">
-                                                <label class="form-check-label" th:for="'cate_' + ${cate.activityCateId}" th:text="${cate.cateName}"></label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 右半部：圖片與行程明細 -->
-                                <div class="col-md-6">
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-image me-2 text-primary"></i>活動圖片</h5>
-                                    
-                                    <!-- 拖曳上傳區 -->
-                                    <div class="mb-2">
-                                        <div class="upload-drop-zone" id="uploadDropZone">
-                                            <input type="file" name="upFiles" id="upFiles" class="file-input-hidden" multiple accept="image/*">
-                                            <i class="bi bi-cloud-arrow-up"></i>
-                                            <h5>拖曳圖片至此處上傳</h5>
-                                            <p>或點擊選擇檔案 (若不修改請保持空白)</p>
-                                        </div>
-                                        <div id="previewContainer" class="preview-container"></div>
-                                    </div>
-
-                                    <!-- 原有圖片展示 -->
-                                    <div class="mb-4">
-                                        <label class="form-label text-muted small">
-                                            <i class="bi bi-clock-history me-1"></i>現有圖片
-                                            <span id="deleteMessage" class="text-danger fw-bold ms-2" style="display: none;">已標記刪除，點擊儲存後生效</span>
-                                        </label>
-                                        <div class="existing-images" th:if="${activityVO.activityImage != null && !activityVO.activityImage.isEmpty()}">
-                                            <div class="existing-image-item" th:each="img : ${activityVO.activityImage}">
-                                                <img th:src="@{${img.activityImageSrc}}" alt="Activity Image">
-                                                <button type="button" class="remove-btn existing-remove-btn" title="刪除此圖片" th:data-img-id="${img.activityImageId}">
-                                                    <i class="bi bi-x-lg"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div th:unless="${activityVO.activityImage != null && !activityVO.activityImage.isEmpty()}" class="text-muted small">
-                                            尚無圖片
-                                        </div>
-                                    </div>
-
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-geo-alt me-2 text-primary"></i>包含行程明細</h5>
-                                    <div class="ticket-list-container">
+                                    <h5 class="fw-bold mb-3 border-bottom pb-2 mt-4"><i class="bi bi-geo-alt me-2 text-primary"></i>一日活動明細</h5>
+                                    <div class="ticket-list-container mb-4">
                                         <div id="ticketListContainer">
                                             
                                             <!-- 如果沒有明細，預設給一個空的 -->
@@ -216,6 +191,56 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                                             <i class="bi bi-plus-circle me-1"></i> 新增下一站行程
                                         </button>
                                     </div>
+                                    
+                                </div>
+
+                                <!-- 右半部：圖片與標籤 -->
+                                <div class="col-md-6">
+
+                                    <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-image me-2 text-primary"></i>活動圖片</h5>
+
+                                    <!-- 拖曳上傳區 -->
+                                    <div class="mb-4">
+                                        <div class="upload-drop-zone" id="uploadDropZone">
+                                            <input type="file" name="upFiles" id="upFiles" class="file-input-hidden" multiple accept="image/*">
+                                            <i class="bi bi-cloud-arrow-up"></i>
+                                            <h5>拖曳圖片至此處上傳</h5>
+                                            <p>或點擊選擇檔案 (若不修改請保持空白)</p>
+                                        </div>
+                                        <div id="previewContainer" class="preview-container"></div>
+                                    </div>
+
+                                    <!-- 原有圖片展示 -->
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small">
+                                            <i class="bi bi-clock-history me-1"></i>現有圖片
+                                            <span id="deleteMessage" class="text-danger fw-bold ms-2" style="display: none;">已標記刪除，點擊儲存後生效</span>
+                                        </label>
+                                        <div class="existing-images" th:if="${activityVO.activityImage != null && !activityVO.activityImage.isEmpty()}">
+                                            <div class="existing-image-item" th:each="img : ${activityVO.activityImage}">
+                                                <img th:src="@{${img.activityImageSrc}}" alt="Activity Image">
+                                                <button type="button" class="remove-btn existing-remove-btn" title="刪除此圖片" th:data-img-id="${img.activityImageId}">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div th:unless="${activityVO.activityImage != null && !activityVO.activityImage.isEmpty()}" class="text-muted small">
+                                            尚無圖片
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3 mt-4">
+                                        <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-tags me-2 text-primary"></i>活動類別標籤</h5>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div th:each="cate : ${activityCateList}">
+                                                <input class="btn-check" type="checkbox" name="cateIds" autocomplete="off"
+                                                       th:value="${cate.activityCateId}"
+                                                       th:id="'cate_' + ${cate.activityCateId}"
+                                                       th:checked="${#lists.contains(activityVO.selectedCateIds, cate.activityCateId)}">
+                                                <label class="custom-tag-btn" th:for="'cate_' + ${cate.activityCateId}" th:text="${cate.cateName}"></label>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>
@@ -238,6 +263,28 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSwitch = document.getElementById('statusSwitch');
+            const hiddenStatus = document.getElementById('hiddenActivityStatus');
+            const statusLabel = document.getElementById('statusLabel');
+
+            if (statusSwitch) {
+                statusSwitch.addEventListener('change', function() {
+                    const isChecked = this.checked;
+                    hiddenStatus.value = isChecked ? '1' : '0';
+                    
+                    if(isChecked) {
+                        statusLabel.textContent = '上架中';
+                        statusLabel.className = 'form-check-label ms-2 fw-bold text-primary mb-0';
+                    } else {
+                        statusLabel.textContent = '已下架';
+                        statusLabel.className = 'form-check-label ms-2 fw-bold text-secondary mb-0';
+                    }
+                });
+            }
+        });
+    </script>
     <script th:src="@{/js/activity/backend-activity-form.js}"></script>
 </body>
 </html>
