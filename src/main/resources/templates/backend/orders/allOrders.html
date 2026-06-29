@@ -311,8 +311,14 @@ tbody tr:last-child td {
 			<!-- 訂單編號查詢 -->
 			<form th:action="@{/backend/orders/search_ordersId}" method="post">
 				<div class="search-group">
-					<label>訂單編號</label> <input type="text" name="ordersId"
-						placeholder="請輸入訂單編號">
+					<input
+					    type="text"
+					    name="ordersId"
+					    placeholder="請輸入訂單編號"
+					    maxlength="6"
+					    inputmode="numeric"
+					    autocomplete="off"
+					    oninput="onlyNumber(this)">
 					<button type="submit" class="search-btn">查詢</button>
 				</div>
 			</form>
@@ -320,7 +326,14 @@ tbody tr:last-child td {
 			<!-- 會員編號查詢 -->
 			<form th:action="@{/backend/orders/search_custId}" method="post">
 				<div class="search-group">
-					<label>會員編號</label> <input type="text" name="custId" placeholder="請輸入會員編號">
+					<input
+					    type="text"
+					    name="custId"
+					    placeholder="請輸入會員編號"
+					    maxlength="6"
+					    inputmode="numeric"
+					    autocomplete="off"
+					    oninput="onlyNumber(this)">
 					<button type="submit" class="search-btn">查詢</button>
 				</div>
 			</form>
@@ -383,5 +396,13 @@ tbody tr:last-child td {
 				</li>
 			</ul>
 		</div>
+		<script>
+			function onlyNumber(input) {
+			    // 去除前後空白
+			    input.value = input.value.trim();
+			    // 只保留數字
+			    input.value = input.value.replace(/\D/g, "");
+			}
+		</script>
 </body>
 </html>

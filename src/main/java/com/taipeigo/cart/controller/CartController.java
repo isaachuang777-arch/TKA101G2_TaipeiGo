@@ -34,23 +34,7 @@ public class CartController {
 	public String cartHome() {
 		return "redirect:/frontend/cart/shoppingCart";
 	}
-/*______★☆★★☆★★☆★★☆★☆★☆測試資料*/
-	@GetMapping("/testInsert")
-	@ResponseBody
-	public String testInsert(HttpSession session){
 
-	    CartVO cart = new CartVO();
-	    cart.setProductId(1);
-	    cart.setProductType("TICKET");
-	    cart.setProductQuantity(2);
-	    cart.setExpiryDate(LocalDateTime.parse("2026-07-01T00:00:00"));
-	    cart.setSpec("ADULT");
-
-	    cartService.insertCart(cart, session);
-
-	    return "OK";
-	}
-/*______★☆★★☆★★☆★★☆★☆★☆測試資料*/
 	@GetMapping("/shoppingCart")
 	public String shoppingCart(HttpSession session, Model model) {
 		/** 進入購物車前，先判斷是否登入，若未登入，就跳轉至登入頁 **/
