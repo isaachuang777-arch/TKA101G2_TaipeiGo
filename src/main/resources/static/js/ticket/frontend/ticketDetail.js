@@ -4,6 +4,7 @@ createApp({
     setup() {
         const ticket = ref({});
         const isLoaded = ref(false);
+        const hasStock = ref(true);
 
         // 我的最愛
         const isFavorite = ref(false);
@@ -75,7 +76,7 @@ createApp({
         };
 
         // 檢查庫存是否足夠
-        const checkStock = async (ticketId, quantity) => {
+        const checkStock = async (ticketId, quantity, showAlert = true) => {
             try {
                 const stockRes = await fetch(`/api/tickets/checkStock?ticketId=${ticketId}&quantity=${quantity}`);
                 if (stockRes.ok) {
@@ -84,15 +85,15 @@ createApp({
                         if (stockData.data) {
                             return true;
                         } else {
-                            alert('庫存不足，無法加入購物車');
+                            if (showAlert) alert('庫存不足，無法加入購物車');
                             return false;
                         }
                     }
                 }
-                alert('檢查庫存失敗，請稍後再試');
+                if (showAlert) alert('檢查庫存失敗，請稍後再試');
                 return false;
             } catch (err) {
-                alert('檢查庫存發生錯誤，請稍後再試');
+                if (showAlert) alert('檢查庫存發生錯誤，請稍後再試');
                 return false;
             }
         };
@@ -160,34 +161,21 @@ createApp({
 
         // 處理加入購物車
         const handleAddToCart = async () => {
+            if (!validateBooking()) return;
+
+            // 先把物件塞進 session storage
+            sessionStorage.setItem('pendingCart', JSON.stringify({
+                ticketId: ticket.value.ticketId,
+                quantities: { ...quantities.value },
+                selectedDateParam: selectedDateParam.value
+            }));
+
+            // 接著檢查有沒有登入 (未登入會自動提示並導向登入頁)
             const loggedIn = await checkLogin();
             if (!loggedIn) return;
 
-            if (!validateBooking()) return;
-
-            // 檢查庫存是否足夠
-            const hasStock = await checkStock(ticket.value.ticketId, totalTicketsCount.value);
-            if (!hasStock) return;
-
-            // 整理已選擇的門票資料
-            const items = prepareBookingItems();
-
-            // 呼叫 API 將商品加入購物車
-            const success = await addToCart(items);
-            if (success) {
-                alert('成功加入購物車');
-                // 重置畫面上數量
-                quantities.value.adult = 0;
-                quantities.value.child = 0;
-                quantities.value.concession = 0;
-
-                // 更新 header 購物車數量
-                if (typeof loadCartCount === "function") {
-                    loadCartCount();
-                }
-            } else {
-                alert('加入購物車失敗，請稍後再試');
-            }
+            // 已登入，直接交給 handlePendingCart 處理自動加入購物車與清理暫存
+            await handlePendingCart(ticket.value.ticketId);
         };
 
         // 處理立即購買
@@ -231,6 +219,58 @@ createApp({
             }
         };
 
+        // 處理未完成的購物車暫存 (加入購物車)
+        const handlePendingCart = async (ticketId) => {
+            const pendingCartStr = sessionStorage.getItem('pendingCart');
+            if (!pendingCartStr) return;
+
+            try {
+                const pendingCart = JSON.parse(pendingCartStr);
+                if (String(pendingCart.ticketId) !== String(ticketId)) return;
+
+                // 還原畫面上的數量與日期
+                quantities.value.adult = pendingCart.quantities.adult || 0;
+                quantities.value.child = pendingCart.quantities.child || 0;
+                quantities.value.concession = pendingCart.quantities.concession || 0;
+                selectedDateParam.value = pendingCart.selectedDateParam;
+
+                // 檢查使用者是否已登入 
+                const res = await fetch('../api/auth/me');
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (!data.login) return;
+
+                // 確認庫存
+                const totalCount = quantities.value.adult + quantities.value.child + quantities.value.concession;
+                if (totalCount <= 0) return;
+
+                const hasStock = await checkStock(ticketId, totalCount);
+                if (!hasStock) return;
+
+                // 呼叫加入購物車 API
+                const items = prepareBookingItems();
+                const success = await addToCart(items);
+                if (success) {
+                    alert('成功加入購物車');
+                    // 將畫面上的數量歸零
+                    quantities.value.adult = 0;
+                    quantities.value.child = 0;
+                    quantities.value.concession = 0;
+                    // 更新 header 購物車數量
+                    if (typeof loadCartCount === "function") {
+                        loadCartCount();
+                    }
+                } else {
+                    alert('加入購物車失敗，請稍後再試');
+                }
+            } catch (err) {
+                // ignore
+            } finally {
+                sessionStorage.removeItem('pendingCart');
+            }
+        };
+
         // 載入單筆門票詳細資料
         const loadTicketDetails = async (ticketId) => {
             try {
@@ -245,10 +285,14 @@ createApp({
                     document.title = `${ticket.value.ticketName} - 台北GO了沒`;
                     isLoaded.value = true;
 
+                    // 檢查庫存狀態並決定是否啟用按鈕
+                    hasStock.value = await checkStock(ticketId, 1, false);
+
                     // 檢查使用者是否已登入，若已登入則查詢其是否收藏了此商品
                     await checkFavorite(ticketId);
 
-
+                    // 檢查是否有 pendingCart 待處理
+                    await handlePendingCart(ticketId);
                 } else {
                     throw new Error(result.message || '找不到此門票商品');
                 }
@@ -308,6 +352,9 @@ createApp({
 
         // 門票數量加減
         const changeQty = (type, amount) => {
+            // 如果沒庫存，不允許加減數量
+            if (!hasStock.value) return;
+
             let currentVal = quantities.value[type] || 0;
             currentVal += amount;
             if (currentVal < 0) currentVal = 0;
@@ -371,6 +418,7 @@ createApp({
         return {
             ticket,
             isLoaded,
+            hasStock,
             isFavorite,
             showLightbox,
             slideIndex,
