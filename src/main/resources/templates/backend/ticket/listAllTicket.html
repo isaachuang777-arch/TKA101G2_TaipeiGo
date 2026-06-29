@@ -166,12 +166,14 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>
+                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        <span th:each="category : ${ticket.ticketCategories}"
-                                            th:class="${category.ticketCategoryStatus == 1 ? 'category-badge' : 'category-badge disabled'}"
-                                            th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">景點</span>
-                                        <span th:if="${#lists.isEmpty(ticket.ticketCategories)}"
+                                        <th:block th:each="category : ${ticket.ticketCategories}">
+                                            <span th:if="${category.ticketCategoryStatus != 2}"
+                                                th:class="${category.ticketCategoryStatus == 1 ? 'category-badge' : 'category-badge disabled'}"
+                                                th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">景點</span>
+                                        </th:block>
+                                        <span th:if="${#lists.isEmpty(ticket.ticketCategories?.?[ticketCategoryStatus != 2])}"
                                             class="text-muted small">未分類</span>
                                     </div>
                                 </td>

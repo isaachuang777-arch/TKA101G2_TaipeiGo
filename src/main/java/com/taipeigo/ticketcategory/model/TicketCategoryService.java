@@ -45,8 +45,7 @@ public class TicketCategoryService {
 			vo.setTicketCategoryStatus(2); // 代表軟刪除 => db保留只是狀態改變
 			repository.save(vo);
 
-			// 同步刪除 TICKET_CATEGORY_INFO 中的關聯資料 （硬刪除 => db 真的刪除）
-			repository.deleteAssociationsByCategoryId(ticketCateId);
+			// 使用軟刪除，保留 TICKET_CATEGORY_INFO 資料庫中的關聯 => 但畫面不顯示已刪除的分類
 		}
 	}
 
