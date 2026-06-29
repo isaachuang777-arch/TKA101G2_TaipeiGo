@@ -115,4 +115,16 @@ public class TicketRestController {
         }
         return ResponseEntity.ok(ApiResponse.success("查詢成功", dtoList));
     }
+
+    /**
+     * 檢查門票庫存是否充足
+     * 網址範例：/api/tickets/checkStock?ticketId=1&quantity=2
+     */
+    @GetMapping("/checkStock")
+    public ResponseEntity<ApiResponse<Boolean>> checkStock(
+            @RequestParam("ticketId") Integer ticketId,
+            @RequestParam("quantity") Integer quantity) {
+        boolean hasStock = ticketService.checkStock(ticketId, quantity);
+        return ResponseEntity.ok(ApiResponse.success("查詢成功", hasStock));
+    }
 }
