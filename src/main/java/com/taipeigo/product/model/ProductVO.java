@@ -36,7 +36,9 @@ public class ProductVO implements java.io.Serializable {
     // 0=下架, 1=上架
     @NotNull(message = "商品上架狀態不能為空")
     @Column(name = "STATUS", nullable = false)
-    private Byte status;
+    private Integer status;
+
+
 
     public ProductVO() {
     }
@@ -73,11 +75,14 @@ public class ProductVO implements java.io.Serializable {
         this.productName = productName;
     }
 
-    public Byte getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
+
+
+
 }

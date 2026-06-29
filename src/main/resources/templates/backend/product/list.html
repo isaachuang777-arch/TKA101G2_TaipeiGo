@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品總表管理 - TaipeiGo 後台</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/activity/backend-list.css}">
+
+<style>
+:root {
+    --primary: #0d6efd;
+}
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+}
+.sidebar {
+    width: 260px !important;
+    transform: translateX(calc(-100% + 15px));
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar:hover {
+    transform: translateX(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+}
+.main-wrap {
+    margin-left: 0 !important;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.sidebar:hover ~ .main-wrap {
+    margin-left: 260px !important;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s !important;
+}
+.sidebar::after {
+    content: '';
+    position: fixed;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 40px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    transition: opacity 0.3s;
+}
+.sidebar:hover::after {
+    opacity: 0;
+    transition: opacity 0.3s 0.5s;
+}
+.main-wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.topbar {
+    background: #fff;
+    padding: 14px 40px 14px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+.topbar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a2236;
+}
+.content-area {
+    padding: 32px 40px 32px 80px;
+    flex: 1;
+}
+/* Inline Edit Hover Effects */
+.name-display:hover, .bind-display:hover {
+    background-color: #e2e8f0;
+}
+</style>
+</head>
+<body>
+
+    <th:block th:replace="~{backend/fragments/sidebar :: sidebar}"></th:block>
+
+    <div class="main-wrap">
+        <div class="topbar">
+            <div class="topbar-title">商品總表管理 <span>/ 列表</span></div>
+            <div class="admin-top-info">
+                <div class="admin-top-name">Admin</div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0 fw-bold">所有商品</h2>
+                <div>
+                    <a th:href="@{/backend/product/add}" class="btn btn-primary shadow-sm">
+                        <i class="bi bi-plus-lg me-1"></i> 新增商品
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="filter-card">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-funnel-fill text-primary me-2"></i>搜尋條件</h5>
+
+                        <form id="searchForm" th:action="@{/backend/product}" method="get">
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">關鍵字</label>
+                                <input type="text" name="keyword" class="form-control" placeholder="商品名稱" th:value="${param.keyword}">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">套用搜尋</button>
+                            <a th:href="@{/backend/product}" class="btn btn-light w-100 mt-2 text-muted">清除條件</a>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-vertical-center mb-0">
+                                    <thead class="table-light text-muted">
+                                        <tr>
+                                            <th class="ps-4">商品 ID</th>
+                                            <th>商品名稱</th>
+                                            <th>綁定關聯</th>
+                                            <th width="150" class="text-center">狀態</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <th:block th:each="product : ${productList}">
+                                            <tr>
+                                                <td class="ps-4">
+                                                    <div class="text-muted small fw-bold">#<span th:text="${product.productId}"></span></div>
+                                                </td>
+                                                <td class="product-name-cell position-relative">
+                                                    <!-- 錯誤訊息提示框 (預設隱藏) -->
+                                                    <div class="error-msg text-danger small fw-bold d-none position-absolute" style="top: -5px; left: 12px; background: rgba(255,255,255,0.9); padding: 0 4px; border-radius: 4px; z-index: 10;">
+                                                        <i class="bi bi-x-circle-fill"></i> 更新失敗
+                                                    </div>
+                                                    
+                                                    <!-- 顯示模式 -->
+                                                    <div class="fw-bold text-dark name-display p-1 rounded" style="cursor: pointer;" th:text="${product.productName}" onclick="editProductSelect(this)"></div>
+                                                    <!-- 編輯模式 (結合活動與票券的下拉選單) -->
+                                                    <select class="form-select form-select-sm name-select d-none" 
+                                                            onblur="cancelEditSelect(this)" 
+                                                            th:onchange="'saveProductSelect(this, ' + ${product.productId} + ')'">
+                                                        <option value="">-- 取消綁定 (無關聯) --</option>
+                                                        <optgroup label="活動 (Activity)">
+                                                            <th:block th:each="activity : ${activityList}">
+                                                                <option th:value="'A_' + ${activity.activityId}" 
+                                                                        th:text="${activity.activityName}" 
+                                                                        th:selected="${product.activityId == activity.activityId}"></option>
+                                                            </th:block>
+                                                        </optgroup>
+                                                        <optgroup label="票券 (Ticket)">
+                                                            <th:block th:each="ticket : ${ticketList}">
+                                                                <option th:value="'T_' + ${ticket.ticketId}" 
+                                                                        th:text="${ticket.ticketName}" 
+                                                                        th:selected="${product.ticketId == ticket.ticketId}"></option>
+                                                            </th:block>
+                                                        </optgroup>
+                                                    </select>
+                                                </td>
+                                                <td class="product-bind-cell">
+                                                    <!-- 單純顯示綁定狀態，不再透過這裡修改 -->
+                                                    <div class="bind-display p-1 rounded">
+                                                        <div th:if="${product.activityId != null}" class="badge bg-info text-dark">Activity: <span th:text="${product.activityId}"></span></div>
+                                                        <div th:if="${product.ticketId != null}" class="badge bg-warning text-dark">Ticket: <span th:text="${product.ticketId}"></span></div>
+                                                        <div th:if="${product.activityId == null && product.ticketId == null}" class="text-muted small">-</div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                                        <span th:id="'status-badge-' + ${product.productId}" 
+                                                              class="small me-1 fw-bold"
+                                                              th:classappend="${product.status == 1} ? 'text-primary' : 'text-muted'"
+                                                              th:text="${product.status == 1} ? '上架中' : '已下架'">
+                                                        </span>
+                                                        
+                                                        <label class="status-switch m-0">
+                                                            <input type="checkbox" class="toggle-status-btn"
+                                                                   th:data-id="${product.productId}"
+                                                                   th:checked="${product.status == 1}"
+                                                                   onchange="toggleProductStatus(this.getAttribute('data-id'), this.checked)">
+                                                            <span class="status-slider"></span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                        
+                                        <tr th:if="${#lists.isEmpty(productList)}">
+                                            <td colspan="5" class="text-center py-5 text-muted">
+                                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                                找不到符合條件的商品
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 分頁區塊 -->
+                    <nav th:if="${totalPage > 1}" class="mt-4" aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <!-- 上一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/backend/product(page=${currentPage - 1}, keyword=${keyword})}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            
+                            <!-- 頁碼 -->
+                            <th:block th:each="i : ${#numbers.sequence(1, totalPage)}">
+                                <li class="page-item" th:classappend="${currentPage == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/backend/product(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
+                                </li>
+                            </th:block>
+                            
+                            <!-- 下一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == totalPage} ? 'disabled'">
+                                <a class="page-link" th:href="@{/backend/product(page=${currentPage + 1}, keyword=${keyword})}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function toggleProductStatus(id, isChecked) {
+            fetch('/backend/product/api/toggle/' + id, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('狀態切換失敗');
+                return response.json();
+            })
+            .then(data => {
+                const badgeEl = document.getElementById('status-badge-' + id);
+                if (badgeEl) {
+                    if (data.status === 1) {
+                        badgeEl.className = 'small me-1 text-dark';
+                        badgeEl.textContent = '已上架';
+                    } else {
+                        badgeEl.className = 'small me-1 text-muted';
+                        badgeEl.textContent = '已下架';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('切換失敗，請稍後再試');
+                window.location.reload();
+            });
+        }
+
+        // 開啟下拉選單編輯模式
+        function editProductSelect(el) {
+            const td = el.closest('.product-name-cell');
+            const display = td.querySelector('.name-display');
+            const select = td.querySelector('.name-select');
+            display.classList.add('d-none');
+            select.classList.remove('d-none');
+            
+            // 讓選單打開並聚焦
+            select.focus();
+        }
+
+        // 失焦時直接恢復原狀，不跳任何 alert (延遲執行，避免吃掉 onchange 事件)
+        function cancelEditSelect(selectEl) {
+            setTimeout(() => {
+                const td = selectEl.closest('.product-name-cell');
+                if(td) {
+                    td.querySelector('.name-select').classList.add('d-none');
+                    td.querySelector('.name-display').classList.remove('d-none');
+                }
+            }, 200);
+        }
+
+        // 選擇改變時儲存
+        function saveProductSelect(selectEl, id) {
+            const value = selectEl.value; // ex: "A_1" 或 "T_2" 或 ""
+            const selectedText = selectEl.options[selectEl.selectedIndex].text;
+            
+            let actId = null;
+            let tktId = null;
+            let newName = selectedText;
+
+            if (value.startsWith('A_')) {
+                actId = parseInt(value.substring(2));
+            } else if (value.startsWith('T_')) {
+                tktId = parseInt(value.substring(2));
+            } else {
+                // 取消綁定的情況，名字保持不變比較好，或者預設名稱
+                newName = "未命名商品";
+            }
+
+            // 送出更新
+            fetch('/backend/product/api/update/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    productName: newName,
+                    activityId: actId,
+                    ticketId: tktId
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Update failed');
+                return res.json();
+            })
+            .then(data => {
+                // 更新成功後直接重整畫面，讓商品名稱和 Badge 都更新
+                window.location.reload();
+            })
+            .catch(err => {
+                console.error('儲存失敗:', err);
+                
+                // 顯示失敗提示
+                const td = selectEl.closest('.product-name-cell');
+                const errorMsg = td.querySelector('.error-msg');
+                if (errorMsg) {
+                    errorMsg.classList.remove('d-none');
+                    // 3秒後自動隱藏
+                    setTimeout(() => {
+                        errorMsg.classList.add('d-none');
+                    }, 3000);
+                }
+
+                // 失敗時復原畫面
+                cancelEditSelect(selectEl);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -31,7 +31,7 @@ public class ActivityCateVO implements Serializable {
     @Column(name = "CATE_NAME", nullable = false, length = 150)
     private String cateName;
 
-    @NotEmpty(message = "啟用狀態不能為空")
+    @jakarta.validation.constraints.NotNull(message = "啟用狀態不能為空")
     @Column(name = "IS_ACTIVE", nullable = false)
     private Integer isActive;
 

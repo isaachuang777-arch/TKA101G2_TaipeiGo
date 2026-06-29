@@ -84,7 +84,7 @@ public class ActivityCateService {
 
                 List<ActivityVO> shuffledActivities = new ArrayList<>(allActivities);
 
-                // 魔法：把全站活動大洗牌！
+                // 把全站活動洗牌
                 Collections.shuffle(shuffledActivities);
                 int randomLimit = Math.min(shuffledActivities.size(), 3);
                 sections.add(new ActivitySectionDTO("懶得規劃?", shuffledActivities.subList(0, randomLimit)));
@@ -95,5 +95,40 @@ public class ActivityCateService {
 
         return sections;
     }
+
+
+    // --------------活動分類管理---------------
+
+    public List<ActivityCateVO> getAllCategories(){
+        return cateRepository.findAll();
+    }
+
+    public ActivityCateVO  saveCategory(ActivityCateVO cate){
+
+        if(cate.getActivityCateId() == null){
+
+            cate.setIsActive(1);
+        }
+
+        return cateRepository.save(cate);
+    }
+
+
+    public ActivityCateVO toggleCateStatus(Integer cateId){
+
+        ActivityCateVO cate = cateRepository.findById(cateId).orElse(null);
+        
+        if(cate != null){
+
+            cate.setIsActive(cate.getIsActive() == 1 ? 0 : 1);
+
+            cateRepository.save(cate);
+        }
+
+        return cate;
+    }
+    
+
+
 
 }
