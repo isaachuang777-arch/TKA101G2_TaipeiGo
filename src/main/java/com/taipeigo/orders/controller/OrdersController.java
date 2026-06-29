@@ -61,10 +61,7 @@ public class OrdersController {
 	}
 	
 	
-	
-	
-
-	/* order 訂單編號查詢 Search OrderId */
+/* order 訂單編號查詢 Search OrderId */
 	@PostMapping("search_ordersId")
 	public String search_ordersId(/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 *************************/
 	@NotEmpty(message = "訂單編號: 請勿空白") 
@@ -92,7 +89,7 @@ public class OrdersController {
 	
 	
 	
-	/* order 會員編號查詢  Search CustomerId */
+/* order 會員編號查詢  Search CustomerId */
 	@PostMapping("search_custId")
 	public String search_custId(
 			/*************************** 1.接收請求參數 - 輸入格式的錯誤處理 *************************/
@@ -116,16 +113,14 @@ public class OrdersController {
 	}
 
 	
-	/**/
-	/* orders 更新訂單狀態, 更新付款狀態 update status */
+/* orders 更新訂單狀態, 更新付款狀態 update status */
 	@PostMapping("update_status")
 	public String update_Status(
 	        @RequestParam("orderId") Integer ordersId,
 	        @RequestParam("orderStatus") String orderStatus,
-	        @RequestParam("paymentStatus") String paymentStatus,
 	        ModelMap model) {
 		/* 更新status邏輯 */
-		ordersService.updateStatus(ordersId, orderStatus, paymentStatus);
+		ordersService.updateStatus(ordersId, orderStatus);
 				return "redirect:/backend/orderDetail/" + ordersId;
 		
 	}

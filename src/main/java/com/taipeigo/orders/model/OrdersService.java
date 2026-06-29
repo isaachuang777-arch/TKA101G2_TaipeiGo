@@ -3,11 +3,12 @@ package com.taipeigo.orders.model;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.taipeigo.ticket.model.TicketService;
 
 
 @Service
@@ -17,7 +18,7 @@ public class OrdersService {
 	OrdersRepository repository;
 	
 	@Autowired
-    private SessionFactory sessionFactory;
+	private TicketService ticketService;
 
 	public List<OrdersVO> getAll() {
 		return repository.findAll();
@@ -36,21 +37,26 @@ public class OrdersService {
 
 	}
 
-	public void updateStatus(Integer ordersId, String orderStatus, String paymentStatus) {
-		/*如果repository去尋找ordersId，沒有找到東西就拋RuntimeException*/
-		OrdersVO orders  = repository.findById(ordersId).orElseThrow(()-> new RuntimeException("找不到訂單"));
-		/*如果repository有找到，就把VO回來的東西給你，再把值塞回去對應欄位*/
-	    orders.setOrderStatus(orderStatus);
-	    orders.setPaymentStatus(paymentStatus);
-	    repository.save(orders);
-
+	public void updateStatus(Integer ordersId, String orderStatus) {
+		/**如果訂單狀態(orderStatus)取消，付款狀態(paymentStatus)改成"退款"*/
+		String paymentStatus = "已付款";
+		
+		if("取消".equals(orderStatus)) {
+			paymentStatus = "退款";
+		}
+		
+		repository.updateStatus(ordersId, orderStatus, paymentStatus);
+		/*防呆機制！不會為改變不小心觸發更新而改錯**/
+		if("取消".equals(orderStatus)) {
+			ticketService.cancelTicketSerial(ordersId);
+		}
 	}
 
 	public Page<OrdersVO> findAll(Pageable pageable) {
 		 return repository.findAll(pageable);
 	}
 
-	/**結帳-新增訂單***/
+/**結帳-新增訂單***/
 	public OrdersVO createOrder(Integer custId, Integer orderTotal) {
 	    OrdersVO order = new OrdersVO();
 	    order.setCustId(custId);

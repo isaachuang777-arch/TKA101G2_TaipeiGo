@@ -233,6 +233,19 @@
     @media (max-width: 768px) {
         .container { margin-left: 0 !important; padding: 16px; }
     }
+    
+	    .btn-save:disabled {
+	    background: #cbd5e1;
+	    color: #ffffff;
+	    cursor: not-allowed;
+	    opacity: .75;
+	    box-shadow: none;
+	}
+	
+	.btn-save:disabled:hover {
+	    background: #cbd5e1;
+	    transform: none;
+	}
 </style>
 
 </head>
@@ -275,24 +288,29 @@
                     <span th:text="${details[0].ordersVO.createdAt}"></span>
                 </div>
 
-                <div class="info-row">
-                    <span class="info-label">訂單狀態：</span>
-                    <select name="orderStatus">
-                        <option value="已完成" th:selected="${details[0].ordersVO.orderStatus == '已完成'}">已完成</option>
-                        <option value="已取消" th:selected="${details[0].ordersVO.orderStatus == '已取消'}">已取消</option>
-                    </select>
-                </div>
+				<div class="info-row">
+				    <span class="info-label">訂單狀態：</span>
+				    <!-- 取消：顯示文字 -->
+				    <span th:if="${details[0].ordersVO.orderStatus == '取消'}"
+				          th:text="${details[0].ordersVO.orderStatus}">
+				    </span>
+				    <!-- 已完成：顯示下拉 -->
+				    <select
+				        th:if="${details[0].ordersVO.orderStatus != '取消'}"
+				        name="orderStatus">
+				        <option value="已完成"
+				            th:selected="${details[0].ordersVO.orderStatus == '已完成'}">  已完成 </option>
+				        <option value="取消"> 取消 </option>
+				    </select>
+				</div>
 
-                <div class="info-row">
-                    <span class="info-label">付款狀態：</span>
-                    <select name="paymentStatus">
-                        <option value="已付款"th:selected="${details[0].ordersVO.paymentStatus == '已付款'}">已付款</option>
-                        <option value="已退款"th:selected="${details[0].ordersVO.paymentStatus == '已退款'}">已退款</option>
-                    </select>
-                </div>
+					<div class="info-row">
+						<span class="info-label">付款狀態：</span> <span
+							th:text="${details[0].ordersVO.paymentStatus}"></span>
+					</div>
 
                 <div class="button-group">
-                    <button type="submit"class="btn btn-save">更新狀態</button>
+                   	<button  type="submit"  class="btn btn-save" th:disabled="${details[0].ordersVO.orderStatus == '取消'}">更新狀態</button>
                     <a th:href="@{/backend/orders}"class="btn btn-back">返回列表</a>
                 </div>
             </div>
