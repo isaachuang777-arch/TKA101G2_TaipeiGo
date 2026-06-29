@@ -12,13 +12,13 @@
     padding: 0 20px;
 }
 
-/* Unified Top Background (Fixes the white gap) */
+
 .aboutus-top-bg {
     background-color: #f9f9f9;
     padding: 6rem 0 5rem;
 }
 
-/* Hero Section */
+
 .aboutus-hero {
     text-align: center;
 }
@@ -38,7 +38,7 @@
     line-height: 1.8;
 }
 
-/* Metrics Section */
+
 .aboutus-metrics-section {
     margin-top: 4rem;
 }
@@ -80,7 +80,6 @@
     font-weight: bold;
 }
 
-/* Common Section Title */
 .aboutus-section-title {
     font-size: 32px;
     margin-bottom: 40px;
@@ -130,7 +129,7 @@
     line-height: 1.6;
 }
 
-/* Reviews Section */
+
 .aboutus-reviews {
     padding: 5rem 0;
     background: #fafafa;
@@ -167,7 +166,7 @@
     color: #333;
 }
 
-/* Apple-style Scroll Reveal Animation */
+
 .reveal-item {
     opacity: 0;
     transform: translateY(40px);
@@ -179,7 +178,7 @@
     transform: translateY(0);
 }
 
-/* Optional sequential delays for elements in a row */
+
 .delay-1 { transition-delay: 0.1s; }
 .delay-2 { transition-delay: 0.2s; }
 .delay-3 { transition-delay: 0.3s; }

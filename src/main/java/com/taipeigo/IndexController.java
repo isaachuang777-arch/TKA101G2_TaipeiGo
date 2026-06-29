@@ -36,6 +36,6 @@ public class IndexController {
 	}
 	@GetMapping("/aboutus")
 	public String showaboutme() {
-		return "frontend/aboutus/aboutus";
+		return  "frontend/aboutus/aboutus";
 	}
 }

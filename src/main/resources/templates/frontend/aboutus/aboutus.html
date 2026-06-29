@@ -94,10 +94,10 @@
 	<!-- JS 引入 -->
 	<script th:src="@{/js/index/header.js}"></script>
 	<script>
-		// 1. Apple-style Scroll Reveal Animation (滑動顯示動畫)
+		
 		document.addEventListener('DOMContentLoaded', () => {
 			const revealOptions = {
-				threshold: 0.15, // 元素進入畫面 15% 時觸發
+				threshold: 0.15, 
 				rootMargin: "0px 0px -50px 0px"
 			};
 
@@ -105,7 +105,7 @@
 				entries.forEach(entry => {
 					if (entry.isIntersecting) {
 						entry.target.classList.add('active');
-						observer.unobserve(entry.target); // 動畫只播放一次
+						observer.unobserve(entry.target); 
 					}
 				});
 			}, revealOptions);
