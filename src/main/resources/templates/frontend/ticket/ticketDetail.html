@@ -96,6 +96,7 @@
                     </span>
                     <span class="currency">NT$</span>
                     <span class="price">{{ ticket.adultPrice }}</span> <span class="up">起</span>
+                    <span v-if="!hasStock" class="sold-out-badge">已售完</span>
                 </div>
             </section>
 
@@ -200,14 +201,22 @@
 
                 <div class="booking-summary-bar">
                     <div class="summary-text" style="font-size: 16px; font-weight: bold; color: #333;">
-                        已選 <span style="color: #ff5b00; font-size: 20px;">{{ totalTicketsCount }}</span> 張，
-                        共 <span style="color: #ff5b00; font-size: 20px;">NT$ <span>{{ totalPriceAmount.toLocaleString()
-                                }}</span></span> 元
+                        <template v-if="hasStock">
+                            已選 <span style="color: #ff5b00; font-size: 20px;">{{ totalTicketsCount }}</span> 張，
+                            共 <span style="color: #ff5b00; font-size: 20px;">NT$ <span>{{
+                                    totalPriceAmount.toLocaleString()
+                                    }}</span></span> 元
+                        </template>
+                        <template v-else>
+                            <span style="color: #757575;">此商品目前已售完</span>
+                        </template>
                     </div>
                     <div class="action-buttons-group" style="display: flex; gap: 12px; align-items: center;">
                         <button type="button" id="addToCartBtn" class="btn-cart" @click="handleAddToCart"
+                            :disabled="!hasStock"
                             style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #fff; color: #ff5b00; border: 1px solid #ff5b00; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box;">加入購物車</button>
                         <button type="button" id="bookingBtn" class="btn-booking" @click="handleBuyNow"
+                            :disabled="!hasStock"
                             style="display: inline-flex; align-items: center; justify-content: center; line-height: 1; background-color: #ff5b00; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; transition: all 0.2s; height: 45px; box-sizing: border-box; border: 1px solid #ff5b00;">立即購買</button>
                     </div>
                 </div>

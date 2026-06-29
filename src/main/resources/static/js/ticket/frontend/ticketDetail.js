@@ -4,6 +4,7 @@ createApp({
     setup() {
         const ticket = ref({});
         const isLoaded = ref(false);
+        const hasStock = ref(true);
 
         // 我的最愛
         const isFavorite = ref(false);
@@ -75,7 +76,7 @@ createApp({
         };
 
         // 檢查庫存是否足夠
-        const checkStock = async (ticketId, quantity) => {
+        const checkStock = async (ticketId, quantity, showAlert = true) => {
             try {
                 const stockRes = await fetch(`/api/tickets/checkStock?ticketId=${ticketId}&quantity=${quantity}`);
                 if (stockRes.ok) {
@@ -84,15 +85,15 @@ createApp({
                         if (stockData.data) {
                             return true;
                         } else {
-                            alert('庫存不足，無法加入購物車');
+                            if (showAlert) alert('庫存不足，無法加入購物車');
                             return false;
                         }
                     }
                 }
-                alert('檢查庫存失敗，請稍後再試');
+                if (showAlert) alert('檢查庫存失敗，請稍後再試');
                 return false;
             } catch (err) {
-                alert('檢查庫存發生錯誤，請稍後再試');
+                if (showAlert) alert('檢查庫存發生錯誤，請稍後再試');
                 return false;
             }
         };
@@ -240,13 +241,14 @@ createApp({
                 const data = await res.json();
                 if (!data.login) return;
 
-                // 確認庫存與呼叫加入購物車 API
+                // 確認庫存
                 const totalCount = quantities.value.adult + quantities.value.child + quantities.value.concession;
                 if (totalCount <= 0) return;
 
                 const hasStock = await checkStock(ticketId, totalCount);
                 if (!hasStock) return;
 
+                // 呼叫加入購物車 API
                 const items = prepareBookingItems();
                 const success = await addToCart(items);
                 if (success) {
@@ -282,6 +284,9 @@ createApp({
                     ticket.value = result.data;
                     document.title = `${ticket.value.ticketName} - 台北GO了沒`;
                     isLoaded.value = true;
+
+                    // 檢查庫存狀態並決定是否啟用按鈕
+                    hasStock.value = await checkStock(ticketId, 1, false);
 
                     // 檢查使用者是否已登入，若已登入則查詢其是否收藏了此商品
                     await checkFavorite(ticketId);
@@ -347,6 +352,9 @@ createApp({
 
         // 門票數量加減
         const changeQty = (type, amount) => {
+            // 如果沒庫存，不允許加減數量
+            if (!hasStock.value) return;
+
             let currentVal = quantities.value[type] || 0;
             currentVal += amount;
             if (currentVal < 0) currentVal = 0;
@@ -410,6 +418,7 @@ createApp({
         return {
             ticket,
             isLoaded,
+            hasStock,
             isFavorite,
             showLightbox,
             slideIndex,
