@@ -184,7 +184,7 @@ public class FrontendAuthController {
 
 		redirectAttributes.addFlashAttribute(
 		        "successMsg",
-		        "🎉 Email 驗證成功！帳號已啟用，現在可以登入了。"
+		        "驗證信已寄出！請前往您的電子郵件收信，完成帳號驗證後即可登入。"
 		);
 		
 		return "redirect:/auth/login";

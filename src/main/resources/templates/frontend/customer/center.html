@@ -15,10 +15,206 @@
     gap: 24px;
 }
 
-
 .content {
     flex: 1;
     padding: 30px;
+}
+
+.center-page {
+    max-width: 900px;
+}
+
+/* 歡迎區 */
+.welcome-card {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    min-height: 220px;
+    padding: 34px 42px;
+    border-radius: 18px;
+    background: linear-gradient(90deg, #fff4e6 0%, #fffaf3 48%, #ffe3ba 100%);
+    border: 1px solid #ffe0bd;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-card::after {
+    content: "台北GO了沒";
+    position: absolute;
+    right: 38px;
+    bottom: 28px;
+    font-size: 38px;
+    font-weight: 800;
+    color: rgba(255,122,0,0.07);
+}
+
+.welcome-avatar {
+    width: 135px;
+    height: 135px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid #fff;
+    background: #f5f5f5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-text {
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-title {
+    font-size: 30px;
+    font-weight: 800;
+    color: #222;
+    margin-bottom: 12px;
+}
+
+.welcome-subtitle {
+    font-size: 15px;
+    color: #666;
+}
+
+/* 區塊標題 */
+.section-title-wrap {
+    margin: 34px 0 18px;
+    border-left: 5px solid #ff7a00;
+    padding-left: 14px;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #222;
+    margin-bottom: 6px;
+}
+
+.section-subtitle {
+    color: #777;
+    font-size: 14px;
+}
+
+/* 快速功能 */
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.quick-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    padding: 30px 18px;
+    min-height: 230px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+}
+
+.quick-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    border-color: #ffd5ad;
+}
+
+.quick-icon {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+}
+
+.icon-profile {
+    background: #e8f1ff;
+}
+
+.icon-order {
+    background: #e7f8ec;
+}
+
+.icon-ticket {
+    background: #fff1cd;
+}
+
+.icon-favorite {
+    background: #ffe5ea;
+}
+
+.icon-service {
+    background: #e8f7ff;
+}
+
+.quick-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: #222;
+}
+
+.quick-desc {
+    color: #666;
+    line-height: 1.8;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.quick-arrow {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ff7a00;
+}
+
+/* 最新消息 */
+.notice-card {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 24px 30px;
+    border-radius: 16px;
+    background: #f0f7ff;
+    border: 1px solid #d7eaff;
+    color: #333;
+}
+
+.notice-icon {
+    font-size: 38px;
+    flex-shrink: 0;
+}
+
+.notice-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.notice-text {
+    color: #666;
+    font-size: 14px;
+}
+
+/* RWD */
+@media (max-width: 1100px) {
+    .quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .welcome-card {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 </style>
 
@@ -29,23 +225,98 @@
 
 <div class="container">
 
-    <!-- 左側選單 -->
     <div th:replace="~{frontend/customer/fragments/sidebar :: customerSidebar}"></div>
 
-    <!-- 右側內容 -->
-    <div class="content">
+    <div class="content center-page">
 
-        <h2>
-            歡迎，
-            <span th:text="${loginCustomer.custName}"></span>
-        </h2>
+        <div class="welcome-card">
 
-        <p>請從左側選單選擇功能</p>
+            <img class="welcome-avatar"
+                 th:src="${loginCustomer.custImg != null && loginCustomer.custImg != ''
+                          ? '/images/' + loginCustomer.custImg + '?v=' + #dates.createNow().time
+                          : '/images/customer/default-avatar.png'}"
+                 alt="會員頭像">
+
+            <div class="welcome-text">
+                <div class="welcome-title">
+                    歡迎回來，
+                    <span th:text="${loginCustomer.custName}">小明</span>
+                    👋
+                </div>
+
+                <div class="welcome-subtitle">
+                    今天想去哪裡玩呢？探索台北的美好，從這裡開始！
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section-title-wrap">
+            <div class="section-title">快速功能</div>
+            <div class="section-subtitle">常用功能快速入口</div>
+        </div>
+
+        <div class="quick-grid">
+
+            <a class="quick-card" th:href="@{/customer/profile}">
+                <div class="quick-icon icon-profile">👤</div>
+                <div class="quick-title">個人資料</div>
+                <div class="quick-desc">
+                    查看或修改<br>
+                    會員個人資料
+                </div>
+                <div class="quick-arrow">→</div>
+            </a>
+
+            <a class="quick-card" th:href="@{/frontend/customer/orders}">
+                <div class="quick-icon icon-order">📦</div>
+                <div class="quick-title">我的訂單</div>
+                <div class="quick-desc">
+                    查看所有訂單<br>
+                    與訂單狀態
+                </div>
+                <div class="quick-arrow">→</div>
+            </a>
+
+            <a class="quick-card" th:href="@{/customer/tickets}">
+                <div class="quick-icon icon-ticket">🎫</div>
+                <div class="quick-title">我的票券</div>
+                <div class="quick-desc">
+                    查看可使用票券<br>
+                    與使用紀錄
+                </div>
+                <div class="quick-arrow">→</div>
+            </a>
+
+			<a class="quick-card" th:href="@{/CustomerService/}">
+			    <div class="quick-icon icon-service">💬</div>
+			    <div class="quick-title">客服中心</div>
+			    <div class="quick-desc">
+			        聯繫客服人員<br>
+			        查看客服紀錄
+			    </div>
+			    <div class="quick-arrow">→</div>
+			</a>
+
+        </div>
+
+        <div class="notice-card">
+            <div class="notice-icon">📢</div>
+            <div>
+                <div class="notice-title">最新消息</div>
+                <div class="notice-text">
+                    目前沒有新的通知，祝您有個美好的旅程！
+                </div>
+            </div>
+        </div>
 
     </div>
 
 </div>
+
 <div th:replace="~{frontend/index/footer :: footer}"></div>
+
+<script th:src="@{/js/index/header.js}"></script>
 
 </body>
 </html>
