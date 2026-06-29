@@ -201,23 +201,10 @@ function updateSummary() {
 }
 
 /* ========================= 前往結帳 ========================= */
-async function checkout() {
+function checkout() {
     if (cartData.length === 0) {
         alert("購物車沒有商品");
         return;
     }
-
-    if (!confirm("確認送出訂單？")) {
-        return;
-    }
-    const response = await fetch("/frontend/checkout", {
-        method: "POST"
-    });
-
-    if (response.ok) {
-        alert("訂單建立成功");
-        location.href = "/frontend/customer/orders";
-    } else {
-        alert("結帳失敗");
-    }
+    location.href = "/frontend/checkout";
 }

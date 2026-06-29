@@ -1,0 +1,268 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"Microsoft JhengHei",sans-serif;
+    background:#f5f6f8;
+    color:#333;
+}
+
+.checkout-page{
+    max-width:1400px;
+    margin:40px auto 80px;
+    padding:0 20px;
+}
+
+.page-title{
+    font-size:32px;
+    font-weight:700;
+    margin-bottom:30px;
+}
+
+.checkout-wrapper{
+    display:flex;
+    gap:30px;
+    align-items:flex-start;
+}
+
+.checkout-left{
+    flex:2;
+}
+
+.checkout-right{
+    flex:1;
+    position:sticky;
+    top:100px;
+}
+
+.card{
+    background:#fff;
+    border-radius:16px;
+    padding:28px;
+    margin-bottom:24px;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.card h2{
+    font-size:22px;
+    margin-bottom:24px;
+    color:#222;
+}
+
+/* ===========================
+   商品卡片
+=========================== */
+
+.checkout-item{
+    display:flex;
+    gap:20px;
+    padding:24px 0;
+    border-bottom:1px solid #ececec;
+    align-items:flex-start;
+}
+
+.checkout-item:last-child{
+    border-bottom:none;
+}
+
+.checkout-item img{
+    width:170px;
+    height:120px;
+    object-fit:cover;
+    border-radius:12px;
+    flex-shrink:0;
+}
+
+.item-info{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+.item-name{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:12px;
+    color:#222;
+}
+
+.item-date{
+    font-size:15px;
+    color:#777;
+    margin-bottom:10px;
+}
+
+.item-price{
+    font-size:18px;
+    color:#666;
+    font-weight:600;
+}
+
+.item-bottom{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.item-qty{
+    font-size:16px;
+    color:#666;
+}
+
+.item-subtotal{
+    font-size:26px;
+    color:#ff5b00;
+    font-weight:700;
+}
+
+/* ===========================
+   訂單摘要
+=========================== */
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+    font-size:17px;
+}
+
+.summary-row.total{
+    margin-top:20px;
+    padding-top:20px;
+    border-top:1px solid #ddd;
+    font-size:28px;
+    font-weight:700;
+    color:#ff5b00;
+}
+
+/* ===========================
+   信用卡
+=========================== */
+
+.form-group{
+    margin-bottom:22px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.form-group input{
+    width:100%;
+    height:48px;
+    border:1px solid #d8d8d8;
+    border-radius:10px;
+    padding:0 15px;
+    font-size:16px;
+    outline:none;
+    transition:.2s;
+}
+
+.form-group input:focus{
+    border-color:#ff5b00;
+}
+
+.row{
+    display:flex;
+    gap:15px;
+}
+
+.half{
+    flex:1;
+}
+
+/* ===========================
+   付款按鈕
+=========================== */
+
+.pay-btn{
+    width:100%;
+    height:56px;
+    border:none;
+    border-radius:12px;
+    background:#ff5b00;
+    color:#fff;
+    font-size:20px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.25s;
+    margin-top:10px;
+}
+
+.pay-btn:hover{
+    background:#e44d00;
+}
+
+/* ===========================
+   購買人資訊
+=========================== */
+
+.customer-info{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom:12px;
+    border-bottom:1px solid #eee;
+}
+
+.info-row span:first-child{
+    color:#777;
+    font-weight:600;
+}
+
+.info-row span:last-child{
+    font-weight:700;
+}
+
+/* ===========================
+   RWD
+=========================== */
+
+@media (max-width:992px){
+
+    .checkout-wrapper{
+        flex-direction:column;
+    }
+
+    .checkout-right{
+        position:static;
+        width:100%;
+    }
+
+}
+
+@media (max-width:768px){
+
+    .checkout-item{
+        flex-direction:column;
+    }
+
+    .checkout-item img{
+        width:100%;
+        height:220px;
+    }
+
+    .item-bottom{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
+
+    .row{
+        flex-direction:column;
+    }
+
+}

@@ -126,7 +126,7 @@ public class OrdersController {
 	        ModelMap model) {
 		/* 更新status邏輯 */
 		ordersService.updateStatus(ordersId, orderStatus, paymentStatus);
-				return "redirect:/orderDetail/" + ordersId;
+				return "redirect:/backend/orderDetail/" + ordersId;
 		
 	}
 	
