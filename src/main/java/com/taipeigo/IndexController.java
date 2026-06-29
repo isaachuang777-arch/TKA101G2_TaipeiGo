@@ -34,4 +34,8 @@ public class IndexController {
 		model.addAttribute("popularTickets", popularTickets);
 		return "frontend/index/index";
 	}
+	@GetMapping("/aboutus")
+	public String showaboutme() {
+		return  "frontend/aboutus/aboutus";
+	}
 }

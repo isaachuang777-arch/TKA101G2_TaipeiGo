@@ -24,7 +24,7 @@ public class BackendLoginFilter extends OncePerRequestFilter {
 		
 		String requestURI = request.getRequestURI();
 // ===================================
-// 開發用 不用強登 || 要測試請把以line29-32注解=>PS.上線前要刪掉or注解
+// 開發用/測試 不用強登 || 要測試請把以line29-32注解=>PS.上線前要注解
 // ===================================
 		if (true) {
 			filterChain.doFilter(request, response);
@@ -116,6 +116,27 @@ if (adminVO.getAdmStatus() == AdminVO.StatusForcetoChangePW) {
 		 return;
 	 }
  }  
+ if (requestURI.contains("/backend/activity")) { 
+	 boolean isOrder= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==22);
+	 if(!isOrder) {
+		 response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+		 return;
+	 }
+ }  
+ if (requestURI.contains("/backend/ticket/serialList")) { 
+	 boolean isOrder= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==22);
+	 if(!isOrder) {
+		 response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+		 return;
+	 }
+ }  
+ if (requestURI.contains("/backend/product")) { 
+	 boolean isOrder= adminVO.getAdmPerVO().stream().anyMatch(p -> p.getAdmfuncVO().getFuncId() ==22);
+	 if(!isOrder) {
+		 response.sendRedirect(request.getContextPath() + "/backend/dashboard/index?error=forbidden");
+		 return;
+	 }
+ } 
 //===================
 //客服中心 funcId = 23 = 只能看訂能看的東西
 //===================    

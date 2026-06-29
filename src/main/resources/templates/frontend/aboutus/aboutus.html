@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>關於我們 | TaipeiGO</title>
+	
+	<!-- 引入共同的 Header / Footer CSS -->
+	<link rel="stylesheet" th:href="@{/css/index/header.css}">
+	<link rel="stylesheet" th:href="@{/css/index/footer.css}">
+	<!-- 引入專屬 CSS -->
+	<link rel="stylesheet" th:href="@{/css/aboutus/aboutus.css}">
+</head>
+
+<body>
+
+	<!-- Header -->
+	<div th:replace="~{frontend/index/header :: header}"></div>
+
+	<!-- 主要內容 -->
+	<main class="aboutus-main">
+
+		<div class="aboutus-top-bg">
+			<!-- Hero & Intro Section -->
+			<section class="aboutus-hero reveal-item">
+				<div class="aboutus-content-wrapper">
+					<h1>TaipeiGO 你的台北旅行好夥伴</h1>
+					<p>看見外縣市旅客對探索大台北的渴望，我們專注深耕台北國旅，致力打造專屬的旅遊平台。<br>以「活動門票」與「一日活動」為核心，打破傳統觀光框架，將真實的台北景點與期間限定的特色盛事完美結合。我們期盼為每一位造訪台北的旅人，編織出獨一無二的精彩回憶。</p>
+				</div>
+			</section>
+
+
+			<section class="aboutus-metrics-section">
+				<div class="aboutus-content-wrapper">
+					<div class="aboutus-metrics">
+						<div class="aboutus-metric-box reveal-item delay-1">
+							<h3>100+</h3>
+							<p>熱門景點門票</p>
+						</div>
+						<div class="aboutus-metric-box reveal-item delay-2">
+							<h3>50+</h3>
+							<p>獨家一日行程</p>
+						</div>
+						<div class="aboutus-metric-box reveal-item delay-3">
+							<h3>10,000+</h3>
+							<p>滿意旅人推薦</p>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<!-- 三大保證/特色-->
+		<section class="aboutus-guarantees">
+			<div class="aboutus-content-wrapper">
+				<h2 class="aboutus-section-title reveal-item" style="justify-content: center;">給旅人的保證</h2>
+				<div class="aboutus-guarantees-grid">
+					<div class="aboutus-guarantee-card reveal-item delay-1">
+						<h4>嚴格篩選</h4>
+						<p>我們親自走訪大台北各角落，精心挑選最優質、最具特色的景點與盛事，只為了讓您擁有最安心的體驗。</p>
+					</div>
+					<div class="aboutus-guarantee-card reveal-item delay-2">
+						<h4>專家規劃</h4>
+						<p>精心設計「3項以上門票結合」的深度一日遊，為您省去繁瑣的行程規劃，輕鬆享受高 CP 值的沉浸式台北之旅。</p>
+					</div>
+					<div class="aboutus-guarantee-card reveal-item delay-3">
+						<h4>輕鬆預訂</h4>
+						<p>無論您喜歡提前計畫，或是習慣說走就走，透過 TaipeiGO 整合平台，隨時隨地一鍵下訂門票，即刻出發！</p>
+					</div>
+					<div class="aboutus-guarantee-card reveal-item delay-4">
+						<h4>安全可靠</h4>
+						<p>您的隱私與交易安全是我們的首要考量。我們提供安全的線上交易環境，讓您無後顧之憂地專心享受旅途。</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 旅人的心聲-->
+		<section class="aboutus-reviews">
+			<div class="aboutus-content-wrapper">
+				<h2 class="aboutus-section-title reveal-item" style="justify-content: center;">旅人的心聲</h2>
+				<!-- JS 動態隨機生成 -->
+				<div class="aboutus-reviews-grid" id="reviews-container">
+				</div>
+			</div>
+		</section>
+
+	</main>
+
+	<!-- Footer -->
+	<div th:replace="~{frontend/index/footer :: footer}"></div>
+
+	<!-- JS 引入 -->
+	<script th:src="@{/js/index/header.js}"></script>
+	<script>
+		
+		document.addEventListener('DOMContentLoaded', () => {
+			const revealOptions = {
+				threshold: 0.15, 
+				rootMargin: "0px 0px -50px 0px"
+			};
+
+			const revealObserver = new IntersectionObserver((entries, observer) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('active');
+						observer.unobserve(entry.target); 
+					}
+				});
+			}, revealOptions);
+
+			document.querySelectorAll('.reveal-item').forEach(el => {
+				revealObserver.observe(el);
+			});
+		});
+
+		// 2. 隨機產生 3 個旅人心聲
+		const allReviews = [
+			{ text: "「帶小孩來台北玩，TaipeiGO 的一日活動真的幫了大忙！行程規劃得很順，完全不用動腦，套票買起來也非常划算！」", author: "來自台中的 <strong>王媽媽</strong> 在 <strong>兒童新樂園</strong>" },
+			{ text: "「之前一直覺得台北只有逛街，沒想到透過 TaipeiGO 發現了許多期間限定的特色盛事和隱藏版景點，非常值得！」", author: "來自高雄的 <strong>林先生</strong> 在 <strong>大稻埕</strong>" },
+			{ text: "「網站介面做得很棒，買票速度很快。身為在地人，假日不知道去哪裡時，只要上來滑一下就能找到超讚的週末提案！」", author: "在地台北人 <strong>陳小姐</strong> 在 <strong>陽明山</strong>" },
+			{ text: "「第一次一個人來台北旅行，參加了專屬導覽的行程，不但認識了新朋友，還深入了解了艋舺的歷史文化，超讚的體驗！」", author: "來自香港的 <strong>張先生</strong> 在 <strong>龍山寺</strong>" },
+			{ text: "「購買了貓空纜車與動物園的套票，完全不需要現場排隊買票，直接掃 QR Code 就能入場，超級方便省時！」", author: "來自桃園的 <strong>李小姐</strong> 在 <strong>貓空</strong>" },
+			{ text: "「原以為台北近郊的交通會很麻煩，但買了 TaipeiGO 的九份一日遊，專車接送加上專業解說，讓這趟旅程無懈可擊！」", author: "來自台南的 <strong>郭先生</strong> 在 <strong>九份老街</strong>" },
+			{ text: "「和朋友預訂了淡水夕陽遊船的行程，在船上吹著海風看夕陽真的好浪漫。整個預訂流程非常順暢，給平台一個讚！」", author: "來自新竹的 <strong>吳同學</strong> 在 <strong>淡水</strong>" },
+			{ text: "「身為一個吃貨，參加了夜市美食導覽行程，吃到了很多一般遊客不知道的隱藏版小吃，導遊也超級熱情！」", author: "來自新加坡的 <strong>Chloe</strong> 在 <strong>寧夏夜市</strong>" },
+			{ text: "「跨年期間買了 101 觀景台的特惠門票，客服回覆速度很快，讓我們的跨年計畫順利進行，非常推薦這個平台！」", author: "來自馬來西亞的 <strong>Jason</strong> 在 <strong>台北101</strong>" },
+			{ text: "「週末想遠離塵囂，在平台找到了北投泡湯加下午茶的組合，整個下午超級放鬆，CP值超高，下次一定會再使用！」", author: "在地台北人 <strong>黃先生</strong> 在 <strong>北投溫泉</strong>" }
+		];
+
+		function shuffleArray(array) {
+			for (let i = array.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[array[i], array[j]] = [array[j], array[i]];
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			shuffleArray(allReviews);
+			const selectedReviews = allReviews.slice(0, 3);
+			
+			const container = document.getElementById('reviews-container');
+			if(container) {
+				container.innerHTML = '';
+				selectedReviews.forEach((review, index) => {
+					const card = document.createElement('div');
+
+					card.className = `aboutus-review-card reveal-item delay-${index + 1}`;
+					card.innerHTML = `
+						<p class="aboutus-review-text">${review.text}</p>
+						<div class="aboutus-review-author">${review.author}</div>
+					`;
+					container.appendChild(card);
+					
+
+					setTimeout(() => {
+						const observer = new IntersectionObserver((entries, obs) => {
+							entries.forEach(entry => {
+								if (entry.isIntersecting) {
+									entry.target.classList.add('active');
+									obs.unobserve(entry.target);
+								}
+							});
+						}, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+						observer.observe(card);
+					}, 100);
+				});
+			}
+		});
+	</script>
+</body>
+
+</html>
