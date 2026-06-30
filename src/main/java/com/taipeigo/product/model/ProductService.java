@@ -1,9 +1,11 @@
 package com.taipeigo.product.model;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.taipeigo.activity.model.ActivityVO;
+import com.taipeigo.ticket.model.TicketVO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,58 +21,50 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    // 取所有商品 (支援分頁，一頁10筆)
-    public Page<ProductVO> getProductsByKeyword(String keyword, int page) {
-        // page - 1 因為 Spring Data JPA 的頁碼是從 0 開始
-        Pageable pageable = PageRequest.of(page - 1, 10);
-
-        if(keyword == null || keyword.trim().isEmpty()){
-            return productRepository.findAll(pageable);
-        }
-
-        return productRepository.findByKeyword(keyword, pageable);
-    }
-
     // 用ID取得商品
     public ProductVO getProductById(Integer id){
         return productRepository.findById(id).orElse(null);
     }
 
-    // 新增商品
-    public ProductVO addProduct(ProductVO product){
+    // 自動連動(ticket或activity只要有上架就會自動新增)
 
-        if(product.getStatus() == null){
-            product.setStatus(1);
-        }
+    public void syncActivityToProduct(ActivityVO activity){
 
-        return productRepository.save(product);
+        if(activity == null || activity.getActivityId() == null)
+            return;
+
+        // 找是否已有該活動商品，沒有的話就 new 一個
+        ProductVO product = productRepository.findByActivityId(activity.getActivityId()).orElse(new ProductVO());
+
+        product.setActivityId(activity.getActivityId());
+        product.setProductName(activity.getActivityName());
+
+        //連動下架，活動如果下架商品也會自動下架
+
+        product.setStatus(activity.getActivityStatus());
+
+        productRepository.save(product);
+
     }
 
-    // 更新商品
-    public ProductVO updateProduct(ProductVO product){
+    public void syncTicketToProduct(TicketVO ticket){
 
-        ProductVO existingProduct = productRepository.findById(product.getProductId()).orElse(null);
-        
-        if(existingProduct != null){
+        if (ticket == null || ticket.getTicketId() == null) {
 
-            existingProduct.setProductName(product.getProductName());
-            existingProduct.setActivityId(product.getActivityId());
-            existingProduct.setTicketId(product.getTicketId());
-            existingProduct.setStatus(product.getStatus());
-            return productRepository.save(existingProduct);
+            return;
+            
         }
+    
 
-        return null;
-    }
+    ProductVO product = productRepository.findByTicketId(ticket.getTicketId()).orElse(new ProductVO());
 
-    // 上下架切換
-    public ProductVO toggleProductStatus(Integer productId){
-        ProductVO product = productRepository.findById(productId).orElse(null);
-        if(product != null) {
-            product.setStatus(product.getStatus() == 1 ? 0 : 1);
-            return productRepository.save(product);
-        }
-        return null;
+    product.setTicketId(ticket.getTicketId());
+    product.setProductName(ticket.getTicketName());
+    product.setStatus(ticket.getTicketStatus());
+
+    productRepository.save(product);
+
     }
+    
 
 }

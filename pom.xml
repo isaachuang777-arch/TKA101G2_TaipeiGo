@@ -55,8 +55,6 @@
 
 
 
-
-
 		<!-- 用途說明5: Starter for using Spring Data JPA with Hibernate -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -154,6 +152,16 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.6.2</version>
 		</dependency>
+
+
+		<!-- Spring Boot AOP (用於攔截 TicketService 儲存動作) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+
+
 
 
 		

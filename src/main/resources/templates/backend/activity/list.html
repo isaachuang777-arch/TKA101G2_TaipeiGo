@@ -23,48 +23,6 @@ body {
     margin: 0;
 }
 
-/* ========================================================= */
-/* 專屬側邊欄動畫覆蓋 (只在此頁面生效，不影響其他組員)           */
-/* ========================================================= */
-.sidebar {
-    width: 260px !important; /* 強制設定寬度 */
-    transform: translateX(calc(-100% + 15px)); /* 留 15px 觸發區 */
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar:hover {
-    transform: translateX(0);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
-}
-
-.main-wrap {
-    margin-left: 0 !important; /* 預設收合時，主內容區滿版 */
-    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.sidebar:hover ~ .main-wrap {
-    margin-left: 260px !important; /* 展開時推移 */
-    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s !important;
-}
-
-.sidebar::after {
-    content: '';
-    position: fixed;
-    right: 4px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 40px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 4px;
-    transition: opacity 0.3s;
-}
-
-.sidebar:hover::after {
-    opacity: 0;
-    transition: opacity 0.3s 0.5s;
-}
-/* ========================================================= */
 
 .main-wrap {
     margin-left: var(--sidebar-width);
@@ -76,7 +34,7 @@ body {
 
 .topbar {
     background: #fff;
-    padding: 14px 40px 14px 80px; /* 左側與 content-area 齊平 (80px) */
+    padding: 14px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -93,7 +51,7 @@ body {
 }
 
 .content-area {
-    padding: 32px 40px 32px 80px; /* 加大左側的 padding，增加滑鼠的緩衝安全區 */
+    padding: 32px;
     flex: 1;
 }
 
@@ -349,8 +307,12 @@ body {
           </div>
           <div class="modal-footer bg-light d-flex flex-column align-items-start p-3">
             <div class="input-group w-100">
+                <label class="btn btn-outline-secondary px-3 mb-0" style="border-radius: 0; border-right: 0;" title="上傳新分類圖片">
+                    <i class="bi bi-image"></i>
+                    <input type="file" id="newCategoryImg" style="display: none;" accept="image/*">
+                </label>
                 <input type="text" class="form-control" id="newCategoryName" placeholder="輸入新分類名稱...">
-                <button class="btn btn-primary px-4 fw-bold" type="button" onclick="saveCategory(null)"><i class="bi bi-plus-lg me-1"></i>新增</button>
+                <button class="btn btn-primary px-4 fw-bold" type="button" onclick="saveNewCategory()"><i class="bi bi-plus-lg me-1"></i>新增</button>
             </div>
             <div id="categoryErrorMsg" class="text-danger small mt-2 w-100 fw-bold" style="display: none;"></div>
           </div>
@@ -412,10 +374,18 @@ body {
 
                     container.innerHTML = '';
                     data.forEach(cate => {
+                        const imgSrc = cate.cateIcon ? `data:image/jpeg;base64,${cate.cateIcon}` : '/images/activity/default.png';
                         const li = document.createElement('li');
                         li.className = 'list-group-item d-flex justify-content-between align-items-center py-3';
                         li.innerHTML = `
                             <div class="d-flex align-items-center flex-grow-1 me-3">
+                                <label style="cursor: pointer; position: relative;" class="me-2 mb-0" title="點擊更換圖片">
+                                    <img src="${imgSrc}" id="cateImgPreview-${cate.activityCateId}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                                    <div style="position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </div>
+                                    <input type="file" style="display: none;" accept="image/*" onchange="uploadCategoryImage(${cate.activityCateId}, this, document.getElementById('cateInput-${cate.activityCateId}').value, ${cate.isActive})">
+                                </label>
                                 <input type="text" class="form-control border-0 bg-transparent fw-bold" 
                                        id="cateInput-${cate.activityCateId}" value="${cate.cateName}" 
                                        onchange="saveCategory(${cate.activityCateId}, this.value, ${cate.isActive})"
@@ -441,29 +411,77 @@ body {
                 });
         }
 
-        // 新增或修改分類
+        // 獨立的新增分類函式，因為要處理圖片
+        function saveNewCategory() {
+            const inputEl = document.getElementById('newCategoryName');
+            const fileInput = document.getElementById('newCategoryImg');
+            const cateName = inputEl.value.trim();
+            if (!cateName) {
+                document.getElementById('categoryErrorMsg').innerText = '請輸入分類名稱';
+                document.getElementById('categoryErrorMsg').style.display = 'block';
+                return;
+            }
+
+            const payload = { cateName: cateName, isActive: 1 };
+            
+            // 如果有選圖片，轉成 base64 送出
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // 去掉 'data:image/jpeg;base64,' 前綴
+                    const base64String = e.target.result.split(',')[1];
+                    payload.cateIcon = base64String;
+                    sendCategoryPayload(null, payload);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                sendCategoryPayload(null, payload);
+            }
+        }
+
+        // 修改既有分類名稱
         function saveCategory(id, nameValue = null, isActive = 1) {
             const errorMsgEl = document.getElementById('categoryErrorMsg');
             errorMsgEl.style.display = 'none';
 
-            let cateName = '';
-            if (id === null) {
-                // 新增模式
-                const inputEl = document.getElementById('newCategoryName');
-                cateName = inputEl.value.trim();
-                if (!cateName) return; // 空白不送出
-            } else {
-                // 修改模式
-                cateName = nameValue.trim();
-                if (!cateName) {
-                    loadCategories(); // 如果使用者清空，則重新載入還原
-                    return;
-                }
+            let cateName = nameValue ? nameValue.trim() : '';
+            if (!cateName) {
+                loadCategories(); // 如果使用者清空，則重新載入還原
+                return;
             }
 
-            const payload = { cateName: cateName, isActive: isActive };
-            if (id !== null) payload.activityCateId = id;
+            const payload = { activityCateId: id, cateName: cateName, isActive: isActive };
+            sendCategoryPayload(id, payload);
+        }
 
+        // 專門處理圖片上傳
+        function uploadCategoryImage(id, inputEl, currentName, isActive) {
+            if (!inputEl.files || !inputEl.files[0]) return;
+            
+            // 先預覽圖片
+            const previewEl = document.getElementById(`cateImgPreview-${id}`);
+            const reader = new FileReader();
+            
+            // 讀取成功後發 API
+            reader.onload = function(e) {
+                previewEl.src = e.target.result;
+                const base64String = e.target.result.split(',')[1];
+                
+                const payload = { 
+                    activityCateId: id, 
+                    cateName: currentName, 
+                    isActive: isActive,
+                    cateIcon: base64String
+                };
+                sendCategoryPayload(id, payload);
+            };
+            reader.readAsDataURL(inputEl.files[0]);
+        }
+
+        // 共用的送出 API
+        function sendCategoryPayload(id, payload) {
+            const errorMsgEl = document.getElementById('categoryErrorMsg');
+            errorMsgEl.style.display = 'none';
             fetch('/backend/activity/api/cate/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -478,15 +496,23 @@ body {
             .then(data => {
                 if (id === null) {
                     document.getElementById('newCategoryName').value = ''; // 清空新增框
+                    const newImgInput = document.getElementById('newCategoryImg');
+                    if (newImgInput) newImgInput.value = ''; // 清空圖片
+                    loadCategories(); // 重新載入列表
+                } else {
+                    // 只需閃一下綠色代表成功
+                    const inputEl = document.getElementById(`cateInput-${id}`);
+                    if(inputEl) {
+                        inputEl.classList.add('is-valid');
+                        setTimeout(() => inputEl.classList.remove('is-valid'), 1500);
+                    }
                 }
-                loadCategories(); // 重新載入列表
             })
             .catch(error => {
-                errorMsgEl.textContent = error.message;
+                console.error('Error saving category:', error);
+                errorMsgEl.innerText = error.message;
                 errorMsgEl.style.display = 'block';
-                if (id !== null) {
-                    loadCategories(); // 修改失敗還原文字
-                }
+                if(id !== null) loadCategories(); // 修改失敗的話，還原列表
             });
         }
 

@@ -77,5 +77,15 @@ public class ActivityController {
         return activityCateService.getHomeSections();
     }
 
+    // 檢查活動庫存是否充足
+
+    @GetMapping("/checkStock")
+    public boolean checkStock(
+        @RequestParam("activityId") Integer activityId,
+        @RequestParam("quantity") Integer quantity) {
+
+             return productCartFacade.checkStock("ACTIVITY", activityId, quantity);
+        }
+
 
 }
