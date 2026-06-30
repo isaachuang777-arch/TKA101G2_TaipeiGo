@@ -1,18 +1,110 @@
 <style>
-summary {
-    background-color: #f05a28; 
-    color: white; 
-    padding: 10px 15px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    margin-bottom: 10px; 
+
+#container {
+    max-width: 800px; 
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-        #container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
+
+h1 center {
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 分類區塊標題 */
+.faqcatblock h3 {
+    color: #333;
+    font-size: 1.4rem;
+    margin-top: 3rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee; 
+    position: relative;
+}
+
+
+.faqcatblock h3::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background-color: #f05a28;
+}
+
+/* 每個 FAQ 的外觀 */
+details {
+    margin-bottom: 12px;
+    border: 1px solid #eaeaea; 
+    border-radius: 8px; 
+    background-color: #fff;
+    overflow: hidden;
+    transition: all 0.3s ease; 
+}
+
+
+details[open] {
+    border-color: #f05a28; 
+    box-shadow: 0 4px 12px rgba(240, 90, 40, 0.1); 
+}
+
+
+summary {
+    padding: 16px 20px; 
+    font-size: 1.05rem;
+    color: #333;
+    cursor: pointer; 
+    background-color: #fff;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    
+    /* 隱藏預設三角形改用 Flex 排版 */
+    list-style: none; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 隱藏 Safari 的預設三角形 */
+summary::-webkit-details-marker {
+    display: none; 
+}
+
+/* 滑鼠移過去的效果 */
+summary:hover {
+    background-color: #fff6f3; 
+    color: #f05a28; 
+}
+
+summary::after {
+    content: '+';
+    color: #f05a28;
+    font-size: 1.4rem;
+    font-weight: 300;
+    transition: transform 0.3s ease;
+}
+
+/* 展開時加號會旋轉變成減號 */
+details[open] summary::after {
+    content: '−';
+    transform: rotate(180deg);
+}
+
+
+details p {
+    padding: 16px 20px;
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+    background-color: #fafafa; 
+    border-top: 1px solid #eaeaea;
+}
 </style>
+<br>
+<br>
 <H1 ><center>常見問題</center></H1>
 <div id="container"></div>
 <script>
@@ -79,7 +171,7 @@ summary {
 				</details>
 				`;
 		}
-		htmlContent += `</div>`;
+		htmlContent += `</div> `;
 	}
 	//放到一個叫container的id 
         document.getElementById('container').innerHTML = htmlContent;
