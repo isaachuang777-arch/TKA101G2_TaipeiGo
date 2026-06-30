@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 <meta charset="UTF-8">
 <title>會員註冊</title>
 
@@ -102,6 +106,31 @@ body {
     margin-top: 6px;
     font-size: 13px;
     color: #888;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #888;
+    font-size: 18px;
+    padding: 0;
+}
+
+.toggle-password:hover {
+    color: #ff7a00;
 }
 
 .btn-register-submit {
@@ -230,14 +259,30 @@ body {
                 </div>
 
                 <div class="form-group">
-                    <label>密碼</label>
-                    <input type="password"
-                           th:field="*{custPassword}"
-                           placeholder="請輸入密碼">
-                    <div class="password-hint">
-                        密碼需 8~20 字元，且包含大寫、小寫英文字母及數字。
-                    </div>
-                </div>
+				    <label>密碼</label>
+				
+				    <div class="password-wrapper">
+				
+				        <input type="password"
+				               id="custPassword"
+				               th:field="*{custPassword}"
+				               placeholder="請輸入密碼">
+				
+				        <button type="button"
+				                class="toggle-password"
+				                onclick="togglePassword()">
+				
+				            <i id="toggleIcon" class="bi bi-eye"></i>
+				
+				        </button>
+				
+				    </div>
+				
+				    <div class="password-hint">
+				        密碼需 8~20 字元，且包含大寫、小寫英文字母及數字。
+				    </div>
+				
+				</div>
 
             </div>
 
@@ -257,6 +302,30 @@ body {
     </div>
 
 </div>
+
+<script>
+function togglePassword() {
+
+    const passwordInput = document.getElementById("custPassword");
+    const icon = document.getElementById("toggleIcon");
+
+    if (passwordInput.type === "password") {
+
+        passwordInput.type = "text";
+
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+
+    } else {
+
+        passwordInput.type = "password";
+
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+
+    }
+}
+</script>
 
 <div th:replace="~{frontend/index/footer :: footer}"></div>
 

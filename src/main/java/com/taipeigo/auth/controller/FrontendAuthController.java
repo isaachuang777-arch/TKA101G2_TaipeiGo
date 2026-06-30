@@ -278,5 +278,150 @@ public class FrontendAuthController {
         }
     }
     
+    // 忘記密碼頁面
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordPage() {
+        return "frontend/auth/forgot-password";
+    }
+    
+    // 寄送忘記密碼驗證信
+    @PostMapping("/forgot-password")
+    public String forgotPassword(
+            @RequestParam("email") String email,
+            Model model) {
+
+        CustomerVO customerVO = customerService.findByEmail(email);
+
+        if (customerVO == null) {
+        	
+            model.addAttribute(
+                    "errorMessage",
+                    "查無此電子信箱。");
+            
+            return "frontend/auth/forgot-password";
+        }
+        
+        String token = UUID.randomUUID().toString();
+
+        stringRedisTemplate.opsForValue().set(
+                "resetpwd:" + token,
+                customerVO.getCustId().toString(),
+                30,
+                TimeUnit.MINUTES
+        );
+
+        String resetUrl = "http://localhost:8080/auth/reset-password?token=" + token;
+        
+        sendResetPasswordEmail(customerVO.getCustEmail(), resetUrl);
+        
+        model.addAttribute(
+                "successMessage",
+                "重設密碼信已寄出，請前往您的電子郵件收信。"
+        );
+
+        return "frontend/auth/forgot-password";
+    }
+    
+    private void sendResetPasswordEmail(String toEmail, String resetUrl) {
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(mailUsername, mailPassword);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(mailUsername, "TaipeiGo 會員中心"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject("TaipeiGo 重設密碼通知");
+
+            message.setText(
+                    "我們收到您的密碼重設申請。\n\n"
+                  + "請點擊以下連結重新設定密碼：\n"
+                  + resetUrl
+                  + "\n\n此連結 30 分鐘內有效。"
+                  + "\n\n如果您沒有申請重設密碼，請忽略此信。"
+            );
+
+            Transport.send(message);
+
+            System.out.println("重設密碼信寄送成功");
+
+        } catch (Exception e) {
+
+            System.out.println("重設密碼信寄送失敗");
+            e.printStackTrace();
+
+        }
+    }
+    
+    // 顯示重設密碼頁面
+    @GetMapping("/reset-password")
+    public String showResetPasswordPage(
+            @RequestParam("token") String token,
+            Model model) {
+
+        String custId = stringRedisTemplate.opsForValue().get("resetpwd:" + token);
+
+        if (custId == null) {
+            model.addAttribute("errorMessage", "重設密碼連結已失效，請重新申請。");
+            return "frontend/auth/forgot-password";
+        }
+
+        model.addAttribute("token", token);
+
+        return "frontend/auth/reset-password";
+    }
+    
+    
+    // 處理重設密碼
+    @PostMapping("/reset-password")
+    public String resetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        String custId = stringRedisTemplate.opsForValue().get("resetpwd:" + token);
+
+        if (custId == null) {
+            model.addAttribute("errorMessage", "重設密碼連結已失效，請重新申請。");
+            return "frontend/auth/forgot-password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("errorMessage", "兩次輸入的密碼不一致。");
+            model.addAttribute("token", token);
+            return "frontend/auth/reset-password";
+        }
+        
+        if (!newPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,20}$")) {
+            model.addAttribute(
+                    "errorMessage",
+                    "密碼需 8~20 字元，且必須包含大寫、小寫英文字母及數字，不可包含特殊字元"
+            );
+            model.addAttribute("token", token);
+            return "frontend/auth/reset-password";
+        }
+
+        CustomerVO customerVO = customerService.getOneCustomer(Integer.valueOf(custId));
+        customerVO.setCustPassword(newPassword);
+        customerService.updateCustomer(customerVO);
+
+        stringRedisTemplate.delete("resetpwd:" + token);
+
+        redirectAttributes.addFlashAttribute("successMsg", "密碼重設成功，請使用新密碼登入。");
+
+        return "redirect:/auth/login";
+    }
     
 }

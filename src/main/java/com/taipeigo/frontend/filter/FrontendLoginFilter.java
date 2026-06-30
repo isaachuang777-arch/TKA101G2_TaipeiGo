@@ -34,7 +34,10 @@ public class FrontendLoginFilter extends OncePerRequestFilter {
         if (requestURI.contains("/auth/login")
                 || requestURI.contains("/auth/register")
                 || requestURI.contains("/auth/verify")
-                || requestURI.contains("/api/auth/me")) {
+                || requestURI.contains("/auth/forgot-password")
+                || requestURI.contains("/auth/reset-password")
+                || requestURI.contains("/api/auth/me")
+                || requestURI.contains("/frontend/cart/count")) {
 
             filterChain.doFilter(request, response);
             return;
