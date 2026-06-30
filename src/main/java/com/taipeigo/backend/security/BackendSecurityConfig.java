@@ -40,8 +40,8 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
     
     //改密碼頁
     .requestMatchers("/backend/admin/profile/resetPw").hasAnyRole("NEED_RESET_PW", "SuperAdmin", "訂單部", "客服中心", "資訊部","BASE_ADMIN")
-    // 實習生也能進首頁跟查看個人資料
-    .requestMatchers("/backend/admin/profile/**", "/backend/dashboard/**").hasRole("BASE_ADMIN")
+    // 限制實習生可以看的頁面
+    .requestMatchers("/backend/admin/profile/**", "/backend/dashboard/**","/backend/faq/**" ).hasRole("BASE_ADMIN")
     //讓所有登入的人都能看 403 畫面
     .requestMatchers("/backend/403").authenticated()
 
@@ -55,8 +55,8 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
     //客服中心權限
     .requestMatchers("/backend/cs/**", "/backend/customer/**").hasAnyRole("客服中心", "SuperAdmin")
 
-
-    .requestMatchers("/backend/**").hasAnyRole("SuperAdmin","訂單部", "客服中心", "資訊部","BASE_ADMIN")
+    //可能的新頁面 實習生不會看到
+    .requestMatchers("/backend/**").hasAnyRole("SuperAdmin","訂單部", "客服中心", "資訊部")
 
     //上面沒有的~例如前台不管
     .anyRequest().permitAll()
