@@ -189,10 +189,10 @@
 						    <div class="mb-3 text-center">
 
 							    <img th:if="${customerVO.custImg != null and customerVO.custImg != ''}"
-							         th:src="@{'/images/' + ${customerVO.custImg}}"
-							         class="img-thumbnail"
-							         style="width:120px;height:120px;object-fit:cover;border-radius:12px;"
-							         alt="會員頭像">
+								     th:src="@{'/images/' + ${customerVO.custImg} + '?v=' + ${#dates.createNow().time}}"
+								     class="img-thumbnail"
+								     style="width:120px;height:120px;object-fit:cover;border-radius:12px;"
+								     alt="會員頭像">
 							
 							    <img th:unless="${customerVO.custImg != null and customerVO.custImg != ''}"
 							         th:src="@{/images/customer/default-avatar.png}"

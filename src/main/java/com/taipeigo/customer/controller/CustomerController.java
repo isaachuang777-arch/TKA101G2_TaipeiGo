@@ -31,9 +31,7 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    // =========================
-    // 1️⃣ 查全部（列表頁）
-    // =========================
+    // 查全部（列表頁）
     @GetMapping("/list")
     public String listAllCustomers(
             @RequestParam(defaultValue = "0") int page,
@@ -62,9 +60,7 @@ public class CustomerController {
         return "backend/customer/listAllCustomer";
     }
 
-    // =========================
-    // 2️⃣ 去新增頁
-    // =========================
+    // 去新增頁
     @GetMapping("/add")
     public String addPage(Model model) {
     	
@@ -73,9 +69,7 @@ public class CustomerController {
         return "backend/customer/addCustomer";
     }
 
-    // =========================
-    // 3️⃣ 新增資料
-    // =========================
+    // 新增資料
     @PostMapping("/insert")
     public String insert(
             @Valid CustomerVO customerVO,
@@ -108,9 +102,8 @@ public class CustomerController {
         return "redirect:/backend/customer/list";
     }
     
-    // =========================
-    // 4️⃣ 去修改頁（先查資料）
-    // =========================
+
+    // 去修改頁（先查資料）
     @GetMapping("/edit")
     public String editPage(@RequestParam("id") Integer id, Model model) {
 
@@ -124,9 +117,7 @@ public class CustomerController {
         return "backend/customer/updateCustomer";
     }
 
-    // =========================
-    // 5️⃣ 修改資料
-    // =========================
+    // 修改資料
     @PostMapping("/update")
     public String update(
             @Valid CustomerVO customerVO,
@@ -192,19 +183,33 @@ public class CustomerController {
         		return "redirect:/backend/customer/list";
     }
 
-    // =========================
-    // 6️⃣ 刪除資料
-    // =========================
-    @GetMapping("/delete")
-    public String delete(@RequestParam("id") Integer id) {
+    // 停權會員（不刪除資料）
+    @GetMapping("/suspend")
+    public String suspend(@RequestParam("id") Integer id) {
 
-        customerService.deleteCustomer(id);
+        CustomerVO customerVO = customerService.getOneCustomer(id);
+
+        customerVO.setCustStatus(2); // 2 = 停權
+
+        customerService.updateCustomer(customerVO);
+
+        return "redirect:/backend/customer/list";
+    }
+    
+    // 啟用帳號
+    @GetMapping("/activate")
+    public String activate(@RequestParam("id") Integer id) {
+
+        CustomerVO customerVO = customerService.getOneCustomer(id);
+
+        customerVO.setCustStatus(1); // 1 = 啟用
+
+        customerService.updateCustomer(customerVO);
+
         return "redirect:/backend/customer/list";
     }
 
-    // =========================
-    // 7️⃣ 查單筆（查看詳情）
-    // =========================
+    // 查單筆（查看詳情）
     @GetMapping("/view")
     public String viewOne(@RequestParam("id") Integer id, Model model) {
 
