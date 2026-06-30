@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class AdminService {
@@ -31,6 +32,8 @@ public class AdminService {
 	private AdminRepository adminRepository;
 	@Autowired
 	private AdmPerRepository admPerRepository;
+	@Autowired
+    private PasswordEncoder passwordEncoder;
 
 	// getAllAdmin全查
 	public List<AdminVO> getAllAdmin() {
@@ -53,22 +56,22 @@ public class AdminService {
 		return adminRepository.findByadmAcc(admAcc);
 	}
 
-// Login登入時會先用VO裡面的getAdmStatus()看是不是停權了
-	public AdminVO adminLogin(String admAcc, String admPw) {
-		AdminVO vo = adminRepository.findByAdmAccAndAdmPw(admAcc, admPw);
+// Login登入時會先用VO裡面的getAdmStatus()看是不是停權了 [SpringBoot已經接管登入]
+	// public AdminVO adminLogin(String admAcc, String admPw) {
+	// 	AdminVO vo = adminRepository.findByAdmAccAndAdmPw(admAcc, admPw);
 
 //PW或空帳檢查
-		if(vo == null) {
-			throw new RuntimeException("錯誤帳號或密碼，如有需要請聯絡IT管理員。");
-		}
+		// if(vo == null) {
+		// 	throw new RuntimeException("錯誤帳號或密碼，如有需要請聯絡IT管理員。");
+		// }
 		
 		
 //停權檢查
-		if (vo.getAdmStatus() == 0) {
-			throw new RuntimeException("此帳號已被停權！如有需要請聯絡IT管理員。");
-		}
-		return vo;
-	}
+	// 	if (vo.getAdmStatus() == 0) {
+	// 		throw new RuntimeException("此帳號已被停權！如有需要請聯絡IT管理員。");
+	// 	}
+	// 	return vo;
+	// }
 
 // 建立新帳號+防呆+權限新增
 	@Transactional // 因為牽涉到兩張表 (ADMIN 與 ADM_PER) 的新增
@@ -87,6 +90,11 @@ public class AdminService {
         if (!adminVO.getAdmPw().matches("^[\\s\\S]{8,}$")) {
             throw new RuntimeException("新增失敗：密碼必須為 8 碼以上的英文、數字或符號！");
         }
+		String rawPw = adminVO.getAdmPw();
+		//加密
+		String encodedPw = passwordEncoder.encode(rawPw);
+		//把加密的密碼塞回去
+		adminVO.setAdmPw(encodedPw);
 
 		
 // 防呆 帳號是否已存在
@@ -171,8 +179,11 @@ public class AdminService {
 		//組新密碼
 		String newAdmPw = adminVO.getAdmAcc() + todayStr;
 
+		//密碼加密
+		String encodedPw = passwordEncoder.encode(newAdmPw);
+
 		//OverWrite 密碼+改狀態
-		adminVO.setAdmPw(newAdmPw);
+		adminVO.setAdmPw(encodedPw);
 		adminVO.setAdmStatus(AdminVO.StatusForcetoChangePW);
 
 		//存進DB
@@ -185,14 +196,21 @@ public class AdminService {
 	public void adminResetPw(Integer admId, String oldPw, String newPw){
 		AdminVO adminVO = adminRepository.findById(admId).orElseThrow(() -> new RuntimeException("修改失敗：找不到您的帳號資料！"));
 		
-		//防呆 再打一次密碼
-		if (!adminVO.getAdmPw().equals(oldPw)) {
+		//防呆 再打一次密碼[明碼版]
+		// if (!adminVO.getAdmPw().equals(oldPw)) {
+		// 	throw new RuntimeException("修改失敗：您輸入的舊密碼不正確！");
+		// }
+		//防呆 再對一次密碼 [加密版] '叫加密器去 match這個碼 對不對'
+		if (!passwordEncoder.matches(oldPw, adminVO.getAdmPw())) {
 			throw new RuntimeException("修改失敗：您輸入的舊密碼不正確！");
 		}
 
+
+		//密碼加密
+		String encodedPw = passwordEncoder.encode(newPw);
 		
-		//寫新密碼進去 status也改回enable 他就能進去了
-		adminVO.setAdmPw(newPw);
+		//寫新的已加密 密碼進去 status也改回enable 他就能進去了
+		adminVO.setAdmPw(encodedPw); //
 		adminVO.setAdmStatus(AdminVO.StatusEnabled);
 
 		adminRepository.save(adminVO);

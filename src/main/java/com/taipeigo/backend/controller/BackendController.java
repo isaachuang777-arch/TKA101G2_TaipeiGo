@@ -30,6 +30,10 @@ public class BackendController {
 	
 	    return "backend/dashboard/index";
 	}
-    
+    @GetMapping("/403")
+    public String show403 (){
+        return "backend/403";
+    }
+
 }
 

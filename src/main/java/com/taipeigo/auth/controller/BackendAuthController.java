@@ -37,43 +37,43 @@ public class BackendAuthController {
         return "backend/auth/login"; // 導向 templates 裡的 login.html
     }
 
-// 登入
-@PostMapping("/auth/login")
-	public String adminLogin(@RequestParam("admAcc") String admAcc,
-							@RequestParam("admPw") String admPw,
-							Model model, HttpSession session) {
-		try {
-            //Service的adminLogin
-            AdminVO adminVO =adminService.adminLogin(admAcc, admPw);
-            //有找到 可以登入
-            if(adminVO != null) {
-                session.setAttribute("adminVO", adminVO);
+// 登入 [/loginProcess 已被Spring Secuity 接了]
+// @PostMapping("/auth/login")
+// 	public String adminLogin(@RequestParam("admAcc") String admAcc,
+// 							@RequestParam("admPw") String admPw,
+// 							Model model, HttpSession session) {
+// 		try {
+//             //Service的adminLogin
+//             AdminVO adminVO =adminService.adminLogin(admAcc, admPw);
+//             //有找到 可以登入
+//             if(adminVO != null) {
+//                 session.setAttribute("adminVO", adminVO);
                 
-                //有了Filter後新增:強登後可以回去剛才被踢掉的頁面[reUrl]
-                //先去Session找有沒有reUrl 如果有 就先redirect去剛被踢的
-                String reUrl = (String) session.getAttribute("reUrl");
-                if(reUrl !=null) {
-                	//先移除session裡面的redirectUrl
-                	session.removeAttribute("reUrl");
-                	//再redirect String裡面存的redirectUrl
-                	return "redirect:"+ reUrl;
-                }
+//                 //有了Filter後新增:強登後可以回去剛才被踢掉的頁面[reUrl]
+//                 //先去Session找有沒有reUrl 如果有 就先redirect去剛被踢的
+//                 String reUrl = (String) session.getAttribute("reUrl");
+//                 if(reUrl !=null) {
+//                 	//先移除session裡面的redirectUrl
+//                 	session.removeAttribute("reUrl");
+//                 	//再redirect String裡面存的redirectUrl
+//                 	return "redirect:"+ reUrl;
+//                 }
                 
-                return "redirect:/backend/dashboard/index";
-            }
-		}catch(RuntimeException e){
-			model.addAttribute("errorMsg", e.getMessage());
-		}
+//                 return "redirect:/backend/dashboard/index";
+//             }
+// 		}catch(RuntimeException e){
+// 			model.addAttribute("errorMsg", e.getMessage());
+// 		}
 				
-		return "backend/auth/login";
-	}
+// 		return "backend/auth/login";
+// 	}
 
-//登出
-@PostMapping("/auth/logout")
-    public String logout (HttpSession session) {
-        	session.removeAttribute("adminVO");
-        	//session.invalidate();
-            return "redirect:/backend/auth/login";
-    }
+//登出 [/logout 已被Spring Secuity 接了]
+// @PostMapping("/auth/logout")
+//     public String logout (HttpSession session) {
+//         	session.removeAttribute("adminVO");
+//         	//session.invalidate();
+//             return "redirect:/backend/auth/login";
+//     }
 	
 }

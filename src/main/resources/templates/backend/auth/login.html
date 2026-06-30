@@ -104,15 +104,36 @@
         
         <h2 class="login-title">TaipeiGO 後台系統</h2>
         <p class="login-subtitle">請輸入您的系統管理員帳號與密碼</p>
+        <div>開發用 : 上線前刪掉<br>
+        boss ->全部通行<br>
+        order_alice -> 訂單部權限限定<br>
+        cs_bob -> 客服權限限定<br>
+        it_charlie -> 資訊部權限限定<br>
+        intern_dave -> 實習生<br>
+            密碼 : 123456<br>
+        </div>
         
-        <!-- 顯示錯誤訊息 (使用 Bootstrap Alert) -->
-        <div th:if="${errorMsg != null}" class="alert alert-danger d-flex align-items-center justify-content-center" role="alert" style="padding: 10px 15px; font-size: 0.9rem; white-space: nowrap;">
+        <!-- Spring Secuity的錯誤/成功提示-->
+        <!-- 登入失敗的錯誤訊息 -->
+        <div th:if="${param.error}" class="alert alert-danger d-flex align-items-center justify-content-center" role="alert" style="padding: 10px 15px; font-size: 0.9rem; white-space: nowrap;">
             <i class="fa-solid fa-triangle-exclamation me-2"></i>
-            <div th:text="${errorMsg}"></div>
+            <div>帳號或密碼錯誤，或是帳號遭停權！</div>
+        </div>
+
+        <!-- 登出成功的提示訊息 -->
+        <div th:if="${param.logout}" class="alert alert-success d-flex align-items-center justify-content-center" role="alert" style="padding: 10px 15px; font-size: 0.9rem; white-space: nowrap;">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            <div>您已成功登出系統。</div>
+        </div>
+
+        <!--綠訊息-->
+        <div th:if="${successMsg != null}" class="alert alert-success d-flex align-items-center justify-content-center" role="alert" style="padding: 10px 15px; font-size: 0.9rem; white-space: nowrap;">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            <div th:text="${successMsg}"></div>
         </div>
 
         <!-- 表單送出到 Controller -->
-        <form th:action="@{/backend/auth/login}" method="post">
+        <form th:action="@{/backend/auth/loginProcess}" method="post">
             
             <div class="mb-4">
                 <div class="input-group input-group-lg">

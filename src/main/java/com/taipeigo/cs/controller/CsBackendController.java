@@ -74,6 +74,7 @@ public class CsBackendController {
 		model.addAttribute("pageResult", pageResult);
 		model.addAttribute("urgentCases", pageResult.getContent());
 		
+		model.addAttribute("activePage", "cscenter");
 		return "backend/cs/index";
 	}
 	//listAll萬用頁
@@ -114,6 +115,8 @@ public class CsBackendController {
 		//
         model.addAttribute("pageResult", pageResult);
 		model.addAttribute("csList", pageResult.getContent());
+
+		model.addAttribute("activePage", "cscenter");
 		return "backend/cs/listAll";
 	}
 	//讀案件
@@ -124,8 +127,10 @@ public class CsBackendController {
 		List<CsMsgVO> csMsgList = csMsgRepository.findByCsVO_CsId(csId);
 		model.addAttribute("csVO", csVO);
 		model.addAttribute("csMsgList", csMsgList);
+
+		model.addAttribute("activePage", "cscenter");
 		return "backend/cs/view";
-		
+	
 	}
 	//管理員回覆或內部訊息(Woknote)
 		@PostMapping("/backendReply")

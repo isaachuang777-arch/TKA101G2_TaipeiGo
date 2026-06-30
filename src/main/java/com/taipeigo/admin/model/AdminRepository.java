@@ -16,8 +16,8 @@ public interface AdminRepository extends JpaRepository<AdminVO, Integer> {
     // 用帳號狀態admStatus找人(List)
     List<AdminVO> findByadmStatus(Byte admStatus);
 
-    // 登入前置作業
-    AdminVO findByAdmAccAndAdmPw(String admAcc, String admPw);
+    // 登入前置作業[SpringBoot已接管登入]
+    // AdminVO findByAdmAccAndAdmPw(String admAcc, String admPw);
 
     //模糊search
     List<AdminVO> findByAdmAccContainingOrAdmNameContaining(String keyword1, String keyword2);
