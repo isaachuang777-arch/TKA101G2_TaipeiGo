@@ -27,7 +27,11 @@
 	<!-- 首頁內容 -->
 	<main>
 		<section class="home-section">
-			<h2>熱門景點</h2>
+			<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px;">
+				<h2 style="margin: 0;">熱門景點</h2>
+				<a href="/ticket"
+					style="color: #ff5722; text-decoration: none; font-size: 15px; font-weight: bold;">查看所有門票 &gt;</a>
+			</div>
 			<div class="ticket-grid" id="ticketGridContainer">
 				<div th:each="ticket : ${popularTickets}" class="ticket-card"
 					th:onclick="|location.href='@{/ticket/detail(ticketId=${ticket.ticketId})}'|">
@@ -64,7 +68,7 @@
 		</section>
 
 		<section class="home-section">
-			<h2>推薦行程</h2>
+			<h2>推薦活動</h2>
 			<div th:replace="~{frontend/activity/randomActivitySection :: randomActivitySection}"></div>
 			<p>商品相關</p>
 		</section>
