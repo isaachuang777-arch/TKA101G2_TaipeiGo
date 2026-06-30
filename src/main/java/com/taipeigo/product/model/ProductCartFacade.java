@@ -78,6 +78,9 @@ public class ProductCartFacade {
 
                 dto.setSubtotal(dto.getPrice()* quantity);
 
+            } else {
+
+                dto.setSubtotal(0);
             }
 
             // 抓門票圖片

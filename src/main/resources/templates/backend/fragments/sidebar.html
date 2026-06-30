@@ -296,7 +296,6 @@
 
         <details class="admin-menu"
          th:attr="open=${activePage == 'ticket'
-                      or activePage == 'product'
                       or activePage == 'ticketCategory'
                       or activePage == 'ticketSerial'
                       or activePage == 'activity'} ? 'open' : null">
@@ -307,12 +306,6 @@
 		    </summary>
 
             <div class="submenu">
-                <a th:href="@{/backend/product}"
-                    th:classappend="${activePage == 'product'} ? ' active'">
-                    <i class="bi bi-box-seam"></i>
-                    <span>商品總管</span>
-                </a>
-
                 <a th:href="@{/backend/ticket/list}"
                     th:classappend="${activePage == 'ticket'} ? ' active'">
                     <i class="bi bi-ticket-perforated"></i>

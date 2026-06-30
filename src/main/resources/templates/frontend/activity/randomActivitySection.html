@@ -12,8 +12,8 @@
         <!-- 引入 activity-list.css 確保網格與卡片樣式能在首頁正常顯示 -->
         <link rel="stylesheet" th:href="@{/css/activity/activity-list.css}">
 
-        <!-- 存放隨機區塊的容器 -->
-        <div id="randomThemeSectionContainer" style="max-width: 1200px; margin: 10px auto 60px auto; padding: 0 20px;">
+        <!-- 存放隨機區塊的容器 (移除多餘的內外邊距，因為外層 index.html 的 home-section 已經包辦了) -->
+        <div id="randomThemeSectionContainer" style="width: 100%;">
             <p style="text-align: center; color: #999;">為您推薦精選行程載入中...</p>
         </div>
 
@@ -37,18 +37,18 @@
                             return;
                         }
 
-                        // 1. 去掉原本的 H2 標題，改成靠右的「查看所有活動」文字連結
-                        const sectionDiv = document.createElement('div');
-                        sectionDiv.className = 'theme-section';
-                        sectionDiv.innerHTML = `
-                            <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-                                <a href="/activity" style="color: #ff5722; text-decoration: none; font-size: 15px; font-weight: bold;">查看所有活動 &gt;</a>
-                            </div>
+                        // 1. 加入靠右的「查看所有活動」文字連結 
+                        // (使用 CSS 負邊距魔法：往上拉 -46px，剛好讓它跟 index.html 的 h2 標題待在同一行水平線上，同時完美消除多餘的上下留白距離！)
+                        const linkContainer = document.createElement('div');
+                        linkContainer.style = 'display: flex; justify-content: flex-end; margin-top: -46px; margin-bottom: 26px; position: relative; z-index: 10;';
+                        linkContainer.innerHTML = `
+                            <a href="/activity" style="color: #ff5722; text-decoration: none; font-size: 15px; font-weight: bold;">查看所有活動 &gt;</a>
                         `;
+                        container.appendChild(linkContainer);
 
-                        // 2. 建立活動網格 (沿用 .activity-grid 樣式)
+                        // 2. 建立活動網格 (改用 index.html 的 ticket-grid 樣式)
                         const gridDiv = document.createElement('div');
-                        gridDiv.className = 'activity-grid';
+                        gridDiv.className = 'ticket-grid';
 
                         // 3. 把那 3 張卡片塞進去
                         targetSection.activities.forEach(activity => {
@@ -56,33 +56,38 @@
                             // 圖片縮圖處理
                             let imageUrl = '/images/default-activity.jpg';
                             if (activity.activityImage && activity.activityImage.length > 0) {
-                                let originalSrc = activity.activityImage[0].activityImageSrc;
-                                let parts = originalSrc.split('/');
-                                let filename = parts.pop();
-                                let baseName = filename.substring(0, filename.lastIndexOf('.'));
-                                if (!baseName) baseName = filename;
-                                imageUrl = '/images/activity/thumb_' + baseName + '.jpg';
+                                imageUrl = activity.activityImage[0].activityImageSrc;
                             }
 
-                            // 產生 HTML
+                            // 計算一個假的「原價」(例如真實價格的 1.2 倍)，因為目前資料庫沒有存原價欄位
+                            const currentPrice = activity.adultPrice || 0;
+                            const originalPrice = Math.round(currentPrice * 1.25);
+
+                            // 產生 HTML (完全模仿 index.html 裡的 ticket-card 結構)
                             const cardHtml = `
-                                <a href="/activity/detail?activityId=${activity.activityId}" class="activity-card" style="text-decoration: none;">
-                                    <div class="card-img-placeholder" style="background-image: url('${imageUrl}')"></div>
-                                    <div class="card-content">
-                                        <h3 class="card-title">${activity.activityName}</h3>
-                                        <p class="card-desc">${activity.activityDesc || '這是一個超讚的體驗行程！'}</p>
-                                        <div class="card-footer">
-                                            <div><span class="card-discount-tag">查看詳情</span></div>
-                                            <div class="card-price">特價 TWD ${activity.adultPrice || '0'}</div>
+                                <div class="ticket-card" onclick="location.href='/activity/detail?activityId=${activity.activityId}'" style="cursor: pointer;">
+                                    <div class="ticket-image-box">
+                                        <img src="${imageUrl}" alt="活動封面">
+                                    </div>
+                                    <div class="ticket-info">
+                                        <h3 class="ticket-title">${activity.activityName}</h3>
+                                        <p class="ticket-desc">${activity.activityDesc || '這是一個超讚的體驗行程！'}</p>
+                                        <div class="ticket-footer">
+                                            <div><span class="ticket-tag">查看詳情</span></div>
+                                            <div class="ticket-price-box">
+                                                <div class="price-wrapper">
+                                                    <span class="original-price">NT$ ${originalPrice}</span>
+                                                    <span class="current-price">NT$ <strong>${currentPrice}</strong> 起</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </a>
+                                </div>
                             `;
                             gridDiv.insertAdjacentHTML('beforeend', cardHtml);
                         });
 
-                        sectionDiv.appendChild(gridDiv);
-                        container.appendChild(sectionDiv);
+                        container.appendChild(gridDiv);
                     })
                     .catch(err => console.error("載入隨機活動失敗:", err));
             });

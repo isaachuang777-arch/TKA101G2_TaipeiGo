@@ -219,12 +219,7 @@ function renderCards(activityList) {
 function buildCardHtml(activity) {
     let imageUrl = '/images/default-activity.jpg';
     if (activity.activityImage && activity.activityImage.length > 0) {
-        let originalSrc = activity.activityImage[0].activityImageSrc;
-        let parts = originalSrc.split('/');
-        let filename = parts.pop();
-        let baseName = filename.substring(0, filename.lastIndexOf('.'));
-        if (!baseName) baseName = filename;
-        imageUrl = '/images/activity/thumb_' + baseName + '.jpg';
+        imageUrl = activity.activityImage[0].activityImageSrc;
     }
 
     return `

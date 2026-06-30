@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>台北GO了沒 - 活動探索</title>
     <!-- 1. 完美對齊團隊共用的 CSS -->
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/index/header.css}">
+    <link rel="stylesheet" th:href="@{/css/index/footer.css}">
     <link rel="stylesheet" th:href="@{/css/index/heroSearch.css}">
 
     <!-- 引入 FontAwesome CDN (為了更精緻的左右箭頭圖示) -->
@@ -65,6 +65,7 @@
     <!-- ============================== -->
     <div th:replace="~{frontend/index/footer :: footer}"></div>
     <!-- 3. 你專屬的神經系統 JS -->
+    <script th:src="@{/js/index/header.js}"></script>
     <script th:src="@{/js/activity/activity-list.js}"></script>
 </body>
 

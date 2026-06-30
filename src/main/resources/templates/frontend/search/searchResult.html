@@ -7,8 +7,8 @@
     <title>台北GO了沒 - 搜尋結果</title>
 
     <!-- 載入全站共通樣式 (維持風格一致) -->
-    <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/index/header.css}">
+    <link rel="stylesheet" th:href="@{/css/index/footer.css}">
 
     <!-- 載入專屬搜尋頁面的樣式 -->
     <link rel="stylesheet" th:href="@{/css/product/searchResult.css}">
@@ -17,7 +17,7 @@
     <link rel="stylesheet" th:href="@{/css/activity/activity-list.css}">
 
     <!-- 載入組員的 Hero Banner 樣式 -->
-    <link rel="stylesheet" th:href="@{/css/heroBanner.css}">
+    <link rel="stylesheet" th:href="@{/css/index/heroBanner.css}">
 
     <!-- FontAwesome icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -67,6 +67,9 @@
 
     <!-- 載入組員的 Hero Banner JS (負責輪播圖效果) -->
     <script th:src="@{/js/heroBanner.js}"></script>
+
+    <!-- 載入 Header JS (負責購物車數量提示等) -->
+    <script th:src="@{/js/index/header.js}"></script>
 
 </body>
 

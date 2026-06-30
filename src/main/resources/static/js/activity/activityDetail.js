@@ -308,6 +308,65 @@ function updateTotalAndPrice() {
     
     document.getElementById('totalTicketsCount').innerText = totalQty;
     document.getElementById('totalPriceAmount').innerText = totalPrice.toLocaleString();
+
+    // =============== 新增：檢查庫存以控制按鈕狀態 ===============
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const bookingBtn = document.getElementById('bookingBtn');
+    
+    // 如果這兩個按鈕存在（不在預覽模式），才需要檢查
+    if (addToCartBtn && bookingBtn) {
+        if (totalQty > 0) {
+            // 發送請求問後端庫存夠不夠
+            fetch(`/activities/checkStock?activityId=${activityId}&quantity=${totalQty}`)
+                .then(res => res.json())
+                .then(hasStock => {
+                    if (hasStock) {
+                        // 庫存足夠，恢復按鈕
+                        addToCartBtn.style.pointerEvents = 'auto';
+                        addToCartBtn.style.backgroundColor = '#fff';
+                        addToCartBtn.style.color = '#ff5b00';
+                        addToCartBtn.style.borderColor = '#ff5b00';
+                        addToCartBtn.innerText = '加入購物車';
+
+                        bookingBtn.style.pointerEvents = 'auto';
+                        bookingBtn.style.backgroundColor = '#ff5b00';
+                        bookingBtn.style.color = '#fff';
+                        bookingBtn.style.borderColor = '#ff5b00';
+                        bookingBtn.innerText = '立即購買';
+                    } else {
+                        // 庫存不足，按鈕反灰
+                        addToCartBtn.style.pointerEvents = 'none';
+                        addToCartBtn.style.backgroundColor = '#f1f5f9';
+                        addToCartBtn.style.color = '#94a3b8';
+                        addToCartBtn.style.borderColor = '#cbd5e1';
+                        addToCartBtn.innerText = '目前庫存不足';
+
+                        bookingBtn.style.pointerEvents = 'none';
+                        bookingBtn.style.backgroundColor = '#cbd5e1';
+                        bookingBtn.style.color = '#fff';
+                        bookingBtn.style.borderColor = '#cbd5e1';
+                        bookingBtn.innerText = '目前庫存不足';
+                    }
+                })
+                .catch(err => {
+                    console.error("庫存檢查失敗:", err);
+                });
+        } else {
+            // 數量為 0 時，恢復預設狀態
+            addToCartBtn.style.pointerEvents = 'auto';
+            addToCartBtn.style.backgroundColor = '#fff';
+            addToCartBtn.style.color = '#ff5b00';
+            addToCartBtn.style.borderColor = '#ff5b00';
+            addToCartBtn.innerText = '加入購物車';
+
+            bookingBtn.style.pointerEvents = 'auto';
+            bookingBtn.style.backgroundColor = '#ff5b00';
+            bookingBtn.style.color = '#fff';
+            bookingBtn.style.borderColor = '#ff5b00';
+            bookingBtn.innerText = '立即購買';
+        }
+    }
+    // =========================================================
 }
 
 // 點擊預訂與購物車時的防呆驗證
@@ -393,7 +452,7 @@ function validateBooking(event, action = 'cart', isAutoTrigger = false) {
                 if (response.ok) {
                     successCount++;
                 } else {
-                    console.error("加入購物車失敗: " + specInfo.type);
+                    // 已移除 console.error 錯誤日誌
                 }
             });
         });

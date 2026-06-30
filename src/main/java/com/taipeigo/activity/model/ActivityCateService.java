@@ -106,8 +106,15 @@ public class ActivityCateService {
     public ActivityCateVO  saveCategory(ActivityCateVO cate){
 
         if(cate.getActivityCateId() == null){
-
             cate.setIsActive(1);
+        } else {
+            // 防呆機制：如果是修改分類，且沒有上傳新圖片，保留舊圖片
+            if (cate.getCateIcon() == null || cate.getCateIcon().length == 0) {
+                ActivityCateVO oldCate = cateRepository.findById(cate.getActivityCateId()).orElse(null);
+                if (oldCate != null && oldCate.getCateIcon() != null) {
+                    cate.setCateIcon(oldCate.getCateIcon());
+                }
+            }
         }
 
         return cateRepository.save(cate);

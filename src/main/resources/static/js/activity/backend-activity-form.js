@@ -58,9 +58,11 @@ function initDragAndDrop() {
         }, false);
     });
 
-    // 處理點擊觸發 file input
-    dropZone.addEventListener('click', () => {
-        fileInput.click();
+    // 處理點擊觸發 file input (避免 event bubbling 造成連點閃退)
+    dropZone.addEventListener('click', (e) => {
+        if (e.target !== fileInput) {
+            fileInput.click();
+        }
     });
 
     // 處理檔案放置
