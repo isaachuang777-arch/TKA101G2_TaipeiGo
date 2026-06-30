@@ -187,7 +187,11 @@
 
                     <!-- 分頁 -->
                     <nav th:if="${totalPages > 1}">
-                        <ul class="pagination pagination-sm mb-0">
+                        <ul class="pagination pagination-sm mb-0" th:with="
+                            startPage=${T(java.lang.Math).max(0, currentPage - 2)},
+                            endPage=${T(java.lang.Math).min(totalPages - 1, startPage + 4)},
+                            adjustedStartPage=${T(java.lang.Math).max(0, endPage - 4)}
+                        ">
                             <!-- 上一頁 -->
                             <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                                 <a class="page-link"
@@ -196,11 +200,31 @@
                                 </a>
                             </li>
 
+                            <!-- 第一頁 -->
+                            <li class="page-item" th:if="${adjustedStartPage > 0}">
+                                <a class="page-link"
+                                    th:href="@{/backend/ticketCategory/list(keyword=${keyword}, page=0)}">1</a>
+                            </li>
+                            <!-- 前省略號 -->
+                            <li class="page-item disabled" th:if="${adjustedStartPage > 1}">
+                                <span class="page-link">...</span>
+                            </li>
+
                             <!-- 數字頁碼 -->
-                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            <li class="page-item" th:each="i : ${#numbers.sequence(adjustedStartPage, endPage)}"
                                 th:classappend="${i == currentPage} ? 'active'">
                                 <a class="page-link" th:text="${i + 1}"
                                     th:href="@{/backend/ticketCategory/list(keyword=${keyword}, page=${i})}"></a>
+                            </li>
+
+                            <!-- 後省略號 -->
+                            <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
+                                <span class="page-link">...</span>
+                            </li>
+                            <!-- 最後一頁 -->
+                            <li class="page-item" th:if="${endPage < totalPages - 1}">
+                                <a class="page-link" th:text="${totalPages}"
+                                    th:href="@{/backend/ticketCategory/list(keyword=${keyword}, page=${totalPages - 1})}"></a>
                             </li>
 
                             <!-- 下一頁 -->
