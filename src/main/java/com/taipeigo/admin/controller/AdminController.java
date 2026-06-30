@@ -68,6 +68,7 @@ public class AdminController {
         //丟回前端
         model.addAttribute("pageResult", pageResult);
         model.addAttribute("adminVOList", pageResult.getContent());
+        model.addAttribute("activePage", "iTadmin");
         return "backend/admin/it/listAllAdmin";
     }
 
@@ -83,6 +84,7 @@ public class AdminController {
         //List<AdmFuncVO>funcList = adminFuncService.getAlladmFuncs();
 
         model.addAttribute("adminVO", adminVO);
+        model.addAttribute("activePage", "iTadmin");
         //model.addAttribute("funcList", funcList);
         return "backend/admin/it/updateAdmin";
 
@@ -113,6 +115,7 @@ public class AdminController {
         }
         List<AdmFuncVO>funcList = adminFuncService.getAlladmFuncs();
         model.addAttribute("funcList", funcList);
+        model.addAttribute("activePage", "iTadmin");
         return "backend/admin/it/addAdmin";
     }
 //(New2)真的新增Admin
@@ -160,14 +163,15 @@ public class AdminController {
   public String showDashboard(Model model, HttpSession session) {
 	    AdminVO loginAdmin = (AdminVO) session.getAttribute("adminVO");
 	    model.addAttribute("adminVO", loginAdmin);
+        model.addAttribute("activePage", "profile");
       return "backend/admin/profile/index";
   }
 // ==========================================
 // IT 管理中心首頁 (4 格卡片入口)
 // ==========================================
 @GetMapping({"/it/index","/it/","/it"})
-public String showITDashboard() {
-        
+public String showITDashboard(Model model) {
+        model.addAttribute("activePage", "iTadmin");
     return "backend/admin/it/index";
 }
 
@@ -184,6 +188,7 @@ public String showforceResetPw(Model model , @RequestParam(value = "keyword", re
 
             model.addAttribute("pageResult", pageResult);
             model.addAttribute("adminVOList", pageResult.getContent());
+            model.addAttribute("activePage", "profile");
         }catch(RuntimeException e){
             model.addAttribute("errorMsg", e.getMessage());
         }
@@ -217,7 +222,8 @@ public String showforceResetPw(Model model , @RequestParam(value = "keyword", re
 // 掛管理員 重設密碼頁面
 // ==========================================
 @GetMapping("/profile/resetPw")
-    public String showForceChangePwPage() {
+    public String showForceChangePwPage(Model model) {
+        model.addAttribute("activePage", "profile");        
         return "backend/admin/profile/resetPw"; 
     }
 // ==========================================
@@ -242,14 +248,15 @@ public String showforceResetPw(Model model , @RequestParam(value = "keyword", re
                 // Service ->驗證密碼+改密碼+轉Status
                 adminService.adminResetPw(adminVO.getAdmId(), oldPw, newPw);
                 
-                //確保session裡的adminVO是最新的
-                adminVO.setAdmPw(newPw);
-                adminVO.setAdmStatus(AdminVO.StatusEnabled);
-                session.setAttribute("adminVO", adminVO);
+                //清掉SpringSecuity的ROLE
+                org.springframework.security.core.context.SecurityContextHolder.clearContext();
                 
-                //重設完成
-                redirectAttributes.addFlashAttribute("successMsg", "密碼修改成功！");
-                return "redirect:/backend/dashboard/index"; 
+                // 清除原本 Session 裡的 adminVO
+                session.removeAttribute("adminVO");
+                
+                // 3. 帶上成功訊息，把他踢回登入頁面
+                redirectAttributes.addFlashAttribute("successMsg", "密碼修改成功！請使用新密碼重新登入。");
+                return "redirect:/backend/auth/login"; 
                 
             } catch (RuntimeException e) {
                 // 舊密碼打錯，或是其他錯誤
@@ -290,7 +297,7 @@ public String showforceResetPw(Model model , @RequestParam(value = "keyword", re
 	    //6.回傳無權限人數
 	    long noPeradmin = adminRepository.countByAdmPerVOsIsEmpty();
 	    model.addAttribute("noPeradmin", noPeradmin);
-	    
+        model.addAttribute("activePage", "iTadmin");
 	    return "backend/admin/it/permission";
 }
 //==========================================
@@ -303,7 +310,7 @@ public String Showupdatepermission(Model model, @RequestParam("admId") Integer a
 
     model.addAttribute("adminVO", adminVO);
     model.addAttribute("funcList", funcList);
-	
+        model.addAttribute("activePage", "iTadmin");
 	return "backend/admin/it/updatepermission";
 }
 //==========================================

@@ -2,26 +2,59 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>重返密碼</title>
+    <title>重設密碼 - TaipeiGo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"> 
     <style>
+        .topbar {
+            background: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2236;
+        }
+        .topbar-title span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7f6; 
+            margin: 0;
+        }
+        
+        .main-content {
+            margin-left: 260px; /* 側邊欄寬度 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-container {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
 
-
-        body > div {
+        .form-card {
             background: white;
             border-radius: 16px;
-            padding: 40px !important; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* 陰影 */
+            padding: 40px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             border: 1px solid #e1e8ed;
-            box-sizing: content-box; 
+            width: 400px;
         }
 
         .form-group {
@@ -41,14 +74,13 @@
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #dcdde1;
-            border-radius: 8px; /* 圓角輸入框 */
+            border-radius: 8px;
             box-sizing: border-box;
             font-size: 15px;
             transition: all 0.3s;
-            background-color: #f8f9fa; /* 微微的灰底，點擊時變白 */
+            background-color: #f8f9fa;
         }
 
-        /* 點擊輸入框時的發光效果 */
         .form-group input:focus {
             outline: none;
             border-color: #3498db;
@@ -68,6 +100,7 @@
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         .btn-submit:hover {
@@ -76,7 +109,6 @@
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
 
-        /* 錯誤訊息*/
         .msg-error {
             color: #e74c3c;
             background-color: #fadbd8;
@@ -87,7 +119,7 @@
             border: 1px solid #f5b7b1;
             text-align: center;
         }
-                /* 返回按鈕的樣式  */
+
         .btn-cancel {
             width: 100%;
             padding: 14px;
@@ -110,38 +142,48 @@
 <body>
 <!--side bar-->
 <div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
-    <div style="width: 400px;">
-    <!-- 錯誤訊息提示區 -->
-    <div th:if="${errorMsg}" class="msg-error" th:text="${errorMsg}"></div>
-
-    <form th:action="@{/backend/admin/profile/resetPw}" method="post">
-        
-        <div class="form-group">
-            <label>目前密碼：</label>
-            <input type="password" name="oldPw" placeholder="請輸入登入時用的密碼" required>
+    
+<div class="main-content">
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="fa-solid fa-gear me-2" style="color:var(--primary);"></i>
+            管理員個人中心
+            <span>/ 更改密碼</span>
         </div>
+    </header>
 
-        <div class="form-group">
-            <label>設定新密碼：</label>
-            <input type="password" name="newPw" placeholder="至少 8 碼英文或數字" required minlength="8">
+    <div class="form-container">
+        <div class="form-card">
+            <!-- 錯誤訊息提示區 -->
+            <div th:if="${errorMsg}" class="msg-error" th:text="${errorMsg}"></div>
+
+            <form th:action="@{/backend/admin/profile/resetPw}" method="post">
+                <div class="form-group">
+                    <label>目前密碼：</label>
+                    <input type="password" name="oldPw" placeholder="請輸入登入時用的密碼" required>
+                </div>
+
+                <div class="form-group">
+                    <label>設定新密碼：</label>
+                    <input type="password" name="newPw" placeholder="至少 8 碼英文或數字" required minlength="8">
+                </div>
+
+                <div class="form-group">
+                    <label>再次確認新密碼：</label>
+                    <input type="password" name="confirmPw" placeholder="請再次輸入新密碼" required minlength="8">
+                </div>
+
+                <button type="submit" class="btn-submit">確認修改</button>     
+                
+                <button th:if="${session.adminVO.admStatus == 9}" type="button" class="btn-cancel" onclick="document.getElementById('logout-form').submit();">放棄並登出</button>
+                <button th:if="${session.adminVO.admStatus != 9}" type="button" class="btn-cancel" onclick="history.back()">返回上一頁</button>
+            </form>
+            <form id="logout-form" th:action="@{/backend/auth/logout}" method="post" style="display: none;"></form>
         </div>
-
-        <div class="form-group">
-            <label>再次確認新密碼：</label>
-            <input type="password" name="confirmPw" placeholder="請再次輸入新密碼" required minlength="8">
-        </div>
-
-        <button type="submit" class="btn-submit" style="margin-top: 0;">確認修改</button>     
-        
-        <button th:if="${session.adminVO.admStatus == 9}" type="button" class="btn-cancel" onclick="document.getElementById('logout-form').submit();">放棄並登出</button>
-        
-  
-         <button th:if="${session.adminVO.admStatus != 9}" type="button" class="btn-cancel" onclick="history.back()">返回上一頁</button>
     </div>
-    </form>
-    <form id="logout-form" th:action="@{/backend/auth/logout}" method="post" style="display: none;"></form>
-
 </div>
+
+</body>
 
 </body>
 </html>

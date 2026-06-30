@@ -4,21 +4,21 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class BackendFilterConfig {
 
-	@Bean
-	public FilterRegistrationBean<BackendLoginFilter> loginFilter(){
+	// @Bean
+	// public FilterRegistrationBean<BackendLoginFilter> loginFilter(){
 	
-	        FilterRegistrationBean<BackendLoginFilter> registrationBean = new FilterRegistrationBean<>();
-	        registrationBean.setFilter(new BackendLoginFilter());
+	//         FilterRegistrationBean<BackendLoginFilter> registrationBean = new FilterRegistrationBean<>();
+	//         registrationBean.setFilter(new BackendLoginFilter());
 	        
 	        
-	        registrationBean.addUrlPatterns("/backend/*"); 
-	        registrationBean.setOrder(1);
+	//         registrationBean.addUrlPatterns("/backend/*"); 
+	//         registrationBean.setOrder(1);
 			
-			  return registrationBean;
-	}
+	// 		  return registrationBean;
+	// }
 
 	
 }

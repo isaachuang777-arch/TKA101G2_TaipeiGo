@@ -35,7 +35,7 @@ public class AdminVO implements Serializable {
     private String admAcc;
     
     @NotNull(message = "密碼不可為空")
-    @Length(min = 1, max = 20, message = "密碼長度需為8~20")
+    @Length(min = 8, message = "密碼長度需為8~20")
     @Column(name = "ADM_PW")
     private String admPw;
     
