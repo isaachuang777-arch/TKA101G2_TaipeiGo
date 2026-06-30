@@ -30,8 +30,7 @@ public class OrderDetailService {
 	    detail.setProductId(item.getProductId());
 	    detail.setProductQuantity(item.getQuantity());
 	    detail.setOrderDetailSubtotal(item.getSubtotal());
-	    /****** 將票種與商品類型記錄在 Remark備註中 *******/
-	    detail.setOrderDetailRemark(item.getProductType() + "_" + item.getSpec());
+	    detail.setOrderDetailRemark(item.getProductName());
 	    repository.save(detail);
 	}
 }

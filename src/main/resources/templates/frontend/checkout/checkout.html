@@ -58,33 +58,35 @@
                     <h2>信用卡付款</h2>
                     <div class="form-group">
                         <label>持卡人姓名</label>
-                        <input  type="text"   id="cardName"  placeholder="請輸入持卡人姓名">
+						<input id="cardName"　class="form-control"  placeholder="請輸入持卡人姓名">
+						<div id="cardNameError" class="error-message"></div>
                     </div>
 
                     <div class="form-group">
                         <label>信用卡號</label>
-                        <input  type="text" id="cardNumber" maxlength="19"  placeholder="1234 5678 9012 3456">
+                        <input id="cardNumber"  class="form-control"  placeholder="1234 5678 9012 3456">
+                    	<div id="cardNumberError" class="error-message"></div>
                     </div>
 
                     <div class="row">
                         <div class="form-group half">
                             <label>有效期限</label>
-                            <input  type="text" id="expireDate"  maxlength="5" placeholder="MM/YY">
-                        </div>
-
+                            <input id="expiry" class="form-control"  maxlength="5" placeholder="MM/YY">
+							<div id="expiryError" class="error-message"></div>                        
+						</div>
+					</div>
+					
                         <div class="form-group half">
                             <label>安全碼</label>
-                            <input  type="password"  id="cvv"  maxlength="3" placeholder="CVV">
-                        </div>
-                    </div>
-
-                    <button id="payBtn" class="pay-btn">  確認付款 </button>
-                </div>
-            </aside>
+								<input id="cvv"  class="form-control"  maxlength="3" placeholder="CVV"> 
+								<div id="cvvError" class="error-message"></div>
+                   		 </div>
+						<button id="payBtn" class="btn btn-warning w-100"  disabled> 確認付款</button> </div>
+          	  </aside>
         </div>
     </main>
 
-    <!-- Footer -->
+    <!-- JS -->
     <div th:replace="~{frontend/index/footer :: footer}"></div>
     <script th:src="@{/js/checkout/checkout.js}"></script>
     <script th:src="@{/js/index/header.js}"></script>
