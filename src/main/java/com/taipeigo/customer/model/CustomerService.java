@@ -16,6 +16,14 @@ public class CustomerService {
 
     @Autowired
     private CustomerRepository repository;
+    
+    @Autowired
+    private CustomerRepository customerRepository;
+    
+    // 用信箱查會員
+    public CustomerVO findByEmail(String email) {
+        return customerRepository.findByCustEmail(email);
+    }
 
     // 新增會員
     public void addCustomer(CustomerVO customerVO) {
@@ -114,4 +122,6 @@ public class CustomerService {
 
         return sum % 10 == 0;
     }
+    
+    
 }
