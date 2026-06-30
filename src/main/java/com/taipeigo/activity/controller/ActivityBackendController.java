@@ -147,8 +147,6 @@ public class ActivityBackendController {
             return "backend/activity/edit";
         }
         
-        System.out.println("====== DEBUG: deleteImageIds received: " + deleteImageIds + " ======");
-
         try {
 
             activityService.updateActivity(id, activityVO, ticketIds, images, deleteImageIds, cateIds);

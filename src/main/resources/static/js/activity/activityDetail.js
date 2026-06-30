@@ -460,7 +460,7 @@ function validateBooking(event, action = 'cart', isAutoTrigger = false) {
     Promise.all(promises).then(() => {
         if (successCount > 0) {
             if (action === 'buyNow') {
-                window.location.href = contextPath + "frontend/cart/shoppingCart"; 
+                window.location.href = contextPath + "frontend/checkout"; 
             } else {
                 if (errorMsgSpan) {
                     errorMsgSpan.style.color = '#10b981'; // 綠色
