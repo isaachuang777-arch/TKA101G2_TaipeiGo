@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpSession;
 @Service
 public class CartService {
 
-	@Autowired(required = false)
+	@Autowired(required = true)
 	private RedisTemplate<String, Object> redisTemplate;
 	
 	@Autowired
