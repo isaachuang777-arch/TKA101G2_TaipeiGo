@@ -286,12 +286,14 @@
         }
 
         .btn-view { background: #eff6ff; color: #3b82f6; }
-        .btn-edit { background: #fff7ed; color: #f97316; }
-        .btn-delete { background: #fff1f2; color: #ef4444; }
-
-        .btn-view:hover { background: #3b82f6; color: #fff; }
-        .btn-edit:hover { background: #f97316; color: #fff; }
-        .btn-delete:hover { background: #ef4444; color: #fff; }
+		.btn-edit { background: #fff7ed; color: #f97316; }
+		.btn-delete { background: #fff1f2; color: #ef4444; }
+		.btn-activate { background: #f0fdf4; color: #16a34a; }
+		
+		.btn-view:hover { background: #3b82f6; color: #fff; }
+		.btn-edit:hover { background: #f97316; color: #fff; }
+		.btn-delete:hover { background: #ef4444; color: #fff; }
+		.btn-activate:hover { background: #16a34a; color: #fff; }
 
         .btn-add {
             background: var(--primary);
@@ -574,12 +576,21 @@
                                     <i class="bi bi-pencil"></i>
                                 </a>
 
-                                <a class="action-btn btn-delete"
-                                   th:href="@{/backend/customer/delete(id=${c.custId})}"
-                                   onclick="return confirmDelete(this)"
-                                   title="刪除">
-                                    <i class="bi bi-trash3"></i>
-                                </a>
+                                <a th:if="${c.custStatus != 2}"
+								   class="action-btn btn-delete"
+								   th:href="@{/backend/customer/suspend(id=${c.custId})}"
+								   onclick="return confirmSuspend();"
+								   title="停權會員">
+								    <i class="bi bi-person-x"></i>
+								</a>
+								
+								<a th:if="${c.custStatus == 2}"
+								   class="action-btn btn-activate"
+								   th:href="@{/backend/customer/activate(id=${c.custId})}"
+								   onclick="return confirmActivate();"
+								   title="恢復啟用">
+								    <i class="bi bi-person-check"></i>
+								</a>
                             </div>
                         </td>
                     </tr>
@@ -653,8 +664,12 @@
         });
     }
 
-    function confirmDelete(el) {
-        return confirm('確定要刪除此會員嗎？此操作無法復原。');
+    function confirmSuspend() {
+        return confirm('確定要停權此會員嗎？停權後該會員將無法登入。');
+    }
+    
+    function confirmActivate() {
+        return confirm('確定要恢復啟用此會員嗎？');
     }
 </script>
 

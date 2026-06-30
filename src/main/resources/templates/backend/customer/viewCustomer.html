@@ -99,18 +99,14 @@
         }
 
         .avatar-lg {
-            width: 68px;
-            height: 68px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.7rem;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
-        }
+			    width: 68px;
+			    height: 68px;
+			    border-radius: 50%;
+			    object-fit: cover;
+			    border: 3px solid rgba(255,255,255,0.45);
+			    background: #fff;
+			    flex-shrink: 0;
+			}
 
         .profile-name {
             font-size: 1.45rem;
@@ -192,29 +188,38 @@
         }
 
         .status-active {
-            background: #f0fdf4;
-            color: #16a34a;
-        }
-
-        .status-inactive {
-            background: #fff1f2;
-            color: #dc2626;
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .status-active .status-dot {
-            background: #16a34a;
-        }
-
-        .status-inactive .status-dot {
-            background: #dc2626;
-        }
+		    background: #f0fdf4;
+		    color: #16a34a;
+		}
+		
+		.status-pending {
+		    background: #fff7ed;
+		    color: #ea580c;
+		}
+		
+		.status-suspended {
+		    background: #fff1f2;
+		    color: #dc2626;
+		}
+		
+		.status-dot {
+		    width: 7px;
+		    height: 7px;
+		    border-radius: 50%;
+		    display: inline-block;
+		}
+		
+		.status-active .status-dot {
+		    background: #16a34a;
+		}
+		
+		.status-pending .status-dot {
+		    background: #ea580c;
+		}
+		
+		.status-suspended .status-dot {
+		    background: #dc2626;
+		}
 
         .sex-badge {
             font-size: 0.78rem;
@@ -327,7 +332,11 @@
 
         <section class="profile-card">
             <div class="profile-main">
-                <div class="avatar-lg" th:text="${#strings.substring(customerVO.custName, 0, 1)}">會</div>
+                <img class="avatar-lg"
+				     th:src="${customerVO.custImg != null and customerVO.custImg != ''
+				              ? '/images/' + customerVO.custImg + '?v=' + #dates.createNow().time
+				              : '/images/customer/default-avatar.png'}"
+				     alt="會員頭像">
 
                 <div>
                     <div class="profile-name" th:text="${customerVO.custName}">會員姓名</div>
@@ -434,19 +443,32 @@
                         </div>
 
                         <div class="info-row">
-                            <div class="info-label">帳號狀態</div>
-                            <div class="info-value">
-                                <span th:if="${customerVO.custStatus == 1}" class="status-badge status-active">
-                                    <span class="status-dot"></span>
-                                    正常
-                                </span>
-
-                                <span th:if="${customerVO.custStatus == 0}" class="status-badge status-inactive">
-                                    <span class="status-dot"></span>
-                                    停權
-                                </span>
-                            </div>
-                        </div>
+					    <div class="info-label">帳號狀態</div>
+					    <div class="info-value">
+					
+					        <!-- 啟用 -->
+					        <span th:if="${customerVO.custStatus == 1}"
+					              class="status-badge status-active">
+					            <span class="status-dot"></span>
+					            啟用
+					        </span>
+					
+					        <!-- 未啟用 -->
+							<span th:if="${customerVO.custStatus == 0}"
+							      class="status-badge status-pending">
+							    <span class="status-dot"></span>
+							    未啟用
+							</span>
+					
+					        <!-- 停權 -->
+					        <span th:if="${customerVO.custStatus == 2}"
+					              class="status-badge status-suspended">
+					            <span class="status-dot"></span>
+					            停權
+					        </span>
+					
+					    </div>
+					</div>
 
                     </div>
                 </div>
