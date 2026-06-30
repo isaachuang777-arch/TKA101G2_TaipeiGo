@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
-
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+      lang="zh-TW">
 <th:block th:fragment="sidebar">
 
 <style>
@@ -236,7 +237,8 @@
         
         <a th:href="@{/backend/admin/profile/index}"
    class="sidebar-profile-card"
-   th:if="${session.adminVO != null}">
+   th:if="${session.adminVO != null}"
+   th:classappend="${activePage == 'profile'} ? ' active'">
 
     <div class="admin-info-icon">
         <i class="bi bi-person-circle"></i>
@@ -271,7 +273,7 @@
 
         <div class="menu-title">主要管理</div>
 
-        <a th:href="@{/backend/customer/list}"
+        <a th:href="@{/backend/customer/list}" sec:authorize="hasAnyRole('客服中心','SuperAdmin')"
            th:classappend="${activePage == 'customer'} ? ' active'">
             <i class="bi bi-people-fill"></i>
             <span>會員管理</span>
@@ -294,7 +296,7 @@
 			</div>
         </details>
 
-        <details class="admin-menu"
+        <details class="admin-menu" sec:authorize="hasAnyRole('訂單部', 'SuperAdmin')"
          th:attr="open=${activePage == 'ticket'
                       or activePage == 'ticketCategory'
                       or activePage == 'ticketSerial'
@@ -306,25 +308,25 @@
 		    </summary>
 
             <div class="submenu">
-                <a th:href="@{/backend/ticket/list}"
+                <a th:href="@{/backend/ticket/list}" sec:authorize="hasAnyRole('訂單部', 'SuperAdmin')"
                     th:classappend="${activePage == 'ticket'} ? ' active'">
                     <i class="bi bi-ticket-perforated"></i>
                     <span>門票管理</span>
                 </a>
 
-                <a th:href="@{/backend/activity}"
+                <a th:href="@{/backend/activity}" sec:authorize="hasAnyRole('訂單部', 'SuperAdmin')"
                     th:classappend="${activePage == 'activity'} ? ' active'">
                     <i class="bi bi-calendar-event"></i>
                     <span>活動管理</span>
                 </a>
 
-                <a th:href="@{/backend/ticketCategory/list}"
+                <a th:href="@{/backend/ticketCategory/list}" sec:authorize="hasAnyRole('訂單部', 'SuperAdmin')"
                     th:classappend="${activePage == 'ticketCategory'} ? ' active'">
                     <i class="bi bi-tags"></i>
                     <span>門票分類管理</span>
                 </a>
 
-                <a th:href="@{/backend/ticket/serialList}"
+                <a th:href="@{/backend/ticket/serialList}" sec:authorize="hasAnyRole('訂單部', 'SuperAdmin')"
                     th:classappend="${activePage == 'ticketSerial'} ? ' active'">
                     <i class="bi bi-upc-scan"></i>
                     <span>門票序號管理</span>
@@ -332,20 +334,20 @@
             </div>
         </details>
 
-	    <a th:href="@{/backend/orders}"
+	    <a th:href="@{/backend/orders}" sec:authorize="hasAnyRole('訂單部', 'SuperAdmin')"
 	      th:classappend="${activePage == 'orders'} ? ' active'">
 	        <i class="bi bi-receipt-cutoff"></i>
 	        <span>訂單管理</span>
 	    </a>
 
-        <a th:href="@{/backend/cs/}">
+        <a th:href="@{/backend/cs/}" sec:authorize="hasAnyRole('客服中心', 'SuperAdmin')" th:classappend="${activePage == 'cscenter'} ? ' active'">
 		    <i class="bi bi-headset"></i>
 		    <span>客服管理</span>
 		</a>
 
         <div class="menu-title">系統管理</div>
 
-        <a th:href="@{/backend/admin/it/index}">
+        <a th:href="@{/backend/admin/it/index}" sec:authorize="hasAnyRole('資訊部', 'SuperAdmin')" th:classappend="${activePage == 'iTadmin'} ? ' active'">
             <i class="bi bi-shield-lock-fill"></i>
             <span>管理員管理</span>
         </a>

@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>客服中心 | 台北GO了沒 後台</title>
+    <title>客服中心 - TaipeiGO</title>
     <!-- 使用 Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"> 
     <style>
         :root {
             --bg-color: #f4f7f6; /* 使用者指定的背景色 */
@@ -211,10 +213,39 @@
             padding: 40px;
             color: var(--text-muted);
         }
+        .topbar {
+            background: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2236;
+        }
+        .topbar-title span {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <!--side bar-->
 <div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+    <header class="topbar">
+        <div class="topbar-title">
+            <i class="fa-solid fa-gear me-2" style="color:var(--primary);"></i>
+            客服中心
+            <span>/ 儀表版</span>
+        </div>
+    </header>
 <div class="dashboard-container">
     <div class="header">
         <h1>客服中心儀表版</h1>
