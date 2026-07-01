@@ -309,6 +309,25 @@ public class CartService {
 		}
 		return cartDTOList;
 	}
+
+/*===============cartCheckStock=======購物車自己進入結帳頁前再確認一次庫存===================================================*/
+	public void cartCheckStock(HttpSession session) {
+	    List<CartItemDTO> cartList = queryCartItem(session);
+	    if (cartList.isEmpty()) {
+	        throw new RuntimeException("購物車沒有商品。");
+	    }
+		for(CartItemDTO item : cartList) {
+			if(!productCartFacade.checkStock(
+					item.getProductType(),
+		            item.getProductId(),
+		            item.getQuantity()) ) 
+				/**拋出:商品名稱(OO票) O張 庫存不足，請重新確認數量。*/
+			{ throw new RuntimeException(item.getProductName()
+		                   +"   "+ item.getQuantity()
+		                    + "張 庫存不足，請重新確認數量。");
+			}
+		}
+	}
 	
 	
 	
