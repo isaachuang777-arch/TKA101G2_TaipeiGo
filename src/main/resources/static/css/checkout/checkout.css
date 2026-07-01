@@ -89,9 +89,23 @@ body{
 }
 
 .item-date{
-    font-size:15px;
-    color:#777;
-    margin-bottom:10px;
+    display:inline-flex;
+    align-items:center;
+
+    padding:8px 14px;
+
+    background:#fff7eb;
+    border:1px solid #ffd9b3;
+    border-radius:8px;
+
+    color:#b45309;
+    font-size:16px;
+    font-weight:600;
+
+    margin:14px 0 18px;
+
+    width:fit-content;
+    line-height:1.4;
 }
 
 .item-price{

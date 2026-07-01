@@ -34,10 +34,9 @@
 						<img th:src="${item.imageUrl}" class="product-image">
 						<div class="item-info">
 							<div class="item-name" th:text="${item.productName}"></div>
-							<div class="item-date" th:text="'使用日期：' + ${item.expiryDate}"></div>
+							<div class="item-date" th:text="'使用日期：' + ${#temporals.format(item.expiryDate,'yyyy-MM-dd')}"></div>
 							<div class="item-price" th:text="'NT$ ' + ${item.price}"></div>
 						</div>
-
 						<div class="item-quantity">x <span th:text="${item.quantity}"></span></div>
 						<div class="item-subtotal" th:text="'NT$ ' + ${item.subtotal}">
 						</div>
