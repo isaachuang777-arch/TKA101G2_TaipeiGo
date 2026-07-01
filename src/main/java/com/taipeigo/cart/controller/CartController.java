@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -114,6 +115,19 @@ public class CartController {
 
 		return cartService.countCart(session);
 
+	}
+	
+	/* ========== 進入結帳頁之前，購物車自己確認庫存是否足夠 */
+	@PostMapping("/cartCheckStock")
+	@ResponseBody
+	public ResponseEntity<String> cartCheckStock(HttpSession session){
+		try {
+	        cartService.cartCheckStock(session);
+	        return ResponseEntity.ok("success");
+
+	    } catch (RuntimeException e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
 	}
 
 }
