@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -136,17 +138,24 @@ public class CsFrontendController {
 //找出使用者能看的Msg List<CsMsgVO> custFindMsg(Integer csId)
 		@GetMapping("/viewmsgs")
 		public String viewMsgs(HttpSession session, Model model, 
-				@RequestParam("csId") Integer csId,
+				@RequestParam(value="csId",required = false) Integer csId,
 				RedirectAttributes redirectAttributes
 				) {
+			 //查這單子號碼收vo
+			 CsVO csVO =csService.findByCsId(csId);
+			//防止有人亂打號碼
+			 if (csVO == null || csId < 999 || csId==null) {
+				 redirectAttributes.addFlashAttribute("errorMsg",  "查無資料。");
+		            return "redirect:/CustomerService/index";
+		        }
+
 			//防止偷看
 			//現在登人的人
 			 CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
 			 Integer currentCustId = loginCustomer.getCustId();
-			 //查這單子
-			 CsVO csVO =csService.findByCsId(csId);
+			
 			 //如果他想偷看
-			 if (!csVO.getCustomerVO().getCustId().equals(currentCustId)){
+			 if (!csVO.getCustomerVO().getCustId().equals(currentCustId) ){
 			 	redirectAttributes.addFlashAttribute("errorMsg",  "查無資料。");
 			 	return "redirect:/CustomerService/index";
 			 }
@@ -159,6 +168,12 @@ public class CsFrontendController {
 			model.addAttribute("csMsg", csMsgVO);
 			
 			return "frontend/cs/viewmsgs";
+		}
+		//亂打字防呆
+		@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+		public String handleTypeMismatch(RedirectAttributes redirectAttributes) {
+			redirectAttributes.addFlashAttribute("errorMsg",  "查無資料。");
+		    return "redirect:/CustomerService/index"; 
 		}
 
 //前台使用者回覆 customerreply(CsMsgVO newMsg, Integer csId)
