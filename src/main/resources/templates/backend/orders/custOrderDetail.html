@@ -147,16 +147,16 @@
         <table class="detail-table">
             <thead>
                 <tr>
-                    <th>商品編號</th>
+<!--                     <th>商品編號</th> -->
                     <th>購買數量</th>
                     <th>小計</th>
-                    <th>備註</th>
+                    <th>購買明細</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr th:each="detail : ${detailList}">
-                    <td th:text="${detail.productId}"></td>
+<!--                     <td th:text="${detail.productId}"></td> -->
                     <td th:text="${detail.productQuantity}"></td>
                     <td> NT$<span th:text="${detail.orderDetailSubtotal}"></span></td>
                     <td th:text="${detail.orderDetailRemark}"></td>
