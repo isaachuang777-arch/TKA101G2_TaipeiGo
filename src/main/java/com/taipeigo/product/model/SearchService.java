@@ -120,9 +120,19 @@ public class SearchService {
                     boolean matchName = a.getActivityName() != null && a.getActivityName().contains(keyword);
                     boolean matchDesc = a.getActivityDesc() != null && a.getActivityDesc().contains(keyword);
 
-                    boolean matchCategory = a.getActivityCateInfoVO() != null && a.getActivityCateInfoVO().stream()
-                                             .anyMatch(info -> info.getActivityCate().getCateName() != null
-                                             && info.getActivityCate().getCateName().contains(keyword));
+                    boolean matchCategory = false;
+                    if (a.getActivityCateInfoVO() != null) {
+                        for (com.taipeigo.activity.model.ActivityCateInfoVO info : a.getActivityCateInfoVO()) {
+                            try {
+                                if (info.getActivityCate() != null && info.getActivityCate().getCateName() != null && info.getActivityCate().getCateName().contains(keyword)) {
+                                    matchCategory = true;
+                                    break;
+                                }
+                            } catch (jakarta.persistence.EntityNotFoundException e) {
+                                // 忽略資料庫中無效的外鍵關聯
+                            }
+                        }
+                    }
 
                     boolean matchKeyword = matchName || matchDesc || matchCategory;
 
