@@ -5,100 +5,59 @@
 <title>票券驗證結果</title>
 
 <style>
-
-body{
-    margin:0;
-    font-family:"Microsoft JhengHei";
-    background:#f5f6f8;
+body {
+    margin: 0;
+    font-family: "Microsoft JhengHei";
+    background: #f5f6f8;
 }
 
-.wrapper{
-    width:100%;
-    display:flex;
-    justify-content:center;
-    margin-top:80px;
+.wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
 }
 
-.result-card{
-
-    width:520px;
-
-    background:white;
-
-    border-radius:12px;
-
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-
-    padding:40px;
-
-    text-align:center;
-
+.result-card {
+    width: 520px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    padding: 40px;
+    text-align: center;
 }
 
-.result-title{
-
-    font-size:30px;
-
-    font-weight:bold;
-
-    margin-bottom:25px;
-
+.result-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 12px;
 }
 
-.success{
-
-    color:#28a745;
-
+.success {
+    color: #28a745;
 }
 
-.fail{
-
-    color:#dc3545;
-
+.fail {
+    color: #dc3545;
 }
 
-.info{
-
-    margin-top:25px;
-
-    text-align:left;
-
-    line-height:38px;
-
-    font-size:17px;
-
+.result-message {
+    margin-bottom: 25px;
+    color: #666;
+    font-size: 16px;
+    line-height: 1.7;
 }
 
-.info span{
-
-    font-weight:bold;
-
+.info {
+    margin-top: 25px;
+    text-align: left;
+    line-height: 38px;
+    font-size: 17px;
 }
 
-.home-btn{
-
-    display:inline-block;
-
-    margin-top:35px;
-
-    padding:12px 28px;
-
-    background:#ff7a00;
-
-    color:white;
-
-    text-decoration:none;
-
-    border-radius:8px;
-
+.info span:first-child {
+    font-weight: bold;
 }
-
-.home-btn:hover{
-
-    background:#e56f00;
-
-}
-
 </style>
 
 </head>
@@ -112,55 +71,55 @@ body{
         <div class="result-title"
              th:classappend="${message == '驗票成功'} ? 'success' : 'fail'">
 
-            <span th:text="${message}">
+            <span th:if="${message == '驗票成功'}">
                 驗票成功
             </span>
 
+            <span th:if="${message != '驗票成功'}">
+                驗票失敗
+            </span>
+
+        </div>
+
+        <div class="result-message">
+            <span th:if="${message == '驗票成功'}">
+                此票券已完成使用。
+            </span>
+
+            <span th:if="${message != '驗票成功'}"
+                  th:text="${message}">
+                此票券無法驗票。
+            </span>
         </div>
 
         <div class="info"
              th:if="${ticket != null}">
 
             <div>
-
                 <span>票券名稱：</span>
-
-                <span th:text="${ticket.ticketVO.ticketName}">
-                </span>
-
+                <span th:text="${ticket.ticketVO.ticketName}"></span>
             </div>
 
             <div>
-
                 <span>票券序號：</span>
-
-                <span th:text="${ticket.serialNumber}">
-                </span>
-
+                <span th:text="${ticket.serialNumber}"></span>
             </div>
 
             <div>
+                <span>會員姓名：</span>
+                <span th:text="${ticket.customerVO.custName}"></span>
+            </div>
 
-                <span>會員：</span>
-
-                <span th:text="${ticket.customerVO.custName}">
-                </span>
-
+            <div th:if="${ticket.expiryDate != null}">
+                <span>可使用日期：</span>
+                <span th:text="${#dates.format(ticket.expiryDate, 'yyyy-MM-dd')}"></span>
             </div>
 
         </div>
-
-        <a th:href="@{/customer/tickets}"
-           class="home-btn">
-
-            返回我的票券
-
-        </a>
 
     </div>
 
 </div>
 
 </body>
-
 </html>

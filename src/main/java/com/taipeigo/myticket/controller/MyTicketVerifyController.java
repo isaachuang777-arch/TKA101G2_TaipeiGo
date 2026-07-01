@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.taipeigo.myticket.model.MyTicketService;
 import com.taipeigo.ticket.model.TicketSerialVO;
@@ -15,25 +16,44 @@ public class MyTicketVerifyController {
     @Autowired
     private MyTicketService myTicketService;
 
+    // 掃描 QR Code 後，先進確認頁，不直接驗票
     @GetMapping("/ticket/verify/{serialNumber}")
-    public String verifyTicket(
+    public String verifyConfirm(
             @PathVariable String serialNumber,
             Model model) {
 
-        // 先查票券
         TicketSerialVO ticket =
                 myTicketService.getTicketBySerialNumber(serialNumber);
 
-        // 驗票
         String message =
-                myTicketService.verifyAndUseTicket(serialNumber);
+                myTicketService.checkTicketBeforeVerify(ticket);
 
+        model.addAttribute("ticket", ticket);
         model.addAttribute("message", message);
 
-        // 有查到票券才放進 Model
-        if (ticket != null) {
-            model.addAttribute("ticket", ticket);
+        // 如果票券不可驗，直接進結果頁
+        if (!"OK".equals(message)) {
+            return "frontend/myticket/verifyResult";
         }
+
+        // 如果票券可驗，進確認頁
+        return "frontend/myticket/verifyConfirm";
+    }
+
+    // 驗票員按下「確認驗票」後，才真正改成已使用
+    @PostMapping("/ticket/verify/{serialNumber}/confirm")
+    public String verifySubmit(
+            @PathVariable String serialNumber,
+            Model model) {
+
+        TicketSerialVO ticket =
+                myTicketService.getTicketBySerialNumber(serialNumber);
+
+        String message =
+                myTicketService.confirmVerifyTicket(serialNumber);
+
+        model.addAttribute("ticket", ticket);
+        model.addAttribute("message", message);
 
         return "frontend/myticket/verifyResult";
     }

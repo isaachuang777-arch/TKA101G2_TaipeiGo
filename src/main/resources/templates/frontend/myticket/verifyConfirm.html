@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>確認驗票</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Microsoft JhengHei";
+    background: #f5f6f8;
+}
+
+.wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+}
+
+.confirm-card {
+    width: 520px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    padding: 40px;
+    text-align: center;
+}
+
+.confirm-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #ff7a00;
+}
+
+.confirm-subtitle {
+    color: #666;
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.info {
+    margin-top: 20px;
+    text-align: left;
+    line-height: 38px;
+    font-size: 17px;
+}
+
+.info span:first-child {
+    font-weight: bold;
+}
+
+.warning {
+    margin-top: 24px;
+    padding: 14px;
+    background: #fff7ed;
+    color: #c2410c;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn-area {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+.cancel-btn {
+    padding: 12px 28px;
+    background: #e5e7eb;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    padding: 12px 28px;
+    background: #ff7a00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.confirm-btn:hover {
+    background: #e56f00;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="confirm-card">
+
+        <div class="confirm-title">
+            確認驗票？
+        </div>
+
+        <div class="confirm-subtitle">
+            請確認票券資訊無誤後，再按下確認驗票。
+        </div>
+
+        <div class="info" th:if="${ticket != null}">
+
+            <div>
+                <span>票券名稱：</span>
+                <span th:text="${ticket.ticketVO.ticketName}"></span>
+            </div>
+
+            <div>
+                <span>票券序號：</span>
+                <span th:text="${ticket.serialNumber}"></span>
+            </div>
+
+            <div>
+                <span>會員姓名：</span>
+                <span th:text="${ticket.customerVO.custName}"></span>
+            </div>
+
+            <div>
+                <span>可使用日期：</span>
+                <span th:text="${#dates.format(ticket.expiryDate, 'yyyy-MM-dd')}"></span>
+            </div>
+
+        </div>
+
+        <div class="warning">
+            確認後，此票券將標記為已使用，無法重複驗票。
+        </div>
+
+        <div class="btn-area">
+
+            <button type="button"
+                    class="cancel-btn"
+                    onclick="history.back()">
+                取消
+            </button>
+
+            <form th:action="@{'/ticket/verify/' + ${ticket.serialNumber} + '/confirm'}"
+                  method="post">
+
+                <button type="submit"
+                        class="confirm-btn">
+                    確認驗票
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
