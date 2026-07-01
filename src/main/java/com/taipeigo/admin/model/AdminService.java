@@ -2,28 +2,17 @@ package com.taipeigo.admin.model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.taipeigo.admin.model.AdmFuncVO;
-import com.taipeigo.admin.model.AdmPerVO;
-import com.taipeigo.admin.model.AdminVO;
-import com.taipeigo.admin.model.AdmPerRepository;
-import com.taipeigo.admin.model.AdminRepository;
-
-import jakarta.transaction.Transactional;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class AdminService {
@@ -287,4 +276,5 @@ public class AdminService {
 		Pageable pageable = PageRequest.of(pageNumber -1,10);
 		return adminRepository.findAll(pageable);
 	}
+
 }
