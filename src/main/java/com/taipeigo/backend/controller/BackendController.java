@@ -16,6 +16,7 @@ public class BackendController {
     private CustomerService customerService;
 
     @GetMapping({
+    	"",
         "/",
         "/dashboard",
         "/dashboard/",

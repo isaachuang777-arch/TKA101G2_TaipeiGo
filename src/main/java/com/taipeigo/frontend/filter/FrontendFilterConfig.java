@@ -19,7 +19,9 @@ public class FrontendFilterConfig {
                 "/customer/*",
                 "/favorite/*",
                 "/frontend/customer/*", 
-                "/frontend/cart/*"
+                "/frontend/cart/*",
+                "/CustomerService/*",
+                "/CustomerService"
         );
 
         registrationBean.setOrder(2);
