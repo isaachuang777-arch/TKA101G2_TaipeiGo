@@ -28,7 +28,7 @@ public class BackendAuthController {
     private AdminService adminService;
 
 //只是顯示login page
-@GetMapping("/auth/login")
+@GetMapping({"/auth/login","/auth/","/auth","/login"})
     public String showLoginPage(HttpSession session) {
         if (session.getAttribute("adminVO") !=null) {
             // 如果session已經有VO 還跑login就跑回後台首頁
