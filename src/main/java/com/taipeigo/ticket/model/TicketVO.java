@@ -7,6 +7,11 @@ import java.util.List;
 import com.taipeigo.ticketcategory.model.TicketCategoryVO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "TICKET")
@@ -18,12 +23,17 @@ public class TicketVO implements java.io.Serializable {
 	@Column(name = "TICKET_ID")
 	private Integer ticketId;
 
+	@NotBlank(message = "門票商品名稱不能留白")
+	@Size(max = 50, message = "門票商品名稱長度不能超過 50 個字")
 	@Column(name = "TICKET_NAME", length = 50)
 	private String ticketName;
 
+	@Size(max = 500, message = "門票詳細描述長度不能超過 500 個字")
 	@Column(name = "TICKET_DESCRIPTION", length = 500)
 	private String ticketDescription;
 
+	@NotBlank(message = "景點地址不能留白")
+	@Size(max = 50, message = "景點地址長度不能超過 50 個字")
 	@Column(name = "TICKET_ADDRESS", length = 50)
 	private String ticketAddress;
 
@@ -33,24 +43,37 @@ public class TicketVO implements java.io.Serializable {
 	@Column(name = "UPDATED_AT")
 	private Timestamp updatedAt;
 
+	@NotNull(message = "請選擇門票狀態")
 	@Column(name = "TICKET_STATUS")
 	private Integer ticketStatus; // 0=未啟用 1=啟用
 
+	@NotNull(message = "成人票原價不能留白")
+	@Min(value = 0, message = "成人票原價必須大於等於 0")
 	@Column(name = "ADULT_ORIGINAL_PRICE")
 	private Integer adultOriginalPrice;
 
+	@NotNull(message = "成人票促銷售價不能留白")
+	@Min(value = 0, message = "成人票促銷售價必須大於等於 0")
 	@Column(name = "ADULT_PRICE")
 	private Integer adultPrice;
 
+	@NotNull(message = "兒童票原價不能留白")
+	@Min(value = 0, message = "兒童票原價必須大於等於 0")
 	@Column(name = "CHILD_ORIGINAL_PRICE")
 	private Integer childOriginalPrice;
 
+	@NotNull(message = "兒童票促銷售價不能留白")
+	@Min(value = 0, message = "兒童票促銷售價必須大於等於 0")
 	@Column(name = "CHILD_PRICE")
 	private Integer childPrice;
 
+	@NotNull(message = "優待票原價不能留白")
+	@Min(value = 0, message = "優待票原價必須大於等於 0")
 	@Column(name = "CONCESSION_ORIGINAL_PRICE")
 	private Integer concessionOriginalPrice;
 
+	@NotNull(message = "優待票促銷售價不能留白")
+	@Min(value = 0, message = "優待票促銷售價必須大於等於 0")
 	@Column(name = "CONCESSION_PRICE")
 	private Integer concessionPrice;
 
@@ -67,6 +90,7 @@ public class TicketVO implements java.io.Serializable {
 	private List<TicketSerialVO> ticketSerials = new ArrayList<>();
 
 	// 門票分類 (透過中介表 TICKET_CATEGORY_INFO 控制)
+	@NotEmpty(message = "請至少選擇一個門票分類")
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "TICKET_CATEGORY_INFO", joinColumns = @JoinColumn(name = "TICKET_ID"), inverseJoinColumns = @JoinColumn(name = "TICKET_CATEGORY_ID"))
 	private List<TicketCategoryVO> ticketCategories = new ArrayList<>();

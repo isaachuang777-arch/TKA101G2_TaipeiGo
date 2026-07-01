@@ -86,6 +86,9 @@
                             <i class="bi bi-exclamation-circle"></i>
                             <span th:errors="*{ticketCategoryName}"></span>
                         </div>
+                        <div class="invalid-feedback-custom" id="categoryNameError" style="display:none;">
+                            <i class="bi bi-exclamation-circle"></i> 門票分類名稱不能留白
+                        </div>
                     </div>
 
                     <!-- 啟用狀態 -->
@@ -101,6 +104,9 @@
                              th:if="${#fields.hasErrors('ticketCategoryStatus')}">
                             <i class="bi bi-exclamation-circle"></i>
                             <span th:errors="*{ticketCategoryStatus}"></span>
+                        </div>
+                        <div class="invalid-feedback-custom" id="categoryStatusError" style="display:none;">
+                            <i class="bi bi-exclamation-circle"></i> 請選擇啟用狀態
                         </div>
                     </div>
 
@@ -123,16 +129,48 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ---- 使用者重新輸入時，清除該欄位上一次由後端回傳的錯誤與前端的錯誤 ----
     document.querySelectorAll('input[name], select[name], textarea[name]').forEach(function (el) {
-        function clearServerError() {
-            document.querySelectorAll('.server-error-' + el.name)
-                .forEach(function (msg) {
-                    msg.style.display = 'none';
-                });
+        function clearErrors() {
+            // 清除後端錯誤
+            document.querySelectorAll('.server-error-' + el.name).forEach(function (msg) {
+                msg.style.display = 'none';
+            });
+            // 清除前端錯誤樣式與提示
+            el.classList.remove('is-invalid');
+            if (el.id === 'ticketCategoryName') {
+                document.getElementById('categoryNameError').style.display = 'none';
+            }
+            if (el.id === 'ticketCategoryStatus') {
+                document.getElementById('categoryStatusError').style.display = 'none';
+            }
         }
 
-        el.addEventListener('input', clearServerError);
-        el.addEventListener('change', clearServerError);
+        el.addEventListener('input', clearErrors);
+        el.addEventListener('change', clearErrors);
+    });
+
+    // ---- 表單送出前進行前端驗證 ----
+    document.getElementById('editForm').addEventListener('submit', function (e) {
+        let hasError = false;
+        const nameInput = document.getElementById('ticketCategoryName');
+        const statusSelect = document.getElementById('ticketCategoryStatus');
+
+        if (!nameInput.value || nameInput.value.trim() === '') {
+            nameInput.classList.add('is-invalid');
+            document.getElementById('categoryNameError').style.display = 'flex';
+            hasError = true;
+        }
+
+        if (!statusSelect.value || statusSelect.value.trim() === '') {
+            statusSelect.classList.add('is-invalid');
+            document.getElementById('categoryStatusError').style.display = 'flex';
+            hasError = true;
+        }
+
+        if (hasError) {
+            e.preventDefault();
+        }
     });
 </script>
 </body>
