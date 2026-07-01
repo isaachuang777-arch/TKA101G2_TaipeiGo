@@ -38,13 +38,13 @@ public class CsFrontendController {
 	private String uploadBaseDir;
 	
 //掛客服中心首頁
-	@GetMapping({"/index","/"})
+	@GetMapping({"/index","/",""})
 	public String showCsIndexPage() {
 		return "frontend/cs/index";
 	}
 
 //掛新增詢問頁面
-	@GetMapping("/createticket")
+	@GetMapping({"/createticket","/createticket/"})
 	public String showcreateTicketpage() {
 		return "frontend/cs/createticket";
 	}

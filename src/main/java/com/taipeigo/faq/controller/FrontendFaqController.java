@@ -18,7 +18,7 @@ public class FrontendFaqController {
 	@Autowired
 	private FaqRepository faqRepository;
 	
-@GetMapping({"/", "/index"})
+@GetMapping({"/", "/index",""})
 	public String showindexpage(Model model) {
 		List<FaqVO> faqVO = faqRepository.findAll();
 		model.addAttribute("faqVO", faqVO);
