@@ -67,7 +67,7 @@
                             const cardHtml = `
                                 <div class="ticket-card" onclick="location.href='/activity/detail?activityId=${activity.activityId}'" style="cursor: pointer;">
                                     <div class="ticket-image-box">
-                                        <img src="${imageUrl}" alt="活動封面">
+                                        <img src="${imageUrl}" alt="活動封面" onerror="this.onerror=null; this.src='/images/activity/default-placeholder.svg';">
                                     </div>
                                     <div class="ticket-info">
                                         <h3 class="ticket-title">${activity.activityName}</h3>

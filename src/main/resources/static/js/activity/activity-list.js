@@ -57,7 +57,7 @@ function renderCategoryCards(categories) {
         const cardHTML = `
             <div class="category-card" onclick="window.location.href='/search?keyword=' + encodeURIComponent('${cate.cateName}')">
                 <div class="category-img-wrapper">
-                    <img src="${imgSrc}" alt="${cate.cateName}" onerror="this.src='/images/activity/default.png'">
+                    <img src="${imgSrc}" alt="${cate.cateName}" onerror="this.onerror=null; this.src='/images/activity/default-placeholder.svg';">
                 </div>
                 <div class="category-info">
                     <h3 class="category-name">${cate.cateName}</h3>
@@ -217,14 +217,14 @@ function renderCards(activityList) {
 
 // 共用的組裝卡片 HTML 函數 (避免程式碼重複)
 function buildCardHtml(activity) {
-    let imageUrl = '/images/default-activity.jpg';
+    let imageUrl = '/images/activity/default-placeholder.svg';
     if (activity.activityImage && activity.activityImage.length > 0) {
         imageUrl = activity.activityImage[0].activityImageSrc;
     }
 
     return `
         <a href="/activity/detail?activityId=${activity.activityId}" class="activity-card">
-            <div class="card-img-placeholder" style="background-image: url('${imageUrl}')"></div>
+            <div class="card-img-placeholder" style="background-image: url('${imageUrl}'), url('/images/activity/default-placeholder.svg'); background-position: center; background-repeat: no-repeat; background-size: cover;"></div>
             <div class="card-content">
                 <h3 class="card-title">${activity.activityName}</h3>
                 <p class="card-desc">${activity.activityDesc || '這是一個超讚的體驗行程！'}</p>
