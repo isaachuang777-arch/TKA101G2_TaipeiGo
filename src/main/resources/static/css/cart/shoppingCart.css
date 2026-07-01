@@ -130,8 +130,21 @@ body{
 }
 
 .product-date{
-    color:#666;
-    margin-bottom:10px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    padding:8px 14px;
+
+    background:#fff7eb;
+    border:1px solid #ffd9b3;
+    border-radius:8px;
+
+    color:#b45309;
+    font-size:17px;
+    font-weight:600;
+
+    margin-bottom:20px;
 }
 
 .product-price{

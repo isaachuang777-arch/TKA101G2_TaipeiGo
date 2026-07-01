@@ -48,7 +48,7 @@ function renderCart() {
                 <img src="${item.imageUrl}" class="product-image">
                 <div class="product-info">
                     <div class="product-name">  ${item.productName} </div>
-                    <div class="product-date">  使用日期：${item.expiryDate} </div>
+					<div class="product-date">  使用日期：${item.expiryDate.substring(0,10)}</div>
                     <div class="product-price"> NT$ ${item.price.toLocaleString()} </div>
                 </div>
             </div>

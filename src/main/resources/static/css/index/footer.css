@@ -27,16 +27,25 @@
     margin-bottom: 24px;
 }
 
-.footer-column p {
+/* 原本 p 改成 a */
+.footer-column a {
+    display: block;
     margin: 14px 0;
     color: #777;
     font-size: 17px;
-    cursor: pointer;
+    text-decoration: none;
     transition: .25s;
 }
 
-.footer-column p:hover {
+.footer-column a:hover {
     color: #0f7c90;
+    padding-left: 4px;
+}
+
+/* 如果有目前所在頁面 */
+.footer-column a.active {
+    color: #0f7c90;
+    font-weight: 600;
 }
 
 .payment-grid {
@@ -72,7 +81,6 @@
     box-shadow: 0 8px 18px rgba(0,0,0,.10);
 }
 
-
 .footer-bottom {
     border-top: 1px solid #ececec;
     padding: 22px 20px;
@@ -104,7 +112,7 @@
         font-size: 20px;
     }
 
-    .footer-column p {
+    .footer-column a {
         font-size: 16px;
     }
 

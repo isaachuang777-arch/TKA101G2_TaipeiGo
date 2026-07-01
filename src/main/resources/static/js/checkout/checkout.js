@@ -27,11 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const lastChar = value.charAt(value.length - 1);
-
         if (/[\u4e00-\u9fa5]/.test(lastChar)) {
-
             if (inputType === "") inputType = "chinese";
-
             if (inputType !== "chinese") {
                 this.value = value.slice(0, -1);
                 cardNameError.innerText = "不可中英文混合";
@@ -40,9 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
         } else if (/[A-Za-z ]/.test(lastChar)) {
-
             if (inputType === "") inputType = "english";
-
             if (inputType !== "english") {
                 this.value = value.slice(0, -1);
                 cardNameError.innerText = "不可中英文混合";
@@ -51,27 +46,20 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
         } else {
-
             this.value = value.slice(0, -1);
             cardNameError.innerText = "只能輸入中文或英文";
             checkForm();
             return;
-
         }
-
         cardNameError.innerText = "";
         checkForm();
-
     });
 
 
     /* ========================= 信用卡號 ========================= */
     cardNumber.addEventListener("input", function () {
-
         let value = this.value.replace(/\D/g, "");
-
         value = value.substring(0, 16);
-
         value = value.replace(/(.{4})/g, "$1 ").trim();
         this.value = value;
         if (value.replace(/\s/g, "").length === 16) {
@@ -95,8 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
         this.value = value;
         validateExpiry();
     });
-
-
     function validateExpiry() {
         const value = expiry.value;
         if (value === "") {
