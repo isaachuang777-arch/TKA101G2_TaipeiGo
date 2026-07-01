@@ -238,7 +238,7 @@ function renderCards(dataList) {
         // 【防呆】處理圖片邏輯
         let finalImageUrl = item.imageUrl;
         if (!finalImageUrl || finalImageUrl.trim() === '') {
-            finalImageUrl = 'https://placehold.co/600x400/eeeeee/999999?text=Taipei+Go';
+            finalImageUrl = '/images/activity/default-placeholder.svg';
         }
 
         // 統一顯示「查看詳情」
@@ -263,7 +263,7 @@ function renderCards(dataList) {
                     ${badgeText}
                 </div>
 
-                <div class="card-img-placeholder" style="background-image: url('${finalImageUrl}')"></div>
+                <div class="card-img-placeholder" style="background-image: url('${finalImageUrl}'), url('/images/activity/default-placeholder.svg'); background-position: center; background-repeat: no-repeat; background-size: cover;"></div>
                 <div class="card-content">
                     <h3 class="card-title">${item.title}</h3>
                     <p class="card-desc">${item.description || '探索這趟美好的旅程！'}</p>

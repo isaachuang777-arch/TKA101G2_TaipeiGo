@@ -448,7 +448,7 @@ public class ActivityService {
         // 2. 扣除活動專屬折扣，並設定防呆最低手續費 30 元
         int finalPrice = totalPrice - activity.getDiscount();
 
-        if (finalPrice <= 0) {
+        if (finalPrice < 30) {
             finalPrice = 30; 
         }
         

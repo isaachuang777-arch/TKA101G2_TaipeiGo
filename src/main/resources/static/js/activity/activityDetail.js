@@ -95,7 +95,7 @@ function renderGalleryAndLightbox(images) {
     // --- 渲染 Gallery 網格 ---
     let mainImgHtml = `
         <div class="main-image has-img" onclick="openLightbox(0)">
-            <img src="${images[0].activityImageSrc}" alt="主圖">
+            <img src="${images[0].activityImageSrc}" alt="主圖" onerror="this.onerror=null; this.src='/images/activity/default-placeholder.svg';">
         </div>
     `;
 
@@ -104,7 +104,7 @@ function renderGalleryAndLightbox(images) {
         let hasImg = i < images.length;
         subImagesHtml += `
             <div class="sub-image-box ${hasImg ? 'has-img' : 'fallback'}" ${hasImg ? `onclick="openLightbox(${i})"` : ''}>
-                ${hasImg ? `<img src="${images[i].activityImageSrc}" alt="副圖">` : '<div class="no-image-placeholder-sub">暫無圖片</div>'}
+                ${hasImg ? `<img src="${images[i].activityImageSrc}" alt="副圖" onerror="this.onerror=null; this.src='/images/activity/default-placeholder.svg';">` : '<div class="no-image-placeholder-sub">暫無圖片</div>'}
                 ${i === 4 && images.length > 0 ? '<div class="view-photos-btn" onclick="event.stopPropagation(); openLightbox(0)">查看照片</div>' : ''}
             </div>
         `;
@@ -119,13 +119,13 @@ function renderGalleryAndLightbox(images) {
     images.forEach((img, index) => {
         slidesHtml += `
             <div class="lightbox-slide">
-                <img src="${img.activityImageSrc}">
+                <img src="${img.activityImageSrc}" onerror="this.onerror=null; this.src='/images/activity/default-placeholder.svg';">
                 <div class="lightbox-counter">${index + 1} / ${images.length}</div>
             </div>
         `;
         thumbsHtml += `
             <div class="thumb-item" onclick="currentSlide(${index})">
-                <img src="${img.activityImageSrc}">
+                <img src="${img.activityImageSrc}" onerror="this.onerror=null; this.src='/images/activity/default-placeholder.svg';">
             </div>
         `;
     });

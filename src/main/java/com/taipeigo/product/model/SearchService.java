@@ -136,6 +136,9 @@ public class SearchService {
 
                     int discount = (a.getDiscount() != null) ? a.getDiscount() : 0;
                     int finalPrice = totalAdultPrice - discount;
+                    if (finalPrice < 30) {
+                        finalPrice = 30;
+                    }
 
                     boolean matchPrice = true;
 
@@ -197,6 +200,9 @@ public class SearchService {
 
             int discount = (a.getDiscount() != null) ? a.getDiscount() : 0;
             int finalPrice = totalAdultPrice - discount;
+            if (finalPrice < 30) {
+                finalPrice = 30;
+            }
 
             dto.setPrice(finalPrice);
 
