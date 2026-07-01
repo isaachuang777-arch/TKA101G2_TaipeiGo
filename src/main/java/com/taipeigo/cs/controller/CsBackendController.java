@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -42,7 +44,7 @@ public class CsBackendController {
 	private String uploadBaseDir;
 	
 //後台客服首頁+dashboard
-	@GetMapping({"/", "/index", "/dashboard"})
+	@GetMapping({"/", "/index", "/dashboard",""})
 	public String showCsdahsboardpage(Model model, @RequestParam(value = "page", defaultValue = "1")  Integer page) {
 		//以問題類別分類的總數
 		//11=操作問題, 12=訂單問題, 13=其他
@@ -121,9 +123,15 @@ public class CsBackendController {
 	}
 	//讀案件
 	@GetMapping("view")
-	public String viewCase(@RequestParam(value = "csId", required = true) Integer csId,
+	public String viewCase(@RequestParam(value = "csId", required = false) Integer csId,
 							Model model) {
+		
 		CsVO csVO= csRepository.findById(csId).orElse(null);
+		//防止有人亂打號碼
+		 if (csVO == null || csId < 999 || csId==null) {
+
+	            return "redirect:/backend/cs/listAll";
+	        }
 		List<CsMsgVO> csMsgList = csMsgRepository.findByCsVO_CsId(csId);
 		model.addAttribute("csVO", csVO);
 		model.addAttribute("csMsgList", csMsgList);
@@ -131,6 +139,11 @@ public class CsBackendController {
 		model.addAttribute("activePage", "cscenter");
 		return "backend/cs/view";
 	
+	}
+	//亂打字防呆
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public String handleTypeMismatch() {
+	    return "redirect:/backend/cs/listAll"; 
 	}
 	//管理員回覆或內部訊息(Woknote)
 		@PostMapping("/backendReply")
