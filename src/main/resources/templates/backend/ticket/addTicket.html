@@ -74,6 +74,9 @@
                                     <i class="bi bi-exclamation-circle"></i>
                                     <span th:errors="*{ticketName}"></span>
                                 </div>
+                                <div class="invalid-feedback-custom" id="ticketNameError" style="display:none;">
+                                    <i class="bi bi-exclamation-circle"></i> 門票商品名稱不能留白且不能超過 50 個字
+                                </div>
                             </div>
 
                             <!-- 上架狀態 -->
@@ -87,9 +90,10 @@
 
                             <!-- 門票分類 -->
                             <div class="col-12">
-                                <label class="form-label">選擇門票分類 (可多選)</label>
+                                <label class="form-label">選擇門票分類 (可多選) <span class="required-mark">*</span></label>
                                 <div class="card p-3"
-                                    style="border: 1.5px solid #e2e8f0; border-radius: 9px; background: #fafbfc;">
+                                    style="border: 1.5px solid #e2e8f0; border-radius: 9px; background: #fafbfc;"
+                                    th:classappend="${#fields.hasErrors('ticketCategories')} ? 'border-danger'">
                                     <div class="d-flex flex-wrap gap-4">
                                         <div th:each="category : ${categoryList}" class="form-check">
                                             <input class="form-check-input" type="checkbox"
@@ -104,6 +108,14 @@
                                             <i class="bi bi-info-circle me-1"></i>請先至門票分類管理建立分類資料。
                                         </div>
                                     </div>
+                                </div>
+                                <div class="invalid-feedback-custom server-error-ticketCategories"
+                                    th:if="${#fields.hasErrors('ticketCategories')}">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    <span th:errors="*{ticketCategories}"></span>
+                                </div>
+                                <div class="invalid-feedback-custom" id="ticketCategoriesError" style="display:none;">
+                                    <i class="bi bi-exclamation-circle"></i> 請至少選擇一個門票分類
                                 </div>
                             </div>
 
@@ -121,13 +133,25 @@
                                     <i class="bi bi-exclamation-circle"></i>
                                     <span th:errors="*{ticketAddress}"></span>
                                 </div>
+                                <div class="invalid-feedback-custom" id="ticketAddressError" style="display:none;">
+                                    <i class="bi bi-exclamation-circle"></i> 景點地址不能留白且不能超過 50 個字
+                                </div>
                             </div>
 
                             <!-- 描述 -->
                             <div class="col-12">
                                 <label class="form-label">門票詳細描述 / 使用須知</label>
                                 <textarea th:field="*{ticketDescription}" class="form-control" id="ticketDescription"
-                                    rows="4" placeholder="請填寫門票的詳細介紹、交通方式與後續核銷說明..."></textarea>
+                                    rows="4" placeholder="請填寫門票的詳細介紹、交通方式與後續核銷說明..." maxlength="500"
+                                    th:classappend="${#fields.hasErrors('ticketDescription')} ? 'is-invalid'"></textarea>
+                                <div class="invalid-feedback-custom server-error-ticketDescription"
+                                    th:if="${#fields.hasErrors('ticketDescription')}">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    <span th:errors="*{ticketDescription}"></span>
+                                </div>
+                                <div class="invalid-feedback-custom" id="ticketDescriptionError" style="display:none;">
+                                    <i class="bi bi-exclamation-circle"></i> 門票描述長度不能超過 500 個字
+                                </div>
                             </div>
                         </div>
 
@@ -136,7 +160,7 @@
 
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
-                                <div class="price-setup-card">
+                                <div class="price-setup-card" th:classappend="${#fields.hasErrors('adultOriginalPrice') or #fields.hasErrors('adultPrice')} ? 'border-danger'">
                                     <div class="price-title"><i class="bi bi-person-fill text-primary"></i> 成人票設定</div>
                                     <div class="mb-3">
                                         <label class="form-label text-secondary small">原價 <span
@@ -144,7 +168,16 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">$</span>
                                             <input type="number" th:field="*{adultOriginalPrice}" class="form-control"
-                                                placeholder="0" min="0" required>
+                                                th:classappend="${#fields.hasErrors('adultOriginalPrice')} ? 'is-invalid'"
+                                                placeholder="0" min="0" required id="adultOriginalPrice">
+                                        </div>
+                                        <div class="invalid-feedback-custom server-error-adultOriginalPrice"
+                                            th:if="${#fields.hasErrors('adultOriginalPrice')}">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <span th:errors="*{adultOriginalPrice}"></span>
+                                        </div>
+                                        <div class="invalid-feedback-custom" id="adultOriginalPriceError" style="display:none;">
+                                            <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
                                     <div>
@@ -153,14 +186,23 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">$</span>
                                             <input type="number" th:field="*{adultPrice}" class="form-control"
-                                                placeholder="0" min="0" required>
+                                                th:classappend="${#fields.hasErrors('adultPrice')} ? 'is-invalid'"
+                                                placeholder="0" min="0" required id="adultPrice">
+                                        </div>
+                                        <div class="invalid-feedback-custom server-error-adultPrice"
+                                            th:if="${#fields.hasErrors('adultPrice')}">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <span th:errors="*{adultPrice}"></span>
+                                        </div>
+                                        <div class="invalid-feedback-custom" id="adultPriceError" style="display:none;">
+                                            <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
-                                <div class="price-setup-card">
+                                <div class="price-setup-card" th:classappend="${#fields.hasErrors('childOriginalPrice') or #fields.hasErrors('childPrice')} ? 'border-danger'">
                                     <div class="price-title"><i class="bi bi-backpack-fill text-success"></i> 兒童票設定
                                     </div>
                                     <div class="mb-3">
@@ -169,7 +211,16 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">$</span>
                                             <input type="number" th:field="*{childOriginalPrice}" class="form-control"
-                                                placeholder="0" min="0" required>
+                                                th:classappend="${#fields.hasErrors('childOriginalPrice')} ? 'is-invalid'"
+                                                placeholder="0" min="0" required id="childOriginalPrice">
+                                        </div>
+                                        <div class="invalid-feedback-custom server-error-childOriginalPrice"
+                                            th:if="${#fields.hasErrors('childOriginalPrice')}">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <span th:errors="*{childOriginalPrice}"></span>
+                                        </div>
+                                        <div class="invalid-feedback-custom" id="childOriginalPriceError" style="display:none;">
+                                            <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
                                     <div>
@@ -178,14 +229,23 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">$</span>
                                             <input type="number" th:field="*{childPrice}" class="form-control"
-                                                placeholder="0" min="0" required>
+                                                th:classappend="${#fields.hasErrors('childPrice')} ? 'is-invalid'"
+                                                placeholder="0" min="0" required id="childPrice">
+                                        </div>
+                                        <div class="invalid-feedback-custom server-error-childPrice"
+                                            th:if="${#fields.hasErrors('childPrice')}">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <span th:errors="*{childPrice}"></span>
+                                        </div>
+                                        <div class="invalid-feedback-custom" id="childPriceError" style="display:none;">
+                                            <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
-                                <div class="price-setup-card">
+                                <div class="price-setup-card" th:classappend="${#fields.hasErrors('concessionOriginalPrice') or #fields.hasErrors('concessionPrice')} ? 'border-danger'">
                                     <div class="price-title"><i class="bi bi-heart-pulse-fill text-warning"></i> 優待票設定
                                     </div>
                                     <div class="mb-3">
@@ -194,7 +254,17 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">$</span>
                                             <input type="number" th:field="*{concessionOriginalPrice}"
-                                                class="form-control" placeholder="0" min="0" required>
+                                                class="form-control" placeholder="0" min="0" required
+                                                th:classappend="${#fields.hasErrors('concessionOriginalPrice')} ? 'is-invalid'"
+                                                id="concessionOriginalPrice">
+                                        </div>
+                                        <div class="invalid-feedback-custom server-error-concessionOriginalPrice"
+                                            th:if="${#fields.hasErrors('concessionOriginalPrice')}">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <span th:errors="*{concessionOriginalPrice}"></span>
+                                        </div>
+                                        <div class="invalid-feedback-custom" id="concessionOriginalPriceError" style="display:none;">
+                                            <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
                                     <div>
@@ -203,7 +273,17 @@
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text">$</span>
                                             <input type="number" th:field="*{concessionPrice}" class="form-control"
-                                                placeholder="0" min="0" required>
+                                                placeholder="0" min="0" required
+                                                th:classappend="${#fields.hasErrors('concessionPrice')} ? 'is-invalid'"
+                                                id="concessionPrice">
+                                        </div>
+                                        <div class="invalid-feedback-custom server-error-concessionPrice"
+                                            th:if="${#fields.hasErrors('concessionPrice')}">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            <span th:errors="*{concessionPrice}"></span>
+                                        </div>
+                                        <div class="invalid-feedback-custom" id="concessionPriceError" style="display:none;">
+                                            <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
                                 </div>

@@ -117,7 +117,7 @@ public class TicketController {
             RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
-            model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+            model.addAttribute("categoryList", ticketCategoryService.getAllNotDeleted());
             return "backend/ticket/addTicket";
         }
 
@@ -182,7 +182,7 @@ public class TicketController {
         // 如果驗證有錯，回原本的修改頁面時，代入原本的資料
         if (result.hasErrors()) {
             // 重新撈出門票分類
-            model.addAttribute("categoryList", ticketCategoryService.getAllActive());
+            model.addAttribute("categoryList", ticketCategoryService.getAllNotDeleted());
 
             // 重新撈出該門票原有的舊圖片重新存回 ticketVO
             TicketVO currentTicket = ticketService.getOneTicket(ticketVO.getTicketId());
