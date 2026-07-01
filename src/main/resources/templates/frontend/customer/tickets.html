@@ -76,8 +76,7 @@
 }
 
 .status-used,
-.status-expired,
-.status-refund {
+.status-expired {
     color: #dc3545;
     font-weight: 700;
 }
@@ -137,10 +136,6 @@
             我的票券
         </div>
 
-        <p style="margin-bottom:25px;">
-            歡迎，
-            <span th:text="${loginCustomer.custName}"></span>
-        </p>
 
         <div th:if="${#lists.isEmpty(myTickets)}" class="empty-card">
             目前尚無票券資料
@@ -170,9 +165,11 @@
                     </div>
 
                     <div class="ticket-info">
-                        <span class="ticket-label">有效期限：</span>
-                        <span th:text="${ticket.expiryDate}"></span>
-                    </div>
+					    <span class="ticket-label">可使用日期：</span>
+					    <span th:if="${ticket.expiryDate != null}"
+					          th:text="${#dates.format(ticket.expiryDate, 'yyyy-MM-dd')}">
+					    </span>
+					</div>
 
                     <div class="ticket-info">
                         <span class="ticket-label">狀態：</span>
@@ -189,9 +186,6 @@
                             已過期
                         </span>
 
-                        <span th:if="${ticket.status == 6}" class="status-refund">
-                            已退款
-                        </span>
                     </div>
 
                 </div>
@@ -206,7 +200,7 @@
                     </div>
 
                     <div class="qrcode-hint">
-                        請於入口掃描使用
+                        請於驗票入口出示 QR Code
                     </div>
 
                 </div>
