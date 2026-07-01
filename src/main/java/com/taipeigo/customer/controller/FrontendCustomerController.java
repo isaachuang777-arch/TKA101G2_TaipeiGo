@@ -49,8 +49,9 @@ public class FrontendCustomerController {
 
         model.addAttribute("loginCustomer", loginCustomer);
     }
+    
 
-    @GetMapping("/center")
+    @GetMapping({"", "/", "/center"})
     public String center() {
         return "frontend/customer/center";
     }
