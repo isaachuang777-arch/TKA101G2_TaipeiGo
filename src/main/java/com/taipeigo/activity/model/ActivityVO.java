@@ -37,10 +37,7 @@ public class ActivityVO implements Serializable {
 	@Column(name = "ACTIVITY_DESC", columnDefinition = "LONGTEXT")
 	private String activityDesc;
 
-	@NotNull(message = "有效天數必填")
-	@Min(value = 1, message = "有效期限不能小於或等於0")
-	@Column(name = "EXPIRY_DATE", nullable = false)
-	private Integer expiryDate;
+
 
 	@NotNull(message = "折扣欄必填")
 	@Min(value = 0, message = "折扣不得為負數")
@@ -108,13 +105,7 @@ public class ActivityVO implements Serializable {
 		this.activityDesc = activityDesc;
 	}
 
-	public Integer getExpiryDate() {
-		return expiryDate;
-	}
 
-	public void setExpiryDate(Integer expiryDate) {
-		this.expiryDate = expiryDate;
-	}
 
 	public Integer getDiscount() {
 		return discount;

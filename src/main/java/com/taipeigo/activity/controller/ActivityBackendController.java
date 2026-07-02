@@ -71,6 +71,20 @@ public class ActivityBackendController {
         model.addAttribute("totalPage", totalPage);
         model.addAttribute("currentPage", currentPage);
 
+        // 統計數據
+        long totalCount = activityService.countAllActivities();
+        long onCount = activityService.countActivitiesByStatus(1);
+        long offCount = activityService.countActivitiesByStatus(0);
+        System.out.println("============================================");
+        System.out.println("TOTAL ACTIVITIES: " + totalCount);
+        System.out.println("ON SHELF: " + onCount);
+        System.out.println("OFF SHELF: " + offCount);
+        System.out.println("============================================");
+        
+        model.addAttribute("totalActivitiesCount", totalCount);
+        model.addAttribute("onShelfCount", onCount);
+        model.addAttribute("offShelfCount", offCount);
+
         // 把前端的params在傳回去 避免換頁的時候消失
         model.addAttribute("queryParams", params);
         

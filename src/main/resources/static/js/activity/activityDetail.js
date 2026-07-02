@@ -46,6 +46,22 @@ document.addEventListener("DOMContentLoaded", function() {
             currentActivity = data[0];
             renderActivityData(currentActivity);
             initFlatpickr(); // 資料載入完畢後初始化日曆
+            
+            // 檢查是否已加入我的最愛
+            if (typeof isUserLoggedIn !== 'undefined' && isUserLoggedIn) {
+                fetch(contextPath + 'favorite/check?type=ACTIVITY&id=' + activityId)
+                    .then(res => res.json())
+                    .then(isFavorited => {
+                        if (isFavorited) {
+                            const favBtn = document.querySelector('.favorite-btn-klook');
+                            if (favBtn) {
+                                favBtn.classList.add('active');
+                                favBtn.querySelector('i').classList.replace('fa-regular', 'fa-solid');
+                            }
+                        }
+                    })
+                    .catch(err => console.error('Error checking favorite:', err));
+            }
         })
         .catch(err => {
             console.error("獲取資料失敗:", err);
@@ -183,7 +199,7 @@ function showSlides(n) {
     }
 }
 
-// 加入我的最愛
+// 加入或取消收藏
 function toggleFavorite(event, button) {
     event.stopPropagation();
     
@@ -199,14 +215,29 @@ function toggleFavorite(event, button) {
         return;
     }
     
-    button.classList.toggle('active');
-    const icon = button.querySelector('i');
-    
-    if (button.classList.contains('active')) {
-        icon.classList.replace('fa-regular', 'fa-solid');
-    } else {
-        icon.classList.replace('fa-solid', 'fa-regular');
-    }
+    const formData = new URLSearchParams();
+    formData.append('type', 'ACTIVITY');
+    formData.append('id', activityId);
+
+    fetch(contextPath + 'favorite/toggle/ajax', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => response.json())
+    .then(isFavorited => {
+        const icon = button.querySelector('i');
+        if (isFavorited) {
+            button.classList.add('active');
+            icon.classList.replace('fa-regular', 'fa-solid');
+        } else {
+            button.classList.remove('active');
+            icon.classList.replace('fa-solid', 'fa-regular');
+        }
+    })
+    .catch(error => console.error('Error toggling favorite:', error));
 }
 
 // 格式化日期成 YYYY-MM-DD
@@ -464,8 +495,12 @@ function validateBooking(event, action = 'cart', isAutoTrigger = false) {
             } else {
                 if (errorMsgSpan) {
                     errorMsgSpan.style.color = '#10b981'; // 綠色
-                    errorMsgSpan.innerText = "已將選取的方案加入購物車";
+                    errorMsgSpan.innerText = "已成功加入方案至購物車";
                     errorMsgSpan.style.opacity = '1';
+
+                    // 加入購物車成功後，將數量歸零並更新總計
+                    document.querySelectorAll('.qty-input').forEach(input => input.value = 0);
+                    updateTotalAndPrice();
                     
                     // 3 秒後自動隱藏成功訊息
                     setTimeout(() => {
