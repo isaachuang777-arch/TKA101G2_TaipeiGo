@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.taipeigo.cart.model.CartService;
 import com.taipeigo.customer.model.CustomerVO;
@@ -77,5 +78,20 @@ public class CheckoutService {
 		/**清空Redis**/
 		cartService.clearCart(session);
 	}
+    
+    @GetMapping("")
+    /*載入checkout畫面**/
+    public String checkoutInit() {
+    	return null;
+    }
+    
+    
+    /**查詢購物車裡面所有的TicketId, quantity**/
+
+    
+    
+    
+    
+    
 
 }

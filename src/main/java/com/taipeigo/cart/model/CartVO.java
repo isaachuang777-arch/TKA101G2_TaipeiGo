@@ -103,6 +103,16 @@ public class CartVO implements Serializable{
 		}
 		
 		
-		
+		@Override
+		public String toString() {
+		    return "CartVO{" +
+		            "productId=" + productId +
+		            ", productType='" + productType + '\'' +
+		            ", productQuantity=" + productQuantity +
+		            ", spec='" + spec + '\'' +
+		            ", expiryDate=" + expiryDate +
+		            ", createdAt=" + createdAt +
+		            '}';
+		}
 		
 }

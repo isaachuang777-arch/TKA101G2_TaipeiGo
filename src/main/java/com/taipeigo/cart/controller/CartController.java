@@ -1,6 +1,5 @@
 package com.taipeigo.cart.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.taipeigo.cart.model.CartService;
 import com.taipeigo.cart.model.CartVO;
+import com.taipeigo.cart.model.TicketStockDTO;
 import com.taipeigo.customer.model.CustomerVO;
 import com.taipeigo.product.dto.CartItemDTO;
 
@@ -129,5 +129,13 @@ public class CartController {
 	        return ResponseEntity.badRequest().body(e.getMessage());
 	    }
 	}
+	
+	/* ========== 查詢購物車裡面所有的TicketId, quantity======*/
+	@GetMapping("/ticketIdQuantitySearch")
+	@ResponseBody
+	public List<TicketStockDTO> ticketIdQuantitySearch(HttpSession session){
+		return cartService.ticketIdQuantitySearch(session);
+	}
+	
 
 }
