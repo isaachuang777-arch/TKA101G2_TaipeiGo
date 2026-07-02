@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 @Repository
-public interface FaqRepository extends JpaRepository<FaqVO, Integer> {
+public interface FaqRepository extends JpaRepository<FaqVO, Integer>, JpaSpecificationExecutor<FaqVO> {
 
 	List<FaqVO> findByStatus(Byte status);
 

@@ -10,6 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
+
 @Service
 public class FaqService {
 
@@ -63,5 +67,41 @@ public class FaqService {
  	   }
  	   return dtoList;
  	   
+    }
+    
+    // 後台複合查詢 + 分頁 + 分類
+    public Page<FaqVO> searchFaqs(int page, String keyword, Byte status, Integer category) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                10,
+                Sort.by(Sort.Direction.DESC, "createTime")
+        );
+
+        Specification<FaqVO> spec = (root, query, cb) -> {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String kw = "%" + keyword.trim() + "%";
+
+                predicates.add(cb.or(
+                        cb.like(root.get("title"), kw),
+                        cb.like(root.get("content"), kw)
+                ));
+            }
+
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+            
+            if (category != null) {
+                predicates.add(cb.equal(root.get("category"), category));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return faqRepository.findAll(spec, pageable);
     }
 }
