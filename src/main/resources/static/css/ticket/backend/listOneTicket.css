@@ -378,3 +378,19 @@ body {
         width: auto;
     }
 }
+
+/* table-footer from listAllTicket.css */
+.table-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.table-footer-info {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}

@@ -26,6 +26,10 @@ public interface TicketSerialRepository extends JpaRepository<TicketSerialVO, In
            "ORDER BY s.ticketSerialId DESC")
     Page<TicketSerialVO> searchSerials(@Param("keyword") String keyword, Pageable pageable);
 
+    // 依門票 ID 取得所有門票序號 (分頁)
+    @Query("SELECT s FROM TicketSerialVO s WHERE s.ticketVO.ticketId = :ticketId ORDER BY s.ticketSerialId DESC")
+    Page<TicketSerialVO> findSerialsByTicketId(@Param("ticketId") Integer ticketId, Pageable pageable);
+
     // 檢查該筆序號是否已存在在資料庫
     boolean existsBySerialNumber(String serialNumber);
 
