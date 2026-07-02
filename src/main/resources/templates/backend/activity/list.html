@@ -99,6 +99,51 @@ body {
                 </div>
             </div>
 
+            <!-- 數據統計列 -->
+            <div class="row stats-row g-3">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">總活動數量</div>
+                            <div class="stat-value" th:text="${totalActivitiesCount != null ? totalActivitiesCount : 0}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">上架中</div>
+                            <div class="stat-value" th:text="${onShelfCount != null ? onShelfCount : 0}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">已下架</div>
+                            <div class="stat-value" th:text="${offShelfCount != null ? offShelfCount : 0}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <!-- 左側：搜尋條件 (Filter) -->
                 <div class="col-lg-3">
@@ -176,10 +221,13 @@ body {
                                                     <!-- 縮圖 -->
                                                     <img th:if="${not #lists.isEmpty(activity.activityImage)}" 
                                                          th:src="${activity.activityImage[0].activityImageSrc}" 
-                                                         class="activity-thumbnail" alt="thumbnail">
-                                                    <img th:if="${#lists.isEmpty(activity.activityImage)}" 
-                                                         th:src="@{/images/activity/default.png}" 
-                                                         class="activity-thumbnail" alt="default">
+                                                         class="activity-thumbnail" alt="thumbnail"
+                                                         onerror="this.onerror=null; this.outerHTML='<div class=\'activity-thumbnail d-flex align-items-center justify-content-center bg-secondary text-white\' style=\'font-size: 12px; font-weight: bold;\'>暫無圖片</div>';">
+                                                    <div th:if="${#lists.isEmpty(activity.activityImage)}" 
+                                                         class="activity-thumbnail d-flex align-items-center justify-content-center bg-secondary text-white" 
+                                                         style="font-size: 12px; font-weight: bold;">
+                                                        暫無圖片
+                                                    </div>
                                                 </td>
                                                 <td style="max-width: 250px;">
                                                     <div class="text-muted small">#<span th:text="${activity.activityId}"></span></div>
@@ -544,9 +592,46 @@ body {
             });
         }
         
-        // Modal 關閉時，如果分類有變動，重新整理頁面以更新側邊的「搜尋分類下拉選單」
+        // Modal 關閉時若有更新分類，重整頁面以更新側邊欄的搜尋分類下拉選單
         document.getElementById('categoryModal').addEventListener('hidden.bs.modal', function () {
             window.location.reload();
+        });
+
+        // ==========================================
+        // 搜尋欄位互斥邏輯
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const idInput = document.querySelector('input[name="activityId"]');
+            const keywordInput = document.querySelector('input[name="keyword"]');
+            const statusSelect = document.querySelector('select[name="activityStatus"]');
+            const cateSelect = document.querySelector('select[name="cateId"]');
+
+            function toggleSearchInputs() {
+                if (idInput.value.trim() !== '') {
+                    // 如果輸入了 ID，鎖定其他模糊搜尋欄位
+                    keywordInput.disabled = true;
+                    statusSelect.disabled = true;
+                    cateSelect.disabled = true;
+                } else if (keywordInput.value.trim() !== '' || statusSelect.value !== '' || cateSelect.value !== '') {
+                    // 如果輸入了模糊搜尋條件，鎖定 ID 欄位
+                    idInput.disabled = true;
+                } else {
+                    // 全空，全部解鎖
+                    idInput.disabled = false;
+                    keywordInput.disabled = false;
+                    statusSelect.disabled = false;
+                    cateSelect.disabled = false;
+                }
+            }
+
+            // 綁定事件監聽器
+            if(idInput) idInput.addEventListener('input', toggleSearchInputs);
+            if(keywordInput) keywordInput.addEventListener('input', toggleSearchInputs);
+            if(statusSelect) statusSelect.addEventListener('change', toggleSearchInputs);
+            if(cateSelect) cateSelect.addEventListener('change', toggleSearchInputs);
+
+            // 頁面載入時執行一次，確保保持搜尋後的停用狀態
+            toggleSearchInputs();
         });
     </script>
 </body>

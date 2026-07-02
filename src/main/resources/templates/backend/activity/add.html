@@ -14,19 +14,26 @@
 <link rel="stylesheet" th:href="@{/css/activity/backend-activity-form.css}">
 
 <style>
-/* 專屬側邊欄動畫覆蓋 */
-:root { --primary: #0d6efd; }
-body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; }
-.sidebar { width: 260px !important; transform: translateX(calc(-100% + 15px)); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.sidebar:hover { transform: translateX(0); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s; }
-.main-wrap { margin-left: 0 !important; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; min-height: 100vh; display: flex; flex-direction: column; }
-.sidebar:hover ~ .main-wrap { margin-left: 260px !important; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s !important; }
-.sidebar::after { content: ''; position: fixed; right: 4px; top: 50%; transform: translateY(-50%); width: 4px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 4px; transition: opacity 0.3s; }
-.sidebar:hover::after { opacity: 0; transition: opacity 0.3s 0.5s; }
-.topbar { background: #fff; padding: 14px 40px 14px 80px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
+/* 基礎排版設定，確保畫面不被側邊欄覆蓋 */
+.main-wrap {
+    margin-left: 260px; /* 對齊側邊欄的寬度 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.topbar {
+    background: #fff; 
+    padding: 14px 40px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    border-bottom: 1px solid #e2e8f0; 
+    position: sticky; 
+    top: 0; 
+    z-index: 50;
+}
 .topbar-title { font-size: 1.1rem; font-weight: 700; color: #1a2236; }
-.content-area { padding: 32px 40px 32px 80px; flex: 1; }
-
+.content-area { padding: 32px 40px; flex: 1; }
 .custom-tag-btn {
     border: 1px dashed #9ca3af;
     padding: 6px 16px;
@@ -82,8 +89,8 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
+            <div class="row">
+                <div class="col-12">
                     <div class="card p-4">
                         <form th:action="@{/backend/activity/add}" method="post" enctype="multipart/form-data">
                             
@@ -97,11 +104,7 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                                             <label for="activityName" class="form-label">活動名稱 <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" id="activityName" name="activityName" th:value="${activityVO.activityName}" required>
                                         </div>
-                                        <div class="col-md-3">
-                                            <label for="expiryDate" class="form-label">可使用天數 <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="expiryDate" name="expiryDate" th:value="${activityVO.expiryDate}" min="1" required>
-                                        </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-6">
                                             <label for="discount" class="form-label">折扣金額 <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="discount" name="discount" th:value="${activityVO.discount}" min="0" required>
                                         </div>

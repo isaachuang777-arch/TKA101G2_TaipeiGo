@@ -134,3 +134,42 @@ input:checked + .status-slider:before {
     pointer-events: none;
     background-color: transparent;
 }
+/* Stats Row */
+.stats-row {
+    margin-bottom: 28px;
+}
+.stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e8edf2;
+    height: 100%;
+}
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.stat-icon.blue { background: #eff6ff; color: #3b82f6; }
+.stat-icon.green { background: #f0fdf4; color: #22c55e; }
+.stat-icon.red { background: #fff1f2; color: #dc2626; }
+.stat-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}

@@ -1,5 +1,7 @@
 package com.taipeigo.product.model;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,28 +126,22 @@ public class ProductCartFacade {
                              Integer quantity, Integer custId, 
                              Integer orderId, LocalDateTime expiryDate) {
 
-        if ("ACTIVITY".equalsIgnoreCase(productType)) {
-        
-        // 用我自己的buyActivity方法(用buyTicketSerial魔改)
-         activityService.buyActivity(productId, quantity, custId, orderId);
+        Timestamp sqlExpiryDate = null;
+
+        if(expiryDate != null){
+            sqlExpiryDate = Timestamp.valueOf(expiryDate);
+        }
+
+        if("ACTIVITY".equalsIgnoreCase(productType)){
+            activityService.buyActivity(productId, quantity, custId, orderId, sqlExpiryDate);
         } 
 
-    else if ("TICKET".equalsIgnoreCase(productType)){
+        else if ("TICKET".equalsIgnoreCase(productType)){
+            for(int i = 0; i < quantity; i++ ){
 
-        // 將 LocalDateTime 轉換為 Timestamp 供 TicketService 使用
-        java.sql.Timestamp sqlExpiryDate = null;
-        if (expiryDate != null) {
-            sqlExpiryDate = java.sql.Timestamp.valueOf(expiryDate);
+                ticketService.buyTicketSerial(productId, sqlExpiryDate, custId, orderId);
+            }
         }
-
-        // ticketService的buyTicketSerial拿來用，但這方法一次只能處理一張，跑迴圈方式去處理
-
-        for(int i = 0; i < quantity; i++){
-
-             ticketService.buyTicketSerial(productId, sqlExpiryDate, custId, orderId); 
-        }
-    } 
-
     }
 
 
