@@ -1,13 +1,16 @@
 package com.taipeigo.cart.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.taipeigo.activity.model.ActivityDetailVO;
 import com.taipeigo.customer.model.CustomerVO;
 import com.taipeigo.product.dto.CartItemDTO;
 import com.taipeigo.product.model.ProductCartFacade;
@@ -22,6 +25,9 @@ public class CartService {
 	
 	@Autowired
 	private ProductCartFacade productCartFacade;
+	
+	@Autowired
+	private CartActivityRepository cartActivityRepository;
 
 /*===============insertCart======新增購物車====================================================*/
 	public void insertCart(CartVO cartVO, HttpSession session) {
@@ -144,6 +150,9 @@ public class CartService {
 			if (obj == null) {
 				return new ArrayList<>();
 			}
+			System.out.println("購物車內容:::");
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println(obj);
 			return (List<CartVO>) obj;
 		}
 
@@ -327,6 +336,65 @@ public class CartService {
 		                    + "張 庫存不足，請重新確認數量。");
 			}
 		}
+	}
+	
+/*===============ticketIdQuantitySearch=======購物車裡面現有的ticket, actity共有那些ticketId,數量========================================*/
+	public List<TicketStockDTO> ticketIdQuantitySearch(HttpSession session) {
+		/**取得reids購物車全部資料**/
+	    List<CartVO> cartList = queryCart(session);
+
+	    /***取的ticketId對應的數量  (例)"ticketId": 17, "quantity": 6**/
+	    Map<Integer, Integer> ticketMap = new HashMap<>();
+	    for (CartVO cart : cartList) {
+	        /*** Ticket**/
+	        if ("TICKET".equalsIgnoreCase(cart.getProductType())) {
+	            addTicketQuantity(
+	                    ticketMap,
+	                    cart.getProductId(),
+	                    cart.getProductQuantity()
+	            );
+	        }
+	        /*** Activity**/
+	        else if ("ACTIVITY".equalsIgnoreCase(cart.getProductType())) {
+	            Integer activityId = cart.getProductId();
+	            Integer quantity = cart.getProductQuantity();
+	            List<ActivityDetailVO> detailList =cartActivityRepository.findByActivity_ActivityId(activityId);
+	            if (detailList != null && !detailList.isEmpty()) {
+	                for (ActivityDetailVO detail : detailList) {
+	                    addTicketQuantity(
+	                            ticketMap,
+	                            detail.getTicket().getTicketId(),
+	                            quantity
+	                    );
+	                }
+	            }
+	        }
+	    }
+	    /***Map 轉成 DTO(JSON格式傳出)**/
+	    List<TicketStockDTO> result = new ArrayList<>();
+	    for (Map.Entry<Integer, Integer> entry : ticketMap.entrySet()) {
+	        TicketStockDTO dto = new TicketStockDTO();
+	        dto.setTicketId(entry.getKey());
+	        dto.setQuantity(entry.getValue());
+	        result.add(dto);
+	    }
+	    return result;
+	}
+
+
+	/*** 將Ticket數量累加到 Map(確保Activity組合Ticket跟單買Ticket數量重複卻沒有累加!!!
+	 * 舉例:Ticket101 x2
+			Activity18 x1
+			    ├── Ticket101
+			    ├── Ticket202
+			    └── Ticket203
+	========> Ticket101應合併為 Ticket101*3 !!!*/
+	private void addTicketQuantity(
+			Map<Integer, Integer> ticketMap,
+	        Integer ticketId,
+	        Integer quantity) {
+			ticketMap.put(ticketId,ticketMap.getOrDefault(ticketId, 0) + quantity
+	    );
 	}
 	
 	
