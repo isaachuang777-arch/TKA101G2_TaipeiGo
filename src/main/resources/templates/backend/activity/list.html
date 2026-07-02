@@ -137,6 +137,51 @@ body {
                 </div>
             </div>
 
+            <!-- 數據統計列 -->
+            <div class="row stats-row g-3">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">總活動數量</div>
+                            <div class="stat-value" th:text="${totalActivitiesCount != null ? totalActivitiesCount : 0}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">上架中</div>
+                            <div class="stat-value" th:text="${onShelfCount != null ? onShelfCount : 0}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">已下架</div>
+                            <div class="stat-value" th:text="${offShelfCount != null ? offShelfCount : 0}">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <!-- 左側：搜尋條件 (Filter) -->
                 <div class="col-lg-3">
