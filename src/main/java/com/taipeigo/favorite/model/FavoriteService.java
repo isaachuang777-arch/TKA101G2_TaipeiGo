@@ -120,7 +120,7 @@ public class FavoriteService {
 
         dto.setFavoriteNo(favorite.getFavoriteNo());
         dto.setProductId(product.getProductId());
-        dto.setProductName(product.getProductName());
+        dto.setProductName(product.getProductName()); // fallback
 
         if (product.getActivityId() != null) {
 
@@ -131,13 +131,16 @@ public class FavoriteService {
                     .findById(product.getActivityId())
                     .orElse(null);
 
-            if (activity != null
-                    && activity.getActivityImage() != null
-                    && !activity.getActivityImage().isEmpty()) {
+            if (activity != null) {
+                dto.setProductName(activity.getActivityName());
 
-                dto.setImageUrl(
-                        activity.getActivityImage().get(0).getActivityImageSrc()
-                );
+                if (activity.getActivityImage() != null
+                        && !activity.getActivityImage().isEmpty()) {
+
+                    dto.setImageUrl(
+                            activity.getActivityImage().get(0).getActivityImageSrc()
+                    );
+                }
             }
 
         } else if (product.getTicketId() != null) {
@@ -149,13 +152,16 @@ public class FavoriteService {
                     .findById(product.getTicketId())
                     .orElse(null);
 
-            if (ticket != null
-                    && ticket.getTicketImages() != null
-                    && !ticket.getTicketImages().isEmpty()) {
+            if (ticket != null) {
+                dto.setProductName(ticket.getTicketName());
 
-                dto.setImageUrl(
-                        ticket.getTicketImages().get(0).getTicketImageSrc()
-                );
+                if (ticket.getTicketImages() != null
+                        && !ticket.getTicketImages().isEmpty()) {
+
+                    dto.setImageUrl(
+                            ticket.getTicketImages().get(0).getTicketImageSrc()
+                    );
+                }
             }
         }
 
