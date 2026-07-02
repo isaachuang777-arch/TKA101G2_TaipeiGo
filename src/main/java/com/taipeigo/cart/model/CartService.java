@@ -31,6 +31,7 @@ public class CartService {
 
 /*===============insertCart======新增購物車====================================================*/
 	public void insertCart(CartVO cartVO, HttpSession session) {
+		
 		CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
 		/**** 會員有登入 ===> 確認Redis有沒有東西 **/
 		if (customer != null) {
@@ -114,6 +115,8 @@ public class CartService {
 		System.out.println("加入Session購物車(暫存車tempCart)成功");
 	}
 
+
+
 /*===============mergeTempCart======整合session跟redis購物車====================================================*/
 	/** 登入時合併tempCart進入到Redis購物車 **/
 	public void mergeTempCart(HttpSession session) {
@@ -166,6 +169,7 @@ public class CartService {
 
 /*===============updateCart======更新購物車====================================================*/
 	public void updateCart(CartVO cartVO, HttpSession session) {
+		
 		CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
 		/*******************已登入**********************************************/
 		if (customer != null) {
@@ -213,7 +217,8 @@ public class CartService {
 		System.out.println("Session購物車修改成功");
 	}
 
-	
+
+
 /*===============removeProduct======單一項目刪除====================================================*/
 	public void removeProduct(CartVO cartVO, HttpSession session) {
 	    CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
@@ -340,27 +345,47 @@ public class CartService {
 	
 /*===============ticketIdQuantitySearch=======購物車裡面現有的ticket, actity共有那些ticketId,數量========================================*/
 	public List<TicketStockDTO> ticketIdQuantitySearch(HttpSession session) {
-		/**取得reids購物車全部資料**/
+
+	    /** 取得 Redis 購物車全部資料 **/
 	    List<CartVO> cartList = queryCart(session);
 
-	    /***取的ticketId對應的數量  (例)"ticketId": 17, "quantity": 6**/
+	    /** ticketId 對應數量 */
 	    Map<Integer, Integer> ticketMap = new HashMap<>();
+
 	    for (CartVO cart : cartList) {
-	        /*** Ticket**/
+
+	        System.out.println("=================================");
+	        System.out.println("商品類型 = " + cart.getProductType());
+	        System.out.println("productId = " + cart.getProductId());
+	        System.out.println("spec = " + cart.getSpec());
+	        System.out.println("quantity = " + cart.getProductQuantity());
+
+	        /** Ticket */
 	        if ("TICKET".equalsIgnoreCase(cart.getProductType())) {
+
 	            addTicketQuantity(
 	                    ticketMap,
 	                    cart.getProductId(),
 	                    cart.getProductQuantity()
 	            );
 	        }
-	        /*** Activity**/
+
+	        /** Activity */
 	        else if ("ACTIVITY".equalsIgnoreCase(cart.getProductType())) {
+
 	            Integer activityId = cart.getProductId();
 	            Integer quantity = cart.getProductQuantity();
-	            List<ActivityDetailVO> detailList =cartActivityRepository.findByActivity_ActivityId(activityId);
+
+	            List<ActivityDetailVO> detailList =
+	                    cartActivityRepository.findByActivity_ActivityId(activityId);
+
 	            if (detailList != null && !detailList.isEmpty()) {
+
 	                for (ActivityDetailVO detail : detailList) {
+
+	                    System.out.println("Activity -> TicketId = "
+	                            + detail.getTicket().getTicketId());
+
 	                    addTicketQuantity(
 	                            ticketMap,
 	                            detail.getTicket().getTicketId(),
@@ -370,19 +395,30 @@ public class CartService {
 	            }
 	        }
 	    }
-	    /***Map 轉成 DTO(JSON格式傳出)**/
-	    List<TicketStockDTO> result = new ArrayList<>();
+
+	    System.out.println("========== ticketMap ==========");
+
 	    for (Map.Entry<Integer, Integer> entry : ticketMap.entrySet()) {
+	        System.out.println("ticketId = " + entry.getKey()
+	                + " , quantity = " + entry.getValue());
+	    }
+
+	    /** Map 轉 DTO */
+	    List<TicketStockDTO> result = new ArrayList<>();
+
+	    for (Map.Entry<Integer, Integer> entry : ticketMap.entrySet()) {
+
 	        TicketStockDTO dto = new TicketStockDTO();
 	        dto.setTicketId(entry.getKey());
 	        dto.setQuantity(entry.getValue());
+
 	        result.add(dto);
 	    }
+
 	    return result;
 	}
 
-
-	/*** 將Ticket數量累加到 Map(確保Activity組合Ticket跟單買Ticket數量重複卻沒有累加!!!
+/*** 將Ticket數量累加到 Map(確保Activity組合Ticket跟單買Ticket數量重複卻沒有累加!!!
 	 * 舉例:Ticket101 x2
 			Activity18 x1
 			    ├── Ticket101
@@ -396,24 +432,91 @@ public class CartService {
 			ticketMap.put(ticketId,ticketMap.getOrDefault(ticketId, 0) + quantity
 	    );
 	}
+
+
+
+	public void checkUpdateStock(CartVO cartVO, HttpSession session) {
+	    // 目前購物車所有 Ticket 已占用數量
+	    List<TicketStockDTO> ticketList = ticketIdQuantitySearch(session);
+	    Map<Integer, Integer> occupiedMap = new HashMap<>();
+	    for (TicketStockDTO dto : ticketList) {
+	        occupiedMap.put(dto.getTicketId(), dto.getQuantity());
+	    }
+
+	    /**************** Ticket ****************/
+	    if ("TICKET".equalsIgnoreCase(cartVO.getProductType())) {
+	        Integer ticketId = cartVO.getProductId();
+	        /*目前這個 Ticket 在購物車已占用數量***/ 
+	        Integer occupied = occupiedMap.getOrDefault(ticketId, 0);
+	        /**找目前這一筆原本數量**/ 
+	        List<CartVO> cartList = queryCart(session);
+	        Integer oldQuantity = 0;
+	        for (CartVO item : cartList) {
+	            if (Objects.equals(item.getProductId(), cartVO.getProductId())
+	                    && Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+	                    && Objects.equals(item.getProductType(), cartVO.getProductType())
+	                    && Objects.equals(item.getSpec(), cartVO.getSpec())) {
+	                oldQuantity = item.getProductQuantity();
+	                break;
+	            }
+	        }
+	        /***更新後整個 Ticket 實際占用數量**/ 
+	        Integer total = occupied - oldQuantity + cartVO.getProductQuantity();
+	        boolean stockEnough = productCartFacade.checkStock(
+	                "TICKET",
+	                ticketId,
+	                total);
+	        if (!stockEnough) {
+	            throw new RuntimeException("商品庫存不足");
+	        }
+	        return;
+	    }
+
+	    /**************** Activity ****************/
+	    if ("ACTIVITY".equalsIgnoreCase(cartVO.getProductType())) {
+	        List<CartVO> cartList = queryCart(session);
+	        Integer oldQuantity = 0;
+	        for (CartVO item : cartList) {
+	            if (Objects.equals(item.getProductId(), cartVO.getProductId())
+	                    && Objects.equals(item.getExpiryDate(), cartVO.getExpiryDate())
+	                    && Objects.equals(item.getProductType(), cartVO.getProductType())
+	                    && Objects.equals(item.getSpec(), cartVO.getSpec())) {
+	                oldQuantity = item.getProductQuantity();
+	                break;
+	            }
+	        }
+
+	        List<ActivityDetailVO> detailList =cartActivityRepository.findByActivity_ActivityId(cartVO.getProductId());
+	        for (ActivityDetailVO detail : detailList) {
+	            Integer ticketId = detail.getTicket().getTicketId();
+	            Integer occupied = occupiedMap.getOrDefault(ticketId, 0);
+	            Integer total = occupied - oldQuantity + cartVO.getProductQuantity();
+	            boolean stockEnough = productCartFacade.checkStock(
+	                    "TICKET",
+	                    ticketId,
+	                    total);
+	            if (!stockEnough) {
+	                throw new RuntimeException("活動庫存不足");
+	            }
+			}
+		}
+	    
+	    
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/*===============saveCart=======Checkout修改後整包存回Redis========================================*/
+	public void saveCart(HttpSession session, List<CartVO> cartList) {
+	    CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
+	    if (customer == null) {
+	        return;
+	    }
+	    String key = "cart:" + customer.getCustId();
+	    redisTemplate.opsForValue().set(key, cartList);
+	    System.out.println("Checkout更新Redis成功");
+	}
+}
 	
 	
 	
 	
 
-}

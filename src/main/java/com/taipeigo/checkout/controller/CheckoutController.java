@@ -29,7 +29,7 @@ public class CheckoutController {
 	private CartService cartService;
 
 	@GetMapping
-	/**結帳頁面載入*/
+/* ==========結帳頁面載入========== */
 	public String checkoutPage(
 			Model model,
 			HttpSession session) {
@@ -58,13 +58,31 @@ public class CheckoutController {
 
 	}
 	
+/* ========== 載入結帳頁前，確認庫存並自動調整購物車 ========== */
+	@PostMapping("/checkoutStockCheck")
+	@ResponseBody
+	public ResponseEntity<String> checkoutStockCheck(HttpSession session) {
+	    System.out.println("========== checkoutStockCheck Controller ==========");
+	    try {
+	        checkoutService.checkoutStockCheck(session);
+	        return ResponseEntity.ok("success");
+
+	    } catch (RuntimeException e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
 	
-	
-	/** 付款 API*/
+		
+/* ========== 付款 API========== */
 	@ResponseBody
 	@PostMapping("/pay")
 	public ResponseEntity<String> pay(HttpSession session) {
-	    checkoutService.checkout(session);
-	    return ResponseEntity.ok("success");
+		 try {
+		        checkoutService.checkout(session);
+		        return ResponseEntity.ok("success");
+		    } catch (RuntimeException e) {
+		        return ResponseEntity.badRequest().body(e.getMessage());
+		    }
 	}
+	
 }

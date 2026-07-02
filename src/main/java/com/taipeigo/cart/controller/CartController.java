@@ -48,49 +48,71 @@ public class CartController {
 		return "frontend/cart/shoppingCart";
 	}
 
-	/* ========== 查詢購物車功能==>查的是購物車原始資料 */
+/* ========== 查詢購物車功能==>查的是購物車原始資料 */
 	@GetMapping("/queryCart")
 	@ResponseBody
 	public List<CartVO> queryCart(HttpSession session) {
 		return cartService.queryCart(session);
 	} 
 
-	/* ========== 查詢傳進來商品的購物車功能==>前端畫面傳進來的資料 */
+/* ========== 查詢傳進來商品的購物車功能==>前端畫面傳進來的資料 */
 	@GetMapping("/queryCartDetail")
 	@ResponseBody
 	public List<CartItemDTO> queryCartDetail(HttpSession session){
 		return cartService.queryCartItem(session);
 	}
 	
-	/* ========== 加入購物車功能 */
+/* ========== 加入購物車功能 */
 	@PostMapping("/insertCart")
 	@ResponseBody
-	public String insertCart(@RequestBody CartVO cartVO, 
+	public ResponseEntity<String> insertCart(@RequestBody CartVO cartVO, 
 			HttpSession session) {
-		/*先判斷是否登入*/
-		System.out.println("========== insertCart ==========");
-		System.out.println(cartVO);
-	    CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
-	    if (loginCustomer == null) {
-	        cartService.insertCart(cartVO, session);
-	        /*回傳CustomerNEEDlogin讓活動, 門票知道先將葉面引導至登入頁 */
-	        return "CustomerNEEDlogin";
-	    }
+		 try {
+		        System.out.println("========== insertCart ==========");
+		        System.out.println(cartVO);
+		        CustomerVO loginCustomer = (CustomerVO) session.getAttribute("loginCustomer");
+		        if (loginCustomer == null) {
+		            cartService.insertCart(cartVO, session);
+		            return ResponseEntity.ok("CustomerNEEDlogin");
+		        }
+		        cartService.insertCart(cartVO, session);
+		        return ResponseEntity.ok("success");
+		    } catch (RuntimeException e) {
+		        return ResponseEntity.badRequest().body(e.getMessage());
 
-	    cartService.insertCart(cartVO, session);
-	    return "success";
+		    }
 	}
 	
 
-	/* ========== 更新購物車功能 */
+/* ========== 更新購物車功能 */
 	@PostMapping("/updateCart")
 	@ResponseBody
-	public String updateCart(@RequestBody CartVO cartVO, HttpSession session) {
-		cartService.updateCart(cartVO, session);
-		return "success";
+	public  ResponseEntity<String> updateCart(@RequestBody CartVO cartVO, HttpSession session) {
+		  try {
+		        cartService.updateCart(cartVO, session);
+		        return ResponseEntity.ok("success");
+		    } catch (RuntimeException e) {
+		        return ResponseEntity.badRequest().body(e.getMessage());
+
+		    }
+	}
+	
+/* ========== 更新購物車前，先確認庫存是否足夠 ========== */
+	@PostMapping("/checkUpdateStock")
+	@ResponseBody
+	public ResponseEntity<String> checkUpdateStock(
+	        @RequestBody CartVO cartVO,
+	        HttpSession session) {
+	    try {
+	        cartService.checkUpdateStock(cartVO, session);
+	        return ResponseEntity.ok("success");
+
+	    } catch (RuntimeException e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
 	}
 
-	/* ========== 購物車刪除門票功能 */
+/* ========== 購物車刪除門票功能 */
 	@PostMapping("/removeCartProduct")
 	@ResponseBody
 	public String removeCartProduct(@RequestBody CartVO cartVO, HttpSession session) {
@@ -98,7 +120,7 @@ public class CartController {
 		return "success";
 	}
 
-	/* ========== 購物車刪除門票功能 */
+/* ========== 購物車刪除門票功能 */
 	@DeleteMapping("/clearCart")
 	@ResponseBody
 	public String clearCart(HttpSession session) {
@@ -108,7 +130,7 @@ public class CartController {
 		return "success";
 	}
 
-	/* ========== 購物車icon數量顯示功能 */
+/* ========== 購物車icon數量顯示功能 */
 	@GetMapping("/count")
 	@ResponseBody
 	public Integer countCart(HttpSession session) {
@@ -117,7 +139,7 @@ public class CartController {
 
 	}
 	
-	/* ========== 進入結帳頁之前，購物車自己確認庫存是否足夠 */
+/* ========== 進入結帳頁之前，購物車自己確認庫存是否足夠 */
 	@PostMapping("/cartCheckStock")
 	@ResponseBody
 	public ResponseEntity<String> cartCheckStock(HttpSession session){
@@ -130,7 +152,7 @@ public class CartController {
 	    }
 	}
 	
-	/* ========== 查詢購物車裡面所有的TicketId, quantity======*/
+/* ========== 查詢購物車裡面所有的TicketId, quantity======*/
 	@GetMapping("/ticketIdQuantitySearch")
 	@ResponseBody
 	public List<TicketStockDTO> ticketIdQuantitySearch(HttpSession session){

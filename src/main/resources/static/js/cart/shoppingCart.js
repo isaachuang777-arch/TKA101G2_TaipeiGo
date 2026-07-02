@@ -65,37 +65,50 @@ document.addEventListener("DOMContentLoaded", function () {
         updateSummary();
     }
 
-    /* ========================= + ========================= */
-    async function plusQuantity(index) {
-        const item = cartData[index];
-        item.quantity++;
+	/* ========================= + ========================= */
+	async function plusQuantity(index) {
+	    const item = cartData[index];
+	    const newQuantity = item.quantity + 1;
+	    const cart = {
+	        productId: item.productId,
+	        productType: item.productType,
+	        expiryDate: item.expiryDate,
+	        spec: item.spec,
+	        productQuantity: newQuantity
+	    };
 
-        const cart = {
-            productId: item.productId,
-            productType: item.productType,
-            expiryDate: item.expiryDate,
-            spec: item.spec,
-            productQuantity: item.quantity
-        };
+	    /* 首先!! 先確認庫存!!! */
+	    const checkResponse = await fetch("/frontend/cart/checkUpdateStock", {
+	        method: "POST",
+	        headers: {
+	            "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify(cart)
+	    });
+	    if (!checkResponse.ok) {
+	        const message = await checkResponse.text();
+	        alert(message);
+	        return;
+	    }
 
-        const response = await fetch("/frontend/cart/updateCart", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(cart)
-        });
+	    /*  庫存OK才更新Redis !!!! */
+	    const updateResponse = await fetch("/frontend/cart/updateCart", {
+	        method: "POST",
+	        headers: {
+	            "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify(cart)
+	    });
 
-        if (response.ok) {
-            await loadCart();
-            if (typeof loadCartCount === "function") {
-                loadCartCount();
-            }
-        } else {
-            alert("更新失敗");
-        }
-    }
-
+	    if (updateResponse.ok) {
+	        await loadCart();
+	        if (typeof loadCartCount === "function") {
+	            loadCartCount();
+	        }
+	    } else {
+	        alert("更新失敗");
+	    }
+	}
 
     /* ========================= - ========================= */
     async function minusQuantity(index) {
@@ -128,9 +141,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 loadCartCount();
             }
         } else {
-            alert("更新失敗");
+			const message = await response.text();
+						   alert(message);
+						   /*** 重新載入，恢復正確數量*/
+						   await loadCart();        }
         }
-    }
+    
 
     /* ========================= 刪除 ========================= */
     async function removeItem(index) {
@@ -160,8 +176,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 loadCartCount();
             }
         } else {
-            alert("刪除失敗");
-        }
+			const message = await response.text();
+			   alert(message);
+			   /*** 重新載入，恢復正確數量*/
+			   await loadCart();        }
     }
 
     /* ========================= 清空購物車 ========================= */
