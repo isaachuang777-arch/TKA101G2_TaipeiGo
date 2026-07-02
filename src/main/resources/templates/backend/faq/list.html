@@ -13,17 +13,6 @@ body {
     font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 }
 
-.main-content {
-    margin-left: 240px;
-    padding: 32px;
-}
-
-.page-title {
-    font-size: 30px;
-    font-weight: 700;
-    margin-bottom: 24px;
-}
-
 .card {
     border: none;
     border-radius: 14px;
@@ -84,6 +73,113 @@ body {
         padding: 20px;
     }
 }
+
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --sidebar-width: 240px;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 0;
+}
+
+.topbar {
+    background: #fff;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    margin-bottom: 32px;
+}
+
+.topbar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a2236;
+}
+
+.topbar-title span {
+    color: #94a3b8;
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-left: 8px;
+}
+
+.main-content > .stats-row,
+.main-content > .card {
+    margin-left: 32px;
+    margin-right: 32px;
+}
+
+.stats-row {
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #e8edf2;
+    height: 100%;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.stat-icon.blue { background: #eff6ff; color: #3b82f6; }
+.stat-icon.green { background: #f0fdf4; color: #22c55e; }
+.stat-icon.orange { background: #fff7ed; color: #f97316; }
+
+.stat-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.btn-add {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 8px 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: background .2s;
+}
+
+.btn-add:hover {
+    background: var(--primary-dark);
+    color: #fff;
+}
 </style>
 </head>
 
@@ -93,28 +189,139 @@ body {
 
 <div class="main-content">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="page-title">
-            <i class="bi bi-question-circle me-2 text-primary"></i>
-            FAQ 管理
+    <header class="topbar">
+	    <div class="topbar-title">
+	        <i class="bi bi-question-circle me-2" style="color:var(--primary);"></i>
+	        FAQ 管理
+	        <span>/ FAQ 列表</span>
+	    </div>
+	
+	    <a class="btn-add" th:href="@{/backend/faq/add}">
+	        <i class="bi bi-plus-lg"></i>
+	        新增 FAQ
+	    </a>
+	</header>
+	
+	<div class="row stats-row g-3">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="bi bi-file-earmark-text-fill"></i>
+            </div>
+            <div>
+                <div class="stat-label">總 FAQ 數</div>
+                <div class="stat-value" th:text="${totalFaqCount}">0</div>
+            </div>
         </div>
-
-        <a class="btn btn-primary" th:href="@{/backend/faq/add}">
-            <i class="bi bi-plus-lg"></i>
-            新增 FAQ
-        </a>
     </div>
+
+    <div class="col-md-4">
+	        <div class="stat-card">
+	            <div class="stat-icon green">
+	                <i class="bi bi-eye-fill"></i>
+	            </div>
+	            <div>
+	                <div class="stat-label">顯示中</div>
+	                <div class="stat-value" th:text="${showCount}">0</div>
+	            </div>
+	        </div>
+	    </div>
+	
+	    <div class="col-md-4">
+	        <div class="stat-card">
+	            <div class="stat-icon orange">
+	                <i class="bi bi-eye-slash-fill"></i>
+	            </div>
+	            <div>
+	                <div class="stat-label">隱藏中</div>
+	                <div class="stat-value" th:text="${hideCount}">0</div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div class="fw-bold">
-                FAQ 列表
-            </div>
+			    <i class="bi bi-list-ul me-1" style="color:var(--primary);"></i>
+			    FAQ 列表
+			    <span class="text-muted small ms-2" th:text="${'共 ' + totalItems + ' 筆'}"></span>
+			</div>
 
-            <input type="text"
-                   id="searchInput"
-                   class="form-control search-input"
-                   placeholder="搜尋 FAQ...">
+            <form th:action="@{/backend/faq/list}"
+			      method="get"
+			      class="d-flex gap-2 flex-wrap align-items-center">
+			
+			    <input type="text"
+			           name="keyword"
+			           class="form-control form-control-sm"
+			           style="width:220px;"
+			           placeholder="搜尋標題 / 內容"
+			           th:value="${keyword}">
+			           
+			    <select name="category"
+				        class="form-select form-select-sm"
+				        style="width:150px;">
+				
+				    <option value="">全部分類</option>
+				
+				    <option value="1"
+				            th:selected="${category == 1}">
+				        訂單與付款
+				    </option>
+				
+				    <option value="2"
+				            th:selected="${category == 2}">
+				        票券使用
+				    </option>
+				
+				    <option value="3"
+				            th:selected="${category == 3}">
+				        帳號與會員
+				    </option>
+				
+				    <option value="4"
+				            th:selected="${category == 4}">
+				        活動與門票
+				    </option>
+				
+				    <option value="5"
+				            th:selected="${category == 5}">
+				        其他
+				    </option>
+				
+				</select>       
+			
+			    <select name="status"
+			            class="form-select form-select-sm"
+			            style="width:140px;">
+			
+			        <option value="">全部狀態</option>
+			        <option value="1"
+			                th:selected="${status == 1}">
+			            顯示
+			        </option>
+			
+			        <option value="0"
+			                th:selected="${status == 0}">
+			            隱藏
+			        </option>
+			
+			    </select>
+			
+			    <button type="submit"
+			            class="btn btn-primary btn-sm">
+			        查詢
+			    </button>
+
+    <a th:href="@{/backend/faq/list}"
+       class="btn btn-outline-secondary btn-sm">
+        清除
+    </a>
+
+</form>
         </div>
 
         <div class="table-responsive">
@@ -203,7 +410,7 @@ body {
             <li class="page-item"
                 th:classappend="${currentPage == 0} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/backend/faq/list(page=${currentPage - 1})}">
+                   th:href="@{/backend/faq/list(page=${currentPage - 1}, keyword=${keyword}, category=${category}, status=${status})}">
                     上一頁
                 </a>
             </li>
@@ -213,14 +420,14 @@ body {
                 th:classappend="${i == currentPage} ? 'active'">
                 <a class="page-link"
                    th:text="${i + 1}"
-                   th:href="@{/backend/faq/list(page=${i})}">
+                   th:href="@{/backend/faq/list(page=${i}, keyword=${keyword}, category=${category}, status=${status})}">
                 </a>
             </li>
 
             <li class="page-item"
                 th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/backend/faq/list(page=${currentPage + 1})}">
+                   th:href="@{/backend/faq/list(page=${currentPage + 1}, keyword=${keyword}, category=${category}, status=${status})}">
                     下一頁
                 </a>
             </li>
@@ -230,22 +437,6 @@ body {
 </div>
     </div>
 </div>
-
-<script>
-const searchInput = document.getElementById('searchInput');
-
-if (searchInput) {
-    searchInput.addEventListener('input', function () {
-        const keyword = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#faqTable tbody tr');
-
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(keyword) ? '' : 'none';
-        });
-    });
-}
-</script>
 
 </body>
 </html>

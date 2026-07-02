@@ -15,6 +15,7 @@ import com.taipeigo.faq.model.FaqVO;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import java.util.List;
 
 @Controller
 @RequestMapping("/backend/faq")
@@ -26,14 +27,29 @@ public class BackendFaqController {
     @GetMapping({"/", "/index", "/list"})
     public String listAllFaq(
             @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Byte status,
+            @RequestParam(required = false) Integer category,
             Model model) {
 
-        Page<FaqVO> faqPage = faqService.getFaqByPage(page);
+    	Page<FaqVO> faqPage = faqService.searchFaqs(page, keyword, status, category);
+
+        List<FaqVO> allFaq = faqService.getAll();
+
+        model.addAttribute("totalFaqCount", allFaq.size());
+        model.addAttribute("showCount",
+                allFaq.stream().filter(f -> f.getStatus() == 1).count());
+        model.addAttribute("hideCount",
+                allFaq.stream().filter(f -> f.getStatus() == 0).count());
 
         model.addAttribute("faqList", faqPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", faqPage.getTotalPages());
         model.addAttribute("totalItems", faqPage.getTotalElements());
+
+        model.addAttribute("category", category);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
         model.addAttribute("activePage", "faq");
 
         return "backend/faq/list";
