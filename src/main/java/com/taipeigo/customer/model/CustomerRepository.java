@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface CustomerRepository 
-        extends JpaRepository<CustomerVO, Integer> {
+		extends JpaRepository<CustomerVO, Integer>, JpaSpecificationExecutor<CustomerVO> {
 
     @Transactional
     @Modifying
