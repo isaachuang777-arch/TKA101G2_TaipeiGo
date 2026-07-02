@@ -1,24 +1,22 @@
 /* ========================= 初始化 ========================= */
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+
+    await checkoutStockCheck();
 
     const cardName = document.getElementById("cardName");
     const cardNumber = document.getElementById("cardNumber");
     const expiry = document.getElementById("expiry");
     const cvv = document.getElementById("cvv");
     const payBtn = document.getElementById("payBtn");
-
     const cardNameError = document.getElementById("cardNameError");
     const cardNumberError = document.getElementById("cardNumberError");
     const expiryError = document.getElementById("expiryError");
     const cvvError = document.getElementById("cvvError");
 
     let inputType = "";
-
     /* ========================= 持卡人姓名 ========================= */
     cardName.addEventListener("input", function () {
-
         let value = this.value;
-
         if (value === "") {
             inputType = "";
             cardNameError.innerText = "";
@@ -193,4 +191,22 @@ async function pay() {
 
     }
 
+}
+/* ========================= 載入結帳頁先確認庫存 ========================= */
+async function checkoutStockCheck() {
+    try {
+        const response = await fetch("/frontend/checkout/checkoutStockCheck", {
+            method: "POST"
+        });
+        if (!response.ok) {
+            const message = await response.text();
+            alert(message);
+            /**回到結帳頁即可，重新載入一次看到更新後的購物車***/ 
+            window.location.href = "/frontend/checkout";
+            return;
+        }
+    } catch (error) {
+        console.error(error);
+        alert("系統忙碌中，請稍後再試");
+    }
 }
