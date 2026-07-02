@@ -3,7 +3,6 @@ package com.taipeigo.product.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CartItemDTO implements Serializable {
 
@@ -18,8 +17,6 @@ public class CartItemDTO implements Serializable {
     
     private Integer subtotal;           // 小計 (單價 * 數量)
 
-
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDateTime expiryDate;   // 票券到期日 (如果是活動，這個欄位就
     private String spec;                // 記錄票種用的 - 成人票兒童票之類的
 
