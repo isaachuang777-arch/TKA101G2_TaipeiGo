@@ -18,6 +18,23 @@ body {
     font-family: Arial, "Microsoft JhengHei", sans-serif;
 }
 
+.btn-demo-login {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ff7a00;
+    border-radius: 8px;
+    background: #fff;
+    color: #ff7a00;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+.btn-demo-login:hover {
+    background: #fff3e6;
+}
+
 .login-wrapper {
     min-height: 620px;
     display: flex;
@@ -191,8 +208,9 @@ body {
             <div class="form-group">
                 <label>帳號</label>
                 <input type="text"
-                       name="custAccount"
-                       placeholder="請輸入帳號">
+				       id="custAccount"
+				       name="custAccount"
+				       placeholder="請輸入帳號">
             </div>
 
             <div class="form-group">
@@ -213,10 +231,19 @@ body {
 					</button>
 			    </div>
 			</div>
+			
+			<button type="submit" class="btn-login-submit">
+			    登入
+			</button>
 
-            <button type="submit" class="btn-login-submit">
-                登入
-            </button>
+            <button type="button"
+			        class="btn-demo-login"
+			        onclick="fillDemoAccount()">
+			    Demo 帳號快速填入
+			</button>
+			<div style="text-align:center; margin-top:8px; color:#888; font-size:13px;">
+			    展示專用，一鍵填入測試帳號與密碼
+			</div>
 
         </form>
 
@@ -261,6 +288,11 @@ function togglePassword() {
 
     }
 
+}
+
+function fillDemoAccount() {
+    document.getElementById("custAccount").value = "ming123";
+    document.getElementById("custPassword").value = "Aa123456";
 }
 </script>
 </body>
