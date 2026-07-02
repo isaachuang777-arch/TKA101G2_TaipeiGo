@@ -35,20 +35,23 @@ public class CustomerController {
     @GetMapping("/list")
     public String listAllCustomers(
             @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer status,
             Model model) {
-    	
-    	List<CustomerVO> allCustomers = customerService.getAllCustomers();
 
-    	model.addAttribute("activeCount",
-    	        allCustomers.stream().filter(c -> c.getCustStatus() == 1).count());
+        List<CustomerVO> allCustomers = customerService.getAllCustomers();
 
-    	model.addAttribute("inactiveCount",
-    	        allCustomers.stream().filter(c -> c.getCustStatus() == 0).count());
+        model.addAttribute("activeCount",
+                allCustomers.stream().filter(c -> c.getCustStatus() == 1).count());
 
-    	model.addAttribute("suspendedCount",
-    	        allCustomers.stream().filter(c -> c.getCustStatus() == 2).count());
+        model.addAttribute("inactiveCount",
+                allCustomers.stream().filter(c -> c.getCustStatus() == 0).count());
 
-        Page<CustomerVO> customerPage = customerService.getCustomersByPage(page);
+        model.addAttribute("suspendedCount",
+                allCustomers.stream().filter(c -> c.getCustStatus() == 2).count());
+
+        Page<CustomerVO> customerPage =
+        		customerService.searchCustomers(page, keyword, status);
 
         model.addAttribute("activePage", "customer");
         model.addAttribute("customerList", customerPage.getContent());
@@ -56,6 +59,9 @@ public class CustomerController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", customerPage.getTotalPages());
         model.addAttribute("totalItems", customerPage.getTotalElements());
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
 
         return "backend/customer/listAllCustomer";
     }

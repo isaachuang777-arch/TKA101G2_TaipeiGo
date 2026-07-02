@@ -11,6 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
+
+import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.Predicate;
+
 @Service
 public class CustomerService {
 
@@ -77,6 +83,44 @@ public class CustomerService {
     public boolean isIdCardExist(String idCard) {
         return repository.findByCustIdCard(idCard) != null;
     }
+    
+    // 後台複合查詢 + 分頁
+    public Page<CustomerVO> searchCustomers(
+            int page,
+            String keyword,
+            Integer status) {
+
+    	Pageable pageable = PageRequest.of(
+    	        page,
+    	        10,
+    	        Sort.by(Sort.Direction.ASC, "custId")
+    	);
+
+        Specification<CustomerVO> spec = (root, query, cb) -> {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String kw = "%" + keyword.trim() + "%";
+
+                predicates.add(cb.or(
+                        cb.like(root.get("custName"), kw),
+                        cb.like(root.get("custAccount"), kw),
+                        cb.like(root.get("custEmail"), kw),
+                        cb.like(root.get("custTel"), kw)
+                ));
+            }
+
+            if (status != null) {
+                predicates.add(cb.equal(root.get("custStatus"), status));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return repository.findAll(spec, pageable);
+    }
+    
     
     // 分頁
     public Page<CustomerVO> getCustomersByPage(int page) {
