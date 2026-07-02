@@ -232,11 +232,10 @@
                             <i class="bi bi-list-check me-2" style="color:var(--primary);"></i>
                             門票序號明細
                             <span class="text-secondary font-weight-normal fs-6"
-                                th:text="${'(共 ' + #lists.size(ticketVO.ticketSerials) + ' 筆)'}"></span>
+                                th:text="${'(共 ' + pageResult.totalElements + ' 筆)'}"></span>
                         </div>
                         <div class="info-card-body">
-                            <div class="table-responsive serial-table-wrap"
-                                style="max-height: 350px; overflow-y: auto;">
+                            <div class="table-responsive serial-table-wrap">
                                 <table class="table align-middle mb-0 text-center">
                                     <thead>
                                         <tr>
@@ -247,8 +246,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="serial, serialStat : *{ticketSerials}">
-                                            <td class="text-muted small" th:text="${serialStat.count}">1</td>
+                                        <tr th:each="serial, serialStat : ${ticketSerialListData}">
+                                            <td class="text-muted small" th:text="${currentPage * 5 + serialStat.count}">1</td>
                                             <td>
                                                 <span class="serial-code-text"
                                                     th:text="${serial.serialNumber}">TKABC123XYZ</span>
@@ -273,7 +272,7 @@
                                                 </span>
                                             </td>
                                         </tr>
-                                        <tr th:if="${#lists.isEmpty(ticketVO.ticketSerials)}">
+                                        <tr th:if="${ticketSerialListData == null or ticketSerialListData.isEmpty()}">
                                             <td colspan="4" class="text-muted py-5 small text-center">
                                                 <i class="bi bi-exclamation-circle me-1"
                                                     style="font-size: 1.5rem; display: block; margin-bottom: 8px;"></i>
@@ -283,6 +282,66 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            <div class="table-footer mt-3" th:if="${totalPages > 0}">
+                                <div class="table-footer-info">
+                                    共 <span th:text="${pageResult.totalElements}"></span> 筆資料，
+                                    第 <span th:text="${currentPage + 1}"></span> 頁 /
+                                    共 <span th:text="${totalPages}"></span> 頁
+                                </div>
+
+                                <nav th:if="${totalPages > 1}">
+                                    <ul class="pagination pagination-sm mb-0" th:with="
+                                        startPage=${T(java.lang.Math).max(0, currentPage - 2)},
+                                        endPage=${T(java.lang.Math).min(totalPages - 1, startPage + 4)},
+                                        adjustedStartPage=${T(java.lang.Math).max(0, endPage - 4)}
+                                    ">
+                                        <!-- 上一頁 -->
+                                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                            <a class="page-link"
+                                                th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticketVO.ticketId}, page=${currentPage - 1})}">
+                                                上一頁
+                                            </a>
+                                        </li>
+
+                                        <!-- 第一頁 -->
+                                        <li class="page-item" th:if="${adjustedStartPage > 0}">
+                                            <a class="page-link"
+                                                th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticketVO.ticketId}, page=0)}">1</a>
+                                        </li>
+                                        <!-- 前省略號 -->
+                                        <li class="page-item disabled" th:if="${adjustedStartPage > 1}">
+                                            <span class="page-link">...</span>
+                                        </li>
+
+                                        <!-- 數字頁碼 -->
+                                        <li class="page-item" th:each="i : ${#numbers.sequence(adjustedStartPage, endPage)}"
+                                            th:classappend="${i == currentPage} ? 'active'">
+                                            <a class="page-link" th:text="${i + 1}"
+                                                th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticketVO.ticketId}, page=${i})}"></a>
+                                        </li>
+
+                                        <!-- 後省略號 -->
+                                        <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                        <!-- 最後一頁 -->
+                                        <li class="page-item" th:if="${endPage < totalPages - 1}">
+                                            <a class="page-link" th:text="${totalPages}"
+                                                th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticketVO.ticketId}, page=${totalPages - 1})}"></a>
+                                        </li>
+
+                                        <!-- 下一頁 -->
+                                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                            <a class="page-link"
+                                                th:href="@{/backend/ticket/getOne_For_Display(ticketId=${ticketVO.ticketId}, page=${currentPage + 1})}">
+                                                下一頁
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+
                         </div>
                     </div>
                 </div>

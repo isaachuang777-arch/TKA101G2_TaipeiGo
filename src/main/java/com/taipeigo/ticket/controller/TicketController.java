@@ -70,9 +70,18 @@ public class TicketController {
      * 網址範例：/backend/ticket/getOne_For_Display?ticketId=1
      */
     @GetMapping("getOne_For_Display")
-    public String getOneForDisplay(@RequestParam("ticketId") Integer ticketId, ModelMap model) {
+    public String getOneForDisplay(
+            @RequestParam("ticketId") Integer ticketId,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            ModelMap model) {
         TicketVO ticketVO = ticketService.getOneTicket(ticketId);
+        Page<TicketSerialVO> pageResult = ticketService.getTicketSerialsByTicketId(ticketId, page);
+
         model.addAttribute("ticketVO", ticketVO);
+        model.addAttribute("pageResult", pageResult);
+        model.addAttribute("ticketSerialListData", pageResult.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageResult.getTotalPages());
         // 以下是 html 路徑
         return "backend/ticket/listOneTicket";
     }

@@ -315,6 +315,14 @@ public class TicketService {
 		return ticketSerialRepository.findAllSerials(pageable);
 	}
 
+	// 撈出特定門票商品的所有門票序號 (分頁，一頁 5 筆)
+	public Page<TicketSerialVO> getTicketSerialsByTicketId(Integer ticketId, int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 5);
+		Page<TicketSerialVO> pageResult = ticketSerialRepository.findSerialsByTicketId(ticketId, pageable);
+		checkAndUpdateExpiryList(pageResult.getContent());
+		return pageResult;
+	}
+
 	// 模糊搜尋門票序號 (搜尋序號、商品名稱、會員名稱) （分頁）
 	public Page<TicketSerialVO> searchTicketSerialsByPage(String keyword, int pageNumber) {
 		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10);
