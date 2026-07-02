@@ -183,7 +183,7 @@ public class TicketController {
     public String update(
             @Valid TicketVO ticketVO,
             BindingResult result,
-            @RequestParam("ticketImageFiles") MultipartFile[] parts,
+            @RequestParam(value = "ticketImageFiles", required = false) MultipartFile[] parts,
             @RequestParam(value = "deleteImageIds", required = false) Integer[] deleteImageIds,
             ModelMap model,
             RedirectAttributes redirectAttributes) {
