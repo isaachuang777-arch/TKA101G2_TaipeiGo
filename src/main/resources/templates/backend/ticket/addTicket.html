@@ -46,6 +46,13 @@
                     <form id="ticketForm" th:action="@{/backend/ticket/insert}" method="post" th:object="${ticketVO}"
                         enctype="multipart/form-data" novalidate>
 
+                        <!-- 後端 Error Message -->
+                        <div class="alert alert-danger d-flex align-items-center mb-4" role="alert"
+                            th:if="${errorMessage}">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div th:text="${errorMessage}"></div>
+                        </div>
+
                         <!-- Error Summary -->
                         <div class="error-summary" th:if="${#fields.hasAnyErrors()}">
                             <div class="error-title">
@@ -160,7 +167,8 @@
 
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
-                                <div class="price-setup-card" th:classappend="${#fields.hasErrors('adultOriginalPrice') or #fields.hasErrors('adultPrice')} ? 'border-danger'">
+                                <div class="price-setup-card"
+                                    th:classappend="${#fields.hasErrors('adultOriginalPrice') or #fields.hasErrors('adultPrice')} ? 'border-danger'">
                                     <div class="price-title"><i class="bi bi-person-fill text-primary"></i> 成人票設定</div>
                                     <div class="mb-3">
                                         <label class="form-label text-secondary small">原價 <span
@@ -176,7 +184,8 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             <span th:errors="*{adultOriginalPrice}"></span>
                                         </div>
-                                        <div class="invalid-feedback-custom" id="adultOriginalPriceError" style="display:none;">
+                                        <div class="invalid-feedback-custom" id="adultOriginalPriceError"
+                                            style="display:none;">
                                             <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
@@ -202,7 +211,8 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="price-setup-card" th:classappend="${#fields.hasErrors('childOriginalPrice') or #fields.hasErrors('childPrice')} ? 'border-danger'">
+                                <div class="price-setup-card"
+                                    th:classappend="${#fields.hasErrors('childOriginalPrice') or #fields.hasErrors('childPrice')} ? 'border-danger'">
                                     <div class="price-title"><i class="bi bi-backpack-fill text-success"></i> 兒童票設定
                                     </div>
                                     <div class="mb-3">
@@ -219,7 +229,8 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             <span th:errors="*{childOriginalPrice}"></span>
                                         </div>
-                                        <div class="invalid-feedback-custom" id="childOriginalPriceError" style="display:none;">
+                                        <div class="invalid-feedback-custom" id="childOriginalPriceError"
+                                            style="display:none;">
                                             <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
@@ -245,7 +256,8 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="price-setup-card" th:classappend="${#fields.hasErrors('concessionOriginalPrice') or #fields.hasErrors('concessionPrice')} ? 'border-danger'">
+                                <div class="price-setup-card"
+                                    th:classappend="${#fields.hasErrors('concessionOriginalPrice') or #fields.hasErrors('concessionPrice')} ? 'border-danger'">
                                     <div class="price-title"><i class="bi bi-heart-pulse-fill text-warning"></i> 優待票設定
                                     </div>
                                     <div class="mb-3">
@@ -263,7 +275,8 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             <span th:errors="*{concessionOriginalPrice}"></span>
                                         </div>
-                                        <div class="invalid-feedback-custom" id="concessionOriginalPriceError" style="display:none;">
+                                        <div class="invalid-feedback-custom" id="concessionOriginalPriceError"
+                                            style="display:none;">
                                             <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>
@@ -282,7 +295,8 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             <span th:errors="*{concessionPrice}"></span>
                                         </div>
-                                        <div class="invalid-feedback-custom" id="concessionPriceError" style="display:none;">
+                                        <div class="invalid-feedback-custom" id="concessionPriceError"
+                                            style="display:none;">
                                             <i class="bi bi-exclamation-circle"></i> 必須大於等於 0
                                         </div>
                                     </div>

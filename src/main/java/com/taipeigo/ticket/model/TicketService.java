@@ -142,28 +142,34 @@ public class TicketService {
 		// 先執行前端要刪除的舊圖片(刪除資料夾檔案 + 在資料庫刪除該筆資料 )
 		this.deleteImage(deleteImageIds);
 
-		// 取出未刪的舊圖
-		TicketVO existingTicket = ticketRepository.findById(ticketVO.getTicketId()).orElse(null);
-		if (existingTicket != null) {
-			// 從 DB 取出原有的所有圖片
-			List<TicketImageVO> currentDbImages = new ArrayList<>(existingTicket.getTicketImages());
+		// 取出未刪的舊圖並更新各欄位
+		TicketVO existingTicket = ticketRepository.findById(ticketVO.getTicketId())
+				.orElseThrow(() -> new IllegalArgumentException("找不到該門票商品，編號: " + ticketVO.getTicketId()));
 
-			// 原有圖片過濾那些已經被執行刪除的舊圖，留下還在的圖片
-			if (deleteImageIds != null && deleteImageIds.length > 0) {
-				List<Integer> deleteIdsList = Arrays.asList(deleteImageIds);
-				currentDbImages.removeIf(img -> deleteIdsList.contains(img.getTicketImageId()));
-			}
+		existingTicket.setTicketName(ticketVO.getTicketName());
+		existingTicket.setTicketDescription(ticketVO.getTicketDescription());
+		existingTicket.setTicketAddress(ticketVO.getTicketAddress());
+		existingTicket.setTicketStatus(ticketVO.getTicketStatus());
+		existingTicket.setAdultOriginalPrice(ticketVO.getAdultOriginalPrice());
+		existingTicket.setAdultPrice(ticketVO.getAdultPrice());
+		existingTicket.setChildOriginalPrice(ticketVO.getChildOriginalPrice());
+		existingTicket.setChildPrice(ticketVO.getChildPrice());
+		existingTicket.setConcessionOriginalPrice(ticketVO.getConcessionOriginalPrice());
+		existingTicket.setConcessionPrice(ticketVO.getConcessionPrice());
+		existingTicket.setTicketCategories(ticketVO.getTicketCategories());
 
-			// 舊圖清單重新存入的 ticketVO 中
-			ticketVO.setTicketImages(currentDbImages);
+		// 處理原有圖片過濾，留下還在的圖片
+		if (deleteImageIds != null && deleteImageIds.length > 0) {
+			List<Integer> deleteIdsList = Arrays.asList(deleteImageIds);
+			existingTicket.getTicketImages().removeIf(img -> deleteIdsList.contains(img.getTicketImageId()));
 		}
 
 		// 更新最新修改時間
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-		ticketVO.setUpdatedAt(now);
+		existingTicket.setUpdatedAt(now);
 
-		// 儲存門票商品主體（確定要留下來的舊圖會存在 DB）
-		TicketVO savedTicket = ticketRepository.save(ticketVO);
+		// 儲存門票商品主體（確定要留下來的舊圖與其它欄位會存入 DB）
+		TicketVO savedTicket = ticketRepository.save(existingTicket);
 
 		// 若管理員有上傳新圖片，則進行新圖的儲存
 		if (files != null && files.length > 0) {
