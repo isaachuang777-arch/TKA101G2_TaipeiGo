@@ -58,6 +58,15 @@ public class ActivityService {
         return activity;
     }
 
+    // ----------------- 總數統計 -----------------
+    public long countAllActivities() {
+        return activityRepo.count();
+    }
+
+    public long countActivitiesByStatus(Integer status) {
+        return activityRepo.countByActivityStatus(status);
+    }
+
     // -----------------前台萬用查詢-----------------
 
     public List<ActivityVO> getActivitiesByCompositeQuery(MultiValueMap<String, String> map) {
@@ -223,7 +232,6 @@ public class ActivityService {
 
         existActivityVO.setActivityName(updatedActivity.getActivityName());
         existActivityVO.setActivityDesc(updatedActivity.getActivityDesc());
-        existActivityVO.setExpiryDate(updatedActivity.getExpiryDate());
         existActivityVO.setDiscount(updatedActivity.getDiscount());
         existActivityVO.setActivityStatus(updatedActivity.getActivityStatus());
 
@@ -505,20 +513,13 @@ public class ActivityService {
     public void buyActivity(Integer activityId, 
                             Integer quantity, 
                             Integer custId, 
-                            Integer orderId){
+                            Integer orderId,
+                            Timestamp expiryDate){
 
        ActivityVO activity = activityRepo.findById(activityId)
                                           .orElseThrow(() -> new RuntimeException("找不到該活動" + activityId));
 
 
-       // 我自己的Activity的有效期限設計不一樣 在使用 ticketService.buyTicketSerial的方法第二個參數需要設定有效期限
-       // 這邊將我之前表格的設計邏輯直接帶入 買的當下再加上我的ExpiryDate(int 然後是天數)
-
-       long currentTimeMillis = System.currentTimeMillis();
-       long validDaysInMillis = activity.getExpiryDate() * 24L * 60L * 60L * 1000L; 
-       
-       // 這邊貫徹我的邏輯 買的當下天數+我設定的天數 = 這個活動所有票卷的有效期限
-       Timestamp expiryTimestamp = new Timestamp(currentTimeMillis + validDaysInMillis);
 
        // 用forEach 買下所有的票並使用ticketService裡面的方法buyTicketSerial 
        // 綁定會員、訂單，並將狀態改為「已售出/未使用」status = 2
@@ -529,7 +530,7 @@ public class ActivityService {
 
             for(int i = 0; i < quantity; i++){
 
-                ticketService.buyTicketSerial(ticketId, expiryTimestamp, custId, orderId);
+                ticketService.buyTicketSerial(ticketId, expiryDate, custId, orderId);
 
 
             }
