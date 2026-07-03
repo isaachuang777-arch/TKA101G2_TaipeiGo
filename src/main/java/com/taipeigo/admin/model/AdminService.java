@@ -69,10 +69,11 @@ public class AdminService {
 //trim
         adminVO.setAdmAcc(adminVO.getAdmAcc().trim());
         adminVO.setAdmPw(adminVO.getAdmPw().trim());
+
         
 // 限制admAcc
-        if (!adminVO.getAdmAcc().matches("^[a-zA-Z0-9]+$")) {
-            throw new RuntimeException("新增失敗：帳號只能包含英文與數字！");
+        if (!adminVO.getAdmAcc().matches("^[a-zA-Z0-9_]{4+}+$")) {
+            throw new RuntimeException("新增失敗：帳號只能包含英文、數字或底線！");
         }
         
 // 限制密碼格式(英文或數字，且至少8碼)
@@ -90,8 +91,8 @@ public class AdminService {
 		if (adminRepository.findByadmAcc(adminVO.getAdmAcc()) != null) {
 			throw new RuntimeException("新增失敗：此帳號已存在！請重新輸入。");
 		}
-		//在Service先預設帳號建立時已開通
-		adminVO.setAdmStatus((byte) 1); 
+		//在Service先預設是強制改密碼 => 所以第一次登入要 先改密碼才能用
+		adminVO.setAdmStatus(adminVO.StatusForcetoChangePW); 
 		// save
 		adminRepository.save(adminVO);
 
@@ -189,6 +190,7 @@ public class AdminService {
 		// if (!adminVO.getAdmPw().equals(oldPw)) {
 		// 	throw new RuntimeException("修改失敗：您輸入的舊密碼不正確！");
 		// }
+		
 		//防呆 再對一次密碼 [加密版] '叫加密器去 match這個碼 對不對'
 		if (!passwordEncoder.matches(oldPw, adminVO.getAdmPw())) {
 			throw new RuntimeException("修改失敗：您輸入的舊密碼不正確！");

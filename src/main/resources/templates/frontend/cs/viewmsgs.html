@@ -108,7 +108,7 @@ input[type="file"].hidden-upload { display: none; }
             <div class="msg-box" th:each="msg : ${csMsg}" th:classappend="|msg-align-${msg.senderType}|">
                 <div class="msg-info">
                     <span th:switch="${msg.senderType}">
-                        <strong th:case="0" th:text="${caseData.customerVO.custAccount}">使用者帳號</strong>
+                        <strong th:case="0" th:text="${caseData.customerVO.custName}">使用者名稱</strong>
                         <strong th:case="1">客服專員</strong>
                         <strong th:case="3">系統提示</strong>
                     </span>

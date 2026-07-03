@@ -123,8 +123,24 @@
                 <div class="mb-4">
                     <label class="form-label">帳號狀態</label>
                     <select name="admStatus" class="form-select">
-                        <option value="1" th:selected="${adminVO.admStatus == 1}">啟用 (Active)</option>
-                        <option value="0" th:selected="${adminVO.admStatus == 0}">停用 (Inactive)</option>
+                        
+                        <!-- 當狀態不是 的時候，才出現 -->
+                        <option value="1" 
+                                th:if="${adminVO.admStatus != 9}" 
+                                th:selected="${adminVO.admStatus == 1}">啟用 (Active)
+                        </option>
+
+                        <!-- 當狀態等於 9的時候，才會出現 -->
+                        <option value="9" 
+                                th:if="${adminVO.admStatus == 9}" 
+                                th:selected="true">待重設密碼 (Pending Reset)
+                        </option>
+                        
+                        <!-- 『停用』一定要出現的-->
+                        <option value="0" 
+                                th:selected="${adminVO.admStatus == 0}">停用 (Inactive)
+                        </option>
+                        
                     </select>
                 </div>
                 

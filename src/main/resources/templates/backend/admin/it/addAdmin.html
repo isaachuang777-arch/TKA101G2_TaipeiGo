@@ -104,22 +104,22 @@
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label class="form-label">登入帳號 <span class="text-danger">*</span></label>
-                        <input type="text" name="admAcc" class="form-control" placeholder="請輸入帳號" required>
+                        <input type="text" name="admAcc" th:value="${adminVO.admAcc}" class="form-control" placeholder="請輸入帳號" required>
                     </div>
                     
                     <div class="col-md-6">
                         <label class="form-label">登入密碼 <span class="text-danger">*</span></label>
-                        <input type="password" name="admPw" class="form-control" placeholder="請輸入密碼" required>
+                        <input type="password" name="admPw" th:value="${adminVO.admPw}" class="form-control" placeholder="請輸入密碼" required>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">管理員姓名 <span class="text-danger">*</span></label>
-                        <input type="text" name="admName" class="form-control" placeholder="請輸入姓名" required>
+                        <input type="text" name="admName" th:value="${adminVO.admName}" class="form-control" placeholder="請輸入姓名" required>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">到職日 <span class="text-danger">*</span></label>
-                        <input type="date" name="hireDate" class="form-control" required>
+                        <input type="date" name="hireDate" th:value="${adminVO.hireDate}"  class="form-control" required>
                     </div>
                 </div>
 
@@ -139,7 +139,7 @@
                 </div>
                 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                    <button type="reset" class="btn btn-light me-md-2 px-4 border">清空表單</button>
+                    <a th:href="@{/backend/admin/it/addAdmin}" class="btn btn-light me-md-2 px-4 border">清空表單</a>
                     <button type="submit" class="btn btn-primary px-5"><i class="fa-solid fa-circle-check me-1"></i>確認新增</button>
                 </div>
                 
