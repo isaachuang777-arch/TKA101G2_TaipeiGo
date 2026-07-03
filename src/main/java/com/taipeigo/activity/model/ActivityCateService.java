@@ -16,12 +16,14 @@ public class ActivityCateService {
 
     private final ActivityCateRepository cateRepository;
     private final ActivityJDBCDAO activityJDBCDAO;
+    private final ActivityRepository activityRepository;
 
     @Autowired
-    public ActivityCateService(ActivityCateRepository cateRepository, ActivityJDBCDAO activityJDBCDAO) {
+    public ActivityCateService(ActivityCateRepository cateRepository, ActivityJDBCDAO activityJDBCDAO, ActivityRepository activityRepository) {
 
         this.cateRepository = cateRepository;
         this.activityJDBCDAO = activityJDBCDAO;
+        this.activityRepository = activityRepository;
 
     }
 
@@ -40,12 +42,7 @@ public class ActivityCateService {
 
             ActivityCateVO randomCate = activeCategories.get(0);
 
-            // 處理分類名稱用(只取斜線之前)
-
-            String oldName = randomCate.getCateName();
-            String newName = oldName.contains("/") ? oldName.split("/")[0].trim() : oldName;
-
-            String SectionTitle = "最新活動: " + newName;
+            String SectionTitle = "最新活動: " + randomCate.getCateName();
 
             MultiValueMap<String, String> querMap = new LinkedMultiValueMap<>();
 
@@ -62,8 +59,9 @@ public class ActivityCateService {
                 sections.add(new ActivitySectionDTO(SectionTitle, randomCateActivities.subList(0, limit)));
 
             }
+        }
 
-            // (為了找出最佳優惠跟隨機活動)先撈出全部已上架的活動
+            // 一般活動不綁活動類型顯示
 
             MultiValueMap<String, String> emptyMap = new LinkedMultiValueMap<>();
 
@@ -80,18 +78,26 @@ public class ActivityCateService {
                 int priceLimit = Math.min(sortedByPrice.size(), 3);
                 sections.add(new ActivitySectionDTO("最佳優惠", sortedByPrice.subList(0, priceLimit)));
 
-                // 準備給懶的規劃那區域的(所有活動亂數)
-
-                List<ActivityVO> shuffledActivities = new ArrayList<>(allActivities);
-
-                // 把全站活動洗牌
-                Collections.shuffle(shuffledActivities);
-                int randomLimit = Math.min(shuffledActivities.size(), 3);
-                sections.add(new ActivitySectionDTO("懶得規劃?", shuffledActivities.subList(0, randomLimit)));
+                // 準備給懶的規劃那區域的(現在改為從資料庫讀取「首頁推薦」標記的活動)
+                MultiValueMap<String, String> recMap = new LinkedMultiValueMap<>();
+                recMap.add("isRecommended", "1");
+                recMap.add("pageSize", "100"); // 確保抓出所有推薦活動再來洗牌
+                List<ActivityVO> recommendedActivities = activityJDBCDAO.getSearch(recMap, true);
+                
+                // 如果後台還沒設定任何推薦活動，就退回原本的「亂數抽 3 筆」作為 fallback
+                if (recommendedActivities == null || recommendedActivities.isEmpty()) {
+                    List<ActivityVO> shuffledActivities = new ArrayList<>(allActivities);
+                    Collections.shuffle(shuffledActivities);
+                    int randomLimit = Math.min(shuffledActivities.size(), 3);
+                    sections.add(new ActivitySectionDTO("懶得規劃?", shuffledActivities.subList(0, randomLimit)));
+                } else {
+                    // 將設定為推薦的活動也洗牌，這樣如果超過 3 筆，每次都會隨機挑選 3 筆！
+                    Collections.shuffle(recommendedActivities);
+                    int limit = Math.min(recommendedActivities.size(), 3);
+                    sections.add(new ActivitySectionDTO("懶得規劃?", recommendedActivities.subList(0, limit)));
+                }
 
             }
-
-        }
 
         return sections;
     }
@@ -134,8 +140,9 @@ public class ActivityCateService {
 
         return cate;
     }
+}
     
 
 
 
-}
+

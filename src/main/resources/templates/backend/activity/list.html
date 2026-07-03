@@ -137,50 +137,7 @@ body {
                 </div>
             </div>
 
-            <!-- 數據統計列 -->
-            <div class="row stats-row g-3">
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-icon blue">
-                            <i class="bi bi-calendar-event"></i>
-                        </div>
-                        <div>
-                            <div class="stat-label">總活動數量</div>
-                            <div class="stat-value" th:text="${totalActivitiesCount != null ? totalActivitiesCount : 0}">
-                                0
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="bi bi-cloud-arrow-up-fill"></i>
-                        </div>
-                        <div>
-                            <div class="stat-label">上架中</div>
-                            <div class="stat-value" th:text="${onShelfCount != null ? onShelfCount : 0}">
-                                0
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-icon red">
-                            <i class="bi bi-cloud-arrow-down-fill"></i>
-                        </div>
-                        <div>
-                            <div class="stat-label">已下架</div>
-                            <div class="stat-value" th:text="${offShelfCount != null ? offShelfCount : 0}">
-                                0
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="row">
                 <!-- 左側：搜尋條件 (Filter) -->
@@ -269,12 +226,9 @@ body {
                                                 </td>
                                                 <td style="max-width: 250px;">
                                                     <div class="text-muted small">#<span th:text="${activity.activityId}"></span></div>
-                                                    <a href="#" 
-                                                       class="fw-bold text-truncate d-block text-decoration-none activity-name-link" 
-                                                       th:classappend="${activity.activityStatus == 1} ? 'text-dark preview-active' : 'text-muted preview-disabled'"
-                                                       th:data-id="${activity.activityId}"
-                                                       th:onclick="${activity.activityStatus == 1} ? |openPreviewModal(${activity.activityId}); return false;| : 'return false;'"
-                                                       th:title="${activity.activityName} + (${activity.activityStatus == 1} ? ' (點擊預覽前台畫面)' : ' (已下架無法預覽)')" 
+                                                    <a th:href="@{/backend/activity/getOne_For_Display(activityId=${activity.activityId})}" 
+                                                       class="fw-bold text-truncate d-block text-decoration-none activity-name-link text-dark" 
+                                                       title="查看活動詳細資料" 
                                                        th:text="${activity.activityName}"></a>
                                                 </td>
                                                 <td>

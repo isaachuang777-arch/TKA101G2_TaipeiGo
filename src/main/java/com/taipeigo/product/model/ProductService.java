@@ -6,10 +6,6 @@ import org.springframework.stereotype.Service;
 import com.taipeigo.activity.model.ActivityVO;
 import com.taipeigo.ticket.model.TicketVO;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 @Service
 public class ProductService {
 

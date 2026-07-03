@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // 2. 將 JSON 資料填入 HTML (取代 Thymeleaf)
 // ==========================================
 function renderActivityData(activity) {
-    // 麵包屑與標題
+    // 標題
     document.getElementById("breadcrumbName").innerText = activity.activityName;
     document.getElementById("activityTitle").innerText = activity.activityName;
     

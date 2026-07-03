@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaipeiGO ｜ 後台萬用商品總表</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/ticket/backend/listAllTicket.css}">
+    <link rel="stylesheet" th:href="@{/css/ticket/backend/listAllTicketSerial.css}">
+    <style>
+        .type-badge {
+            background-color: #e2e3e5;
+            color: #383d41;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85em;
+        }
+        .pulse-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #28a745;
+            border-radius: 50%;
+            margin-right: 6px;
+            box-shadow: 0 0 0 rgba(40, 167, 69, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+        #serialTable tbody tr {
+            transition: background-color 0.8s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+    <div class="main-wrap">
+
+        <header class="topbar">
+            <div class="topbar-title">
+                <i class="bi bi-box-seam me-2" style="color:var(--primary);"></i>
+                萬用商品總表
+                <span>/ 自動連動監控</span>
+            </div>
+
+            <div class="badge bg-light text-dark border p-2 fs-6">
+                <span class="pulse-indicator"></span> 即時監控中 (每2秒更新)
+            </div>
+        </header>
+
+        <main class="content-area">
+
+            <!-- Stats Row -->
+            <div class="stats-grid" th:if="${totalCount > 0}">
+                <!-- 總商品數 -->
+                <div class="stat-card-mini theme-total">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">總商品數</div>
+                        <div class="stat-value-mini" th:text="${totalCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 門票類型 -->
+                <div class="stat-card-mini theme-stock">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-ticket-perforated"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">門票類型</div>
+                        <div class="stat-value-mini" th:text="${ticketCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 活動類型 -->
+                <div class="stat-card-mini theme-used">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">活動類型</div>
+                        <div class="stat-value-mini" th:text="${activityCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 已上架 -->
+                <div class="stat-card-mini theme-sold">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-bag-check-fill"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">已上架</div>
+                        <div class="stat-value-mini" th:text="${activeCount}">0</div>
+                    </div>
+                </div>
+
+                <!-- 已下架 -->
+                <div class="stat-card-mini theme-off">
+                    <div class="stat-icon-mini">
+                        <i class="bi bi-dash-circle"></i>
+                    </div>
+                    <div class="stat-info-mini">
+                        <div class="stat-label-mini">已下架</div>
+                        <div class="stat-value-mini" th:text="${inactiveCount}">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="table-card mt-4">
+                <div class="table-card-header">
+                    <div class="table-card-title">
+                        <i class="bi bi-list-ol me-1" style="color:var(--primary);"></i>
+                        Product 資料表列表
+                        <span th:text="${'共 ' + totalCount + ' 筆'}"></span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table custom-table" id="serialTable">
+                        <thead>
+                            <tr>
+                                <th width="10%" class="text-center">Product ID</th>
+                                <th width="15%" class="text-center">商品類型</th>
+                                <th width="35%">統一商品名稱</th>
+                                <th width="15%" class="text-center">關聯 Ticket ID</th>
+                                <th width="15%" class="text-center">關聯 Activity ID</th>
+                                <th width="10%" class="text-center">狀態</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="productTbody">
+                            <tr th:if="${productList == null or productList.isEmpty()}">
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <i class="bi bi-box"></i>
+                                        <div>目前沒有任何商品資料</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:each="product : ${productList}" th:attr="data-id=${product.productId}">
+                                <td class="text-center fw-bold text-primary" th:text="${product.productId}"></td>
+                                <td class="text-center">
+                                    <span class="type-badge" th:if="${product.ticketId != null}"><i class="bi bi-ticket-perforated"></i> 門票</span>
+                                    <span class="type-badge" th:if="${product.activityId != null}"><i class="bi bi-calendar-event"></i> 活動</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark" th:text="${product.productName}">商品名稱</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border" th:if="${product.ticketId != null}" th:text="${'T' + product.ticketId}"></span>
+                                    <span th:unless="${product.ticketId != null}" class="text-muted small">—</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border" th:if="${product.activityId != null}" th:text="${'A' + product.activityId}"></span>
+                                    <span th:unless="${product.activityId != null}" class="text-muted small">—</span>
+                                </td>
+                                <td class="text-center">
+                                    <span th:if="${product.status == 1}" class="status-badge status-active">
+                                        <span class="status-dot"></span>
+                                        已上架
+                                    </span>
+                                    <span th:if="${product.status == 0}" class="status-badge status-inactive">
+                                        <span class="status-dot"></span>
+                                        已下架
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer" th:if="${totalPages > 0}">
+                    <div class="table-footer-info">
+                        共 <span th:text="${pageResult.totalElements}"></span> 筆資料，
+                        第 <span th:text="${currentPage + 1}"></span> 頁 /
+                        共 <span th:text="${totalPages}"></span> 頁
+                    </div>
+
+                    <nav th:if="${totalPages > 1}">
+                        <ul class="pagination pagination-sm mb-0" th:with="
+                            startPage=${T(java.lang.Math).max(0, currentPage - 2)},
+                            endPage=${T(java.lang.Math).min(totalPages - 1, startPage + 4)},
+                            adjustedStartPage=${T(java.lang.Math).max(0, endPage - 4)}
+                        ">
+                            <!-- 上一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/product/monitor(page=${currentPage - 1})}">
+                                    上一頁
+                                </a>
+                            </li>
+
+                            <!-- 第一頁 -->
+                            <li class="page-item" th:if="${adjustedStartPage > 0}">
+                                <a class="page-link" th:href="@{/backend/product/monitor(page=0)}">1</a>
+                            </li>
+                            <!-- 前省略號 -->
+                            <li class="page-item disabled" th:if="${adjustedStartPage > 1}">
+                                <span class="page-link">...</span>
+                            </li>
+
+                            <!-- 數字頁碼 -->
+                            <li class="page-item" th:each="i : ${#numbers.sequence(adjustedStartPage, endPage)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:text="${i + 1}"
+                                    th:href="@{/backend/product/monitor(page=${i})}"></a>
+                            </li>
+
+                            <!-- 後省略號 -->
+                            <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
+                                <span class="page-link">...</span>
+                            </li>
+                            <!-- 最後一頁 -->
+                            <li class="page-item" th:if="${endPage < totalPages - 1}">
+                                <a class="page-link" th:text="${totalPages}"
+                                    th:href="@{/backend/product/monitor(page=${totalPages - 1})}"></a>
+                            </li>
+
+                            <!-- 下一頁 -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/backend/product/monitor(page=${currentPage + 1})}">
+                                    下一頁
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 紀錄目前的最新一筆 ID，用來判斷是否有新資料進來
+            const firstRow = document.querySelector('#productTbody tr:first-child');
+            window.lastFirstId = firstRow ? firstRow.dataset.id : null;
+
+            // 每 2 秒鐘發送一次 AJAX 請求，靜默更新表格內容
+            setInterval(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const pageParam = urlParams.get('page') ? '?page=' + urlParams.get('page') : '';
+
+                fetch('/backend/product/monitor' + pageParam)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newTbody = doc.getElementById('productTbody');
+                        
+                        if (newTbody) {
+                            // 替換現有的 Tbody 內容
+                            document.getElementById('productTbody').innerHTML = newTbody.innerHTML;
+                            
+                            // 檢查是否有新的資料進來 (判斷第一筆 ID 是否改變)
+                            const newFirstRow = document.querySelector('#productTbody tr:first-child');
+                            if (newFirstRow && newFirstRow.dataset.id !== window.lastFirstId) {
+                                
+                                // 觸發「綠色閃爍」特效，視覺提示面試官
+                                newFirstRow.style.backgroundColor = '#d1e7dd';
+                                
+                                // 兩秒後慢慢淡出特效
+                                setTimeout(() => { 
+                                    newFirstRow.style.backgroundColor = ''; 
+                                }, 2000);
+                                
+                                // 更新最後已知的 ID
+                                window.lastFirstId = newFirstRow.dataset.id;
+                                console.log("偵測到 AOP 新增一筆 Product！ID: " + window.lastFirstId);
+                            }
+                        }
+                    })
+                    .catch(err => console.error("監控台連線異常:", err));
+            }, 2000);
+        });
+    </script>
+</body>
+
+</html>

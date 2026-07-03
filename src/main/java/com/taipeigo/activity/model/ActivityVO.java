@@ -48,6 +48,9 @@ public class ActivityVO implements Serializable {
 	@Column(name = "ACTIVITY_STATUS", nullable = false)
 	private Integer activityStatus;
 
+	@Column(name = "IS_RECOMMENDED", nullable = false, columnDefinition = "TINYINT DEFAULT 0")
+	private Integer isRecommended = 0;
+
 	@OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("sequence ASC")
 	private List<ActivityDetailVO> activityDetails;
@@ -69,6 +72,9 @@ public class ActivityVO implements Serializable {
 	private Integer concessionPrice;
 
 	@Transient
+	private Integer adultOriginalPrice;
+
+    @Transient
 	public List<Integer> getSelectedCateIds() {
 		if (activityCateInfoVO == null || activityCateInfoVO.isEmpty()) {
 			return java.util.Collections.emptyList();
@@ -123,6 +129,14 @@ public class ActivityVO implements Serializable {
 		this.activityStatus = activityStatus;
 	}
 
+	public Integer getIsRecommended() {
+		return isRecommended;
+	}
+
+	public void setIsRecommended(Integer isRecommended) {
+		this.isRecommended = isRecommended;
+	}
+
 	public List<ActivityDetailVO> getActivityDetails() {
 		return activityDetails;
 	}
@@ -170,4 +184,12 @@ public class ActivityVO implements Serializable {
 	public void setActivityCateInfoVO(List<ActivityCateInfoVO> activityCateInfoVO) {
 		this.activityCateInfoVO = activityCateInfoVO;
 	}
+
+	public Integer getAdultOriginalPrice() {
+        return adultOriginalPrice;
+    }
+
+    public void setAdultOriginalPrice(Integer adultOriginalPrice) {
+        this.adultOriginalPrice = adultOriginalPrice;
+    }
 }

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaipeiGO ｜ 活動詳情</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/activity/backend/listOneActivity.css}">
+
+</head>
+
+<body>
+
+    <div th:replace="~{backend/fragments/sidebar :: sidebar}"></div>
+
+    <div class="main-wrap">
+
+        <header class="topbar">
+            <div class="topbar-title">
+                <i class="bi bi-calendar-event-fill me-2" style="color:var(--primary);"></i>
+                活動詳細資料
+                <span th:text="${'/ ' + activityVO.activityName}">/ Detail</span>
+            </div>
+
+            <div class="text-secondary small">
+                <i class="bi bi-eye me-1"></i>
+                查看模式
+            </div>
+        </header>
+
+        <main class="content-area">
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-custom">
+                <a th:href="@{/backend/activity}">
+                    <i class="bi bi-house-door"></i>
+                    活動列表
+                </a>
+                <i class="bi bi-chevron-right" style="font-size:0.7rem;"></i>
+                <span th:text="${activityVO.activityName}">活動詳細</span>
+            </div>
+
+            <!-- Profile Card -->
+            <section class="profile-card" th:object="${activityVO}">
+                <div class="profile-main">
+                    <img th:src="${not #lists.isEmpty(activityVO.activityImage) ? activityVO.activityImage[0].activityImageSrc : '/images/default-activity.png'}"
+                        class="avatar-lg shadow-sm" id="mainActivityImage" alt="活動主圖"
+                        onerror="this.onerror=null; this.src='/images/default-ticket.png';">
+
+                    <div>
+                        <div class="profile-name" th:text="*{activityName}">活動名稱</div>
+                        <div class="profile-sub">
+                            <i class="bi bi-tags-fill me-1"></i>
+                            <span>套票組合活動</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="id-badge">
+                    <i class="bi bi-hash"></i>
+                    <span th:text="${'活動編號：' + activityVO.activityId}">活動編號</span>
+                </div>
+            </section>
+
+            <!-- Grid Layout -->
+            <div class="row g-4" th:object="${activityVO}">
+
+                <!-- Left: Basic Info -->
+                <div class="col-lg-6">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="bi bi-info-circle-fill me-2" style="color:var(--primary);"></i>
+                            基本資料
+                        </div>
+
+                        <div class="info-card-body">
+                            <div class="info-row">
+                                <div class="info-label">活動編號</div>
+                                <div class="info-value fw-bold text-secondary" th:text="*{activityId}"></div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">活動名稱</div>
+                                <div class="info-value fw-bold" th:text="*{activityName}"></div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">主題分類</div>
+                                <div class="info-value">
+                                     <div class="d-flex flex-wrap gap-1">
+                                         <th:block th:each="cateInfo : *{activityCateInfoVO}">
+                                             <span class="category-badge" th:text="${cateInfo.activityCate.cateName}">分類</span>
+                                         </th:block>
+                                         <span th:if="${#lists.isEmpty(activityVO.activityCateInfoVO)}"
+                                             class="text-muted small">未分類</span>
+                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">套票折扣</div>
+                                <div class="info-value fw-bold text-danger">
+                                    <span th:text="*{discount}">0</span> 元
+                                </div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">活動狀態</div>
+                                <div class="info-value">
+                                    <span th:if="*{activityStatus == 1}" class="status-badge status-active">
+                                        <span class="status-dot"></span>
+                                        上架
+                                    </span>
+                                    <span th:if="*{activityStatus == 0}" class="status-badge status-inactive">
+                                        <span class="status-dot"></span>
+                                        下架
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Description -->
+                <div class="col-lg-6">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="bi bi-file-earmark-text-fill me-2" style="color:var(--primary);"></i>
+                            活動描述 / 使用須知
+                        </div>
+                        <div class="info-card-body">
+                            <div class="info-value text-muted" style="white-space: pre-line; min-height: 120px;"
+                                th:text="*{activityDesc}">
+                                這裡會帶出詳細的活動介紹與使用說明...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full Width: Bundle Sequence Table -->
+                <div class="col-12">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="bi bi-collection-fill me-2" style="color:var(--primary);"></i>
+                            套票順序 (組合門票)
+                            <span class="text-secondary font-weight-normal fs-6"
+                                th:text="${'(共 ' + #lists.size(activityVO.activityDetails) + ' 張門票)'}"></span>
+                        </div>
+                        <div class="info-card-body">
+                            <div class="table-responsive serial-table-wrap"
+                                style="max-height: 350px; overflow-y: auto;">
+                                <table class="table align-middle mb-0 text-center">
+                                    <thead>
+                                        <tr>
+                                            <th width="15%">套票順序</th>
+                                            <th width="15%">門票 ID</th>
+                                            <th width="45%">門票名稱</th>
+                                            <th width="25%">門票狀態</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="detail : *{activityDetails}">
+                                            <td>
+                                                <span class="badge bg-light text-dark border px-2 py-1" th:text="${'第 ' + detail.sequence + ' 順位'}"></span>
+                                            </td>
+                                            <td class="text-muted fw-bold" th:text="${detail.ticket.ticketId}"></td>
+                                            <td>
+                                                <a th:href="@{/backend/ticket/getOne_For_Display(ticketId=${detail.ticket.ticketId})}"
+                                                   class="fw-bold text-decoration-none" target="_blank"
+                                                   th:text="${detail.ticket.ticketName}">門票名稱</a>
+                                            </td>
+                                            <td>
+                                                <span th:if="${detail.ticket.ticketStatus == 1}" class="badge bg-success px-2 py-1">上架中</span>
+                                                <span th:if="${detail.ticket.ticketStatus == 0}" class="badge bg-secondary px-2 py-1">已下架</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(activityVO.activityDetails)}">
+                                            <td colspan="4" class="text-muted py-5 small text-center">
+                                                <i class="bi bi-exclamation-circle me-1"
+                                                    style="font-size: 1.5rem; display: block; margin-bottom: 8px;"></i>
+                                                此活動目前尚未設定組合門票。
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Area -->
+            <div class="action-area" th:object="${activityVO}">
+                <a class="btn-back" th:href="@{/backend/activity}">
+                    <i class="bi bi-arrow-left"></i>
+                    返回列表
+                </a>
+
+                <a th:href="@{/backend/activity/{id}/edit(id=*{activityId})}" class="btn-edit-custom d-inline-flex align-items-center justify-content-center text-decoration-none" style="margin:0;">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    修改活動
+                </a>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

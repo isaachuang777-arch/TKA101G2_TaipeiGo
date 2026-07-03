@@ -234,6 +234,7 @@ public class ActivityService {
         existActivityVO.setActivityDesc(updatedActivity.getActivityDesc());
         existActivityVO.setDiscount(updatedActivity.getDiscount());
         existActivityVO.setActivityStatus(updatedActivity.getActivityStatus());
+        existActivityVO.setIsRecommended(updatedActivity.getIsRecommended() != null ? updatedActivity.getIsRecommended() : 0);
 
         List<ActivityDetailVO> oldDetailVOs = existActivityVO.getActivityDetails();
 

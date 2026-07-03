@@ -77,6 +77,10 @@
                         <input class="form-check-input fs-5 m-0" style="cursor: pointer;" type="checkbox" role="switch" id="statusSwitch" checked>
                         <label class="form-check-label ms-2 fw-bold text-primary mb-0" style="cursor: pointer; padding-top: 2px;" for="statusSwitch" id="statusLabel">上架中</label>
                     </div>
+                    <div class="form-check form-switch mb-0 d-flex align-items-center ms-4">
+                        <input class="form-check-input fs-5 m-0" style="cursor: pointer;" type="checkbox" role="switch" id="recommendSwitch">
+                        <label class="form-check-label ms-2 fw-bold text-warning mb-0" style="cursor: pointer; padding-top: 2px;" for="recommendSwitch"><i class="bi bi-star-fill"></i> 設為首頁推薦</label>
+                    </div>
                 </div>
                 <a th:href="@{/backend/activity}" class="btn btn-outline-secondary shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i> 返回列表
@@ -95,6 +99,7 @@
                         <form th:action="@{/backend/activity/add}" method="post" enctype="multipart/form-data">
                             
                             <input type="hidden" name="activityStatus" id="hiddenActivityStatus" value="1">
+                            <input type="hidden" name="isRecommended" id="hiddenIsRecommended" value="0">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-info-circle me-2 text-primary"></i>基本資訊</h5>
@@ -203,6 +208,14 @@
                         statusLabel.textContent = '草稿 (不上架)';
                         statusLabel.className = 'form-check-label ms-2 fw-bold text-secondary mb-0';
                     }
+                });
+            }
+
+            const recommendSwitch = document.getElementById('recommendSwitch');
+            const hiddenIsRecommended = document.getElementById('hiddenIsRecommended');
+            if (recommendSwitch) {
+                recommendSwitch.addEventListener('change', function() {
+                    hiddenIsRecommended.value = this.checked ? '1' : '0';
                 });
             }
         });

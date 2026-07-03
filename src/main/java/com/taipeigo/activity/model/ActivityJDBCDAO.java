@@ -113,9 +113,15 @@ public class ActivityJDBCDAO {
             args.add(Integer.valueOf(map.get("activityId").get(0).trim()));
         }
 
+        // 首頁推薦活動查詢
+        if (map.containsKey("isRecommended") && !map.get("isRecommended").get(0).trim().isEmpty()) {
+            sql.append(" AND a.IS_RECOMMENDED = ? ");
+            args.add(Integer.valueOf(map.get("isRecommended").get(0).trim()));
+        }
+
         sql.append(" ORDER BY a.ACTIVITY_ID DESC ");
 
-        int pageSize = 5;
+        int pageSize = map.containsKey("pageSize") ? Integer.parseInt(map.get("pageSize").get(0)) : 5;
 
         int currentPage = map.containsKey("page") ? Integer.parseInt(map.get("page").get(0)) : 1;
         int offset = (currentPage -1 ) * pageSize;
@@ -156,6 +162,7 @@ public class ActivityJDBCDAO {
 
             String priceSql = "SELECT " +
                     "COALESCE(SUM(t.ADULT_PRICE),0) AS ADULT_TOTAL, " +
+                    "COALESCE(SUM(t.ADULT_ORIGINAL_PRICE),0) AS ADULT_ORIGINAL_TOTAL," +
                     "COALESCE(SUM(t.CHILD_PRICE), 0) AS CHILD_TOTAL, " +
                     "COALESCE(SUM(t.CONCESSION_PRICE), 0) AS CONCESSION_TOTAL " +
                     "FROM ACTIVITY_DETAIL ad " +
@@ -166,11 +173,13 @@ public class ActivityJDBCDAO {
                 int discount = act.getDiscount() != null ? act.getDiscount() : 0;
 
                 int adultFinal = rs.getInt("ADULT_TOTAL") - discount;
+                int adultOriginalFinal = rs.getInt("ADULT_ORIGINAL_TOTAL");
                 int childFinal = rs.getInt("CHILD_TOTAL") - discount;
                 int concessionFinal = rs.getInt("CONCESSION_TOTAL") - discount;
 
                 // 確保價格不會變負數，若折扣過多則保底收取 30 元手續費
                 act.setAdultPrice(adultFinal <= 0 ? 30 : adultFinal);
+                act.setAdultOriginalPrice(adultOriginalFinal);
                 act.setChildPrice(childFinal <= 0 ? 30 : childFinal);
                 act.setConcessionPrice(concessionFinal <= 0 ? 30 : concessionFinal);
 
@@ -184,7 +193,7 @@ public class ActivityJDBCDAO {
     //算總頁數的方法，反正只給後台用就把前後台判斷拿掉
     public int getTotalPage(MultiValueMap<String, String> map){
 
-        int pageSize = 5; 
+        int pageSize = map.containsKey("pageSize") ? Integer.parseInt(map.get("pageSize").get(0)) : 6;
 
         StringBuilder sql = new StringBuilder(
 
@@ -274,6 +283,11 @@ public class ActivityJDBCDAO {
             args.add(Integer.valueOf(map.get("activityId").get(0).trim()));
         }
 
+        // 首頁推薦活動查詢
+        if (map.containsKey("isRecommended") && !map.get("isRecommended").get(0).trim().isEmpty()) {
+            sql.append(" AND a.IS_RECOMMENDED = ? ");
+            args.add(Integer.valueOf(map.get("isRecommended").get(0).trim()));
+        }
         
         Integer totalCount = jdbcTemplate.queryForObject
                              (sql.toString(), Integer.class, args.toArray());
