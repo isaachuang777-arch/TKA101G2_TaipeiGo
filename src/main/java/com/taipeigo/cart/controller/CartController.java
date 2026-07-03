@@ -158,6 +158,18 @@ public class CartController {
 	public List<TicketStockDTO> ticketIdQuantitySearch(HttpSession session){
 		return cartService.ticketIdQuantitySearch(session);
 	}
-	
+
+/* ========== 前往結帳前確認庫存 ========== */
+	@ResponseBody
+	@PostMapping("/checkBeforeCheckout")
+	public ResponseEntity<String> checkBeforeCheckout(HttpSession session) {
+		System.out.println("========== checkBeforeCheckout Controller ==========");
+	    try {
+	        cartService.checkBeforeCheckout(session);
+	        return ResponseEntity.ok("success");
+	    } catch (RuntimeException e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
 
 }

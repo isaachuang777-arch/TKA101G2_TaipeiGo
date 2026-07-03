@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	        return;
 	    }
 	    try {
-	        const response = await fetch("/frontend/cart/cartCheckStock", {
+	        const response = await fetch("/frontend/cart/checkBeforeCheckout", {
 	            method: "POST"
 	        });
 	        if (response.ok) {
