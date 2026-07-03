@@ -45,7 +45,7 @@ public class OrdersController {
 	        Model model) {
 
 
-		Page<OrdersVO> orderPage =ordersService.findAll(PageRequest.of(page, 10));	    
+		Page<OrdersVO> orderPage =ordersService.findAll(PageRequest.of(page, 5));	    
 		model.addAttribute("allOrders", orderPage.getContent());
 	    model.addAttribute("currentPage", page);
 	    model.addAttribute("totalPages",orderPage.getTotalPages());

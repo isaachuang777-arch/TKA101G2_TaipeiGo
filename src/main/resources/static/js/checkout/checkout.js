@@ -201,8 +201,8 @@ async function checkoutStockCheck() {
         if (!response.ok) {
             const message = await response.text();
             alert(message);
-            /**回到結帳頁即可，重新載入一次看到更新後的購物車***/ 
-            window.location.href = "/frontend/checkout";
+            /*** 回購物車讓使用者自行調整***/
+            window.location.href = "/frontend/cart/shoppingCart";
             return;
         }
     } catch (error) {
