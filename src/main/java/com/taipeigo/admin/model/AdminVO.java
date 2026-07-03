@@ -30,17 +30,17 @@ public class AdminVO implements Serializable {
     private Integer admId;
 
     @NotNull(message = "帳號不可為空")
-    @Length(min = 1, max = 20, message = "帳號長度需為1~20")
+    @Length(min = 4, max = 20, message = "失敗:帳號只能包含4位或以上的英文、數字或底線！　\n")
     @Column(name = "ADM_ACC")
     private String admAcc;
     
     @NotNull(message = "密碼不可為空")
-    @Length(min = 8, message = "密碼長度需為8~20")
+    @Length(min = 8, message = "失敗：密碼必須為 8 碼以上的英文、數字或符號！　\n")
     @Column(name = "ADM_PW")
     private String admPw;
     
     @NotNull(message = "姓名不可為空")
-    @Length(min = 1, max = 10, message = "姓名長度需為1~10")
+    @Length(min = 2, max = 10, message = "失敗：姓名長度需為2~10位！　\n")
     @Column(name = "ADM_NAME")
     private String admName;
 

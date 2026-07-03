@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +19,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.taipeigo.IndexController;
 import com.taipeigo.admin.model.AdmFuncService;
 import com.taipeigo.admin.model.AdmFuncVO;
-
 import com.taipeigo.admin.model.AdminRepository;
 import com.taipeigo.admin.model.AdminService;
 import com.taipeigo.admin.model.AdminVO;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/backend/admin")
@@ -96,7 +97,7 @@ public class AdminController {
             RedirectAttributes redirectAttributes) {
         // 檢查 loginedAdmin 是否 等於 改自己
         AdminVO loginedAdmin = (AdminVO) session.getAttribute("adminVO");
-        
+        String keywordString = adminVO.getAdmName();
         if(loginedAdmin.getAdmId().equals(adminVO.getAdmId())){
             redirectAttributes.addFlashAttribute("errorMsg", "您無法修改自己的系統管理員資料!");
             return "redirect:/backend/admin/it/listAll";
@@ -104,7 +105,7 @@ public class AdminController {
         try {
             adminService.updateAdmin(adminVO);
             redirectAttributes.addFlashAttribute("successMsg", "已經成功修改管理員 " + adminVO.getAdmName() + " 資料！");
-
+            redirectAttributes.addAttribute("keyword", keywordString);
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
         }
@@ -114,9 +115,7 @@ public class AdminController {
     // (New1)新增admin頁面時要列出的權限列表
     @GetMapping("/it/addAdmin")
     public String getAlladmFuncs(Model model, HttpSession session) {
-        if (session.getAttribute("adminVO") == null) {
-            return "redirect:/backend/auth/login";
-        }
+    	model.addAttribute("adminVO", new AdminVO()); 
         List<AdmFuncVO> funcList = adminFuncService.getAlladmFuncs();
         model.addAttribute("funcList", funcList);
         model.addAttribute("activePage", "iTadmin");
@@ -125,9 +124,20 @@ public class AdminController {
 
     // (New2)真的新增Admin
     @PostMapping("/it/createAdmin")
-    public String createAdmin(AdminVO adminVO, Integer[] funcIds, Model model, HttpSession session,
+    public String createAdmin(@Valid AdminVO adminVO, BindingResult bindingResult, Integer[] funcIds, Model model, HttpSession session,
             RedirectAttributes redirectAttributes) {
-
+    	//增加驗證
+    	if(bindingResult.hasErrors()) {
+    		StringBuilder errorBuilder = new StringBuilder();
+    		
+    		for(FieldError error : bindingResult.getFieldErrors()) {
+    			errorBuilder.append(error.getDefaultMessage()).append(" ");
+    		}
+    		model.addAttribute("errorMsg",errorBuilder.toString());
+    		model.addAttribute("funcList", adminFuncService.getAlladmFuncs());
+    		return "backend/admin/it/addAdmin";
+    	}
+    	
         try {
             adminService.createAdmin(adminVO, funcIds);
 
@@ -138,6 +148,7 @@ public class AdminController {
 
             model.addAttribute("errorMsg", e.getMessage());
 
+            model.addAttribute("checkedFuncIds", funcIds); 
             model.addAttribute("funcList", adminFuncService.getAlladmFuncs());
             return "backend/admin/it/addAdmin";
         }
@@ -215,7 +226,10 @@ public class AdminController {
     @PostMapping("/it/saveForcePwtoDB")
     public String saveForcePwtoDB(@RequestParam("admId") Integer admId, RedirectAttributes redirectAttributes,
             AdminVO adminVO, HttpSession session) {
-
+    	
+    	AdminVO adminVO2 = adminService.findByAdmId(admId);
+    	String keywordString = adminVO2.getAdmName();
+    	
         try {
             // 檢查 loginedAdmin 是否 等於 改自己
             AdminVO loginedAdmin = (AdminVO) session.getAttribute("adminVO");
@@ -230,9 +244,11 @@ public class AdminController {
             adminService.itforceResetPw(admId);
 
             AdminVO adminVO1 = adminService.findByAdmId(admId);
+            
             redirectAttributes.addFlashAttribute("successMsg",
                     "密碼已成功強制重設為預設值！" + adminVO1.getAdmAcc() + " 登入時將被強制重設密碼。");
-
+            redirectAttributes.addAttribute("keyword", keywordString);
+            
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMsg", "重設失敗：" + e.getMessage());
         }
