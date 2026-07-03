@@ -92,6 +92,16 @@ public class ActivityBackendController {
 
     }
 
+    /**
+     * 後台活動詳細頁面 (對應 Ticket 的 getOne_For_Display)
+     */
+    @GetMapping("getOne_For_Display")
+    public String getOneForDisplay(@RequestParam("activityId") Integer activityId, Model model) {
+        ActivityVO activityVO = activityService.getActivityVOById(activityId);
+        model.addAttribute("activityVO", activityVO);
+        return "backend/activity/listOneActivity";
+    }
+
     // 前往新增頁面，先用GetMapping做一個空的ActivityVO
 
     @GetMapping("/add")

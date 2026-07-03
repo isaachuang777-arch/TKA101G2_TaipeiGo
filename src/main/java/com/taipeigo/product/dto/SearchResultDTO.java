@@ -12,6 +12,7 @@ public class SearchResultDTO implements Serializable {
     private String title;
     private String description;
     private Integer price;
+    private Integer originalPrice;
     private String imageUrl;
     private List<Integer> categoryIds;
 
@@ -50,6 +51,14 @@ public class SearchResultDTO implements Serializable {
         this.description = description;
     }
 
+    public Integer getOriginalPrice() {
+        return originalPrice;
+    }
+
+    public void setOriginalPrice(Integer originalPrice) {
+        this.originalPrice = originalPrice;
+    }
+
     public Integer getPrice() {
         return price;
     }
@@ -75,3 +84,4 @@ public class SearchResultDTO implements Serializable {
     }
 
 }
+

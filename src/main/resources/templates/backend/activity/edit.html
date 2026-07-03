@@ -91,6 +91,10 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                         <input class="form-check-input fs-5 m-0" style="cursor: pointer;" type="checkbox" role="switch" id="statusSwitch" th:checked="${activityVO.activityStatus == 1}">
                         <label th:class="'form-check-label ms-2 fw-bold mb-0 ' + (${activityVO.activityStatus == 1} ? 'text-primary' : 'text-secondary')" style="cursor: pointer; padding-top: 2px;" for="statusSwitch" id="statusLabel" th:text="${activityVO.activityStatus == 1} ? '上架中' : '已下架'"></label>
                     </div>
+                    <div class="form-check form-switch mb-0 d-flex align-items-center ms-4">
+                        <input class="form-check-input fs-5 m-0" style="cursor: pointer;" type="checkbox" role="switch" id="recommendSwitch" th:checked="${activityVO.isRecommended == 1}">
+                        <label class="form-check-label ms-2 fw-bold text-warning mb-0" style="cursor: pointer; padding-top: 2px;" for="recommendSwitch"><i class="bi bi-star-fill"></i> 設為首頁推薦</label>
+                    </div>
                 </div>
                 <a th:href="@{/backend/activity}" class="btn btn-outline-secondary shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i> 返回列表
@@ -113,6 +117,7 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                             <input type="hidden" name="activityId" th:value="${activityVO.activityId}">
                             <!-- 隱藏的狀態欄位 -->
                             <input type="hidden" name="activityStatus" id="hiddenActivityStatus" th:value="${activityVO.activityStatus != null ? activityVO.activityStatus : 0}">
+                            <input type="hidden" name="isRecommended" id="hiddenIsRecommended" th:value="${activityVO.isRecommended != null ? activityVO.isRecommended : 0}">
 
                             <div class="row g-4">
                                 <!-- 左半部：基本資訊 -->
@@ -268,6 +273,14 @@ body { font-family: 'Noto Sans TC', sans-serif; background: #f0f4f8; margin: 0; 
                         statusLabel.textContent = '已下架';
                         statusLabel.className = 'form-check-label ms-2 fw-bold text-secondary mb-0';
                     }
+                });
+            }
+
+            const recommendSwitch = document.getElementById('recommendSwitch');
+            const hiddenIsRecommended = document.getElementById('hiddenIsRecommended');
+            if (recommendSwitch) {
+                recommendSwitch.addEventListener('change', function() {
+                    hiddenIsRecommended.value = this.checked ? '1' : '0';
                 });
             }
         });

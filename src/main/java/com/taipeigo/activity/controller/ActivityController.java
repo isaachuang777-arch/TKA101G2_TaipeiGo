@@ -47,6 +47,14 @@ public class ActivityController {
 
     }
 
+
+    @GetMapping("/total-pages")
+    public int getTotalPage(@RequestParam MultiValueMap<String, String> params){
+
+        //直接拿查詢出來的分頁邏輯來用
+         return activityService.getTotalPageByCompositeQuery(params);
+    }
+
     // 單一搜尋API
 
     @GetMapping("/{id}")

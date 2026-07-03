@@ -7,10 +7,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.taipeigo.product.dto.SearchResultDTO;
 import com.taipeigo.product.model.SearchService;
 import com.taipeigo.ticketcategory.model.TicketCategoryService;
 
@@ -33,18 +35,20 @@ public class SearchController {
 
     @GetMapping("/api/search")
     @ResponseBody
-    public List<SearchResultDTO> getSearchResults(
+    public ResponseEntity<Map<String, Object>> getSearchResults(
             @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-            // 用來接受前端參數來作價格篩選
             @RequestParam(value = "minPrice", required = false) Integer minPrice,
             @RequestParam(value = "maxPrice", required = false) Integer maxPrice,
-            @RequestParam(value = "categoryId", required = false) Integer categoryId
+            @RequestParam(value = "categoryIds", required = false) List<Integer> categoryIds,
+            @RequestParam(value = "type", required = false, defaultValue = "ALL") String type,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "relevance") String sortBy,
 
+            // 分頁參數
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "12") int size
     ) {
-
-        // 將所有參數一起給 Servicr處理
-        return searchService.globalSearch(keyword, minPrice, maxPrice, categoryId);
-
+        Map<String, Object> response = searchService.globalSearch(keyword, minPrice, maxPrice, categoryIds, type, page, size, sortBy);
+        return ResponseEntity.ok(response);
     }
 
 }
