@@ -96,10 +96,6 @@ public class CustomerVO implements Serializable {
      *   - 不允許特殊字元
      */
     @NotBlank(message = "密碼不可空白")
-    @Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z0-9]{8,20}$",
-        message = "密碼需 8~20 字元，且必須包含大寫、小寫英文字母及數字，不可包含特殊字元"
-    )
     @Column(name = "CUST_PASSWORD", nullable = false)
     private String custPassword;
 
