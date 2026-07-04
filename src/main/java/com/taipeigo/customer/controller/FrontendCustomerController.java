@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.taipeigo.customer.model.CustomerService;
 import java.time.LocalDate;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Controller
 @RequestMapping("/customer")
@@ -38,6 +39,9 @@ public class FrontendCustomerController {
     
     @Autowired
     private CustomerService customerService;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Value("${taipeigo.upload.base-dir}")
     private String uploadBaseDir;
@@ -114,7 +118,7 @@ public class FrontendCustomerController {
         CustomerVO db =
                 customerService.getOneCustomer(loginCustomer.getCustId());
 
-        if (!db.getCustPassword().equals(oldPassword)) {
+        if (!passwordEncoder.matches(oldPassword, db.getCustPassword())) {
             model.addAttribute("errorMessage", "舊密碼錯誤");
             return "frontend/customer/password";
         }
@@ -129,7 +133,8 @@ public class FrontendCustomerController {
             return "frontend/customer/password";
         }
 
-        db.setCustPassword(newPassword);
+        // 使用 BCrypt 加密新密碼後再存入資料庫
+        db.setCustPassword(passwordEncoder.encode(newPassword));
         customerService.updateCustomer(db);
 
         session.setAttribute("loginCustomer", db);

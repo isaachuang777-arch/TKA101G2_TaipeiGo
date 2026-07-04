@@ -32,6 +32,9 @@ import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/auth")
 public class FrontendAuthController {
@@ -45,12 +48,15 @@ public class FrontendAuthController {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
     
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
     @Value("${spring.mail.username}")
     private String mailUsername;
 
     @Value("${spring.mail.password}")
     private String mailPassword;
-    
+        
     // 顯示前台會員登入頁
     // 網址：GET /auth/login
     // 對應：templates/frontend/auth/login.html
@@ -85,7 +91,7 @@ public class FrontendAuthController {
         }
 
         // 密碼不一致，代表密碼錯誤
-        if (!customer.getCustPassword().equals(custPassword)) {
+        if (!passwordEncoder.matches(custPassword, customer.getCustPassword())) {
             model.addAttribute("errorMsg", "密碼錯誤");
             return "frontend/auth/login";
         }
@@ -105,7 +111,7 @@ public class FrontendAuthController {
         // 登入成功，把會員資料存進 Session
         session.setAttribute("loginCustomer", customer);
         
-     // 同步未登入購物車到 Redis
+        // 同步未登入購物車到 Redis
         cartService.mergeTempCart(session);
 
         // 如果原本是被 Filter 擋下來的頁面，登入後導回原頁
@@ -138,7 +144,8 @@ public class FrontendAuthController {
 	        @Valid CustomerVO customerVO,
 	        BindingResult result,
 	        Model model,
-	        RedirectAttributes redirectAttributes) {
+	        RedirectAttributes redirectAttributes,
+	        HttpServletRequest request) {
 		
 		System.out.println("custStatus = " + customerVO.getCustStatus());
 		
@@ -146,6 +153,11 @@ public class FrontendAuthController {
 		if(result.hasErrors()) {
 	        return "frontend/auth/register";
 	    }
+		
+		if (!customerVO.getCustPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z0-9]{8,20}$")) {
+		    model.addAttribute("errorMsg", "密碼需 8~20 字元，且必須包含大寫、小寫英文字母及數字，不可包含特殊字元");
+		    return "frontend/auth/register";
+		}
 		
 		// 帳號重複檢查
 		if (customerService.isAccountExist(customerVO.getCustAccount())) {
@@ -166,7 +178,7 @@ public class FrontendAuthController {
 		}
 
 		customerVO.setCustStatus(0); // 0 = 未啟用
-
+		customerVO.setCustPassword(passwordEncoder.encode(customerVO.getCustPassword())); // 密碼使用 BCrypt 加密後再存入資料庫
 		customerService.addCustomer(customerVO);
 
 		// 產生驗證 token
@@ -176,7 +188,7 @@ public class FrontendAuthController {
 		stringRedisTemplate.opsForValue().set("verify:" + token, customerVO.getCustId().toString(), 30,
 				TimeUnit.MINUTES);
 
-		String verifyUrl = "http://localhost:8080/auth/verify?token=" + token;
+		String verifyUrl = getBaseUrl(request) + "/auth/verify?token=" + token;
 
 		sendVerifyEmail(customerVO.getCustEmail(), verifyUrl);
 
@@ -288,7 +300,8 @@ public class FrontendAuthController {
     @PostMapping("/forgot-password")
     public String forgotPassword(
             @RequestParam("email") String email,
-            Model model) {
+            Model model, 
+            HttpServletRequest request) {
 
         CustomerVO customerVO = customerService.findByEmail(email);
 
@@ -310,7 +323,7 @@ public class FrontendAuthController {
                 TimeUnit.MINUTES
         );
 
-        String resetUrl = "http://localhost:8080/auth/reset-password?token=" + token;
+        String resetUrl = getBaseUrl(request) + "/auth/reset-password?token=" + token;
         
         sendResetPasswordEmail(customerVO.getCustEmail(), resetUrl);
         
@@ -414,7 +427,8 @@ public class FrontendAuthController {
         }
 
         CustomerVO customerVO = customerService.getOneCustomer(Integer.valueOf(custId));
-        customerVO.setCustPassword(newPassword);
+        // 使用 BCrypt 加密新密碼
+        customerVO.setCustPassword(passwordEncoder.encode(newPassword));
         customerService.updateCustomer(customerVO);
 
         stringRedisTemplate.delete("resetpwd:" + token);
@@ -422,6 +436,36 @@ public class FrontendAuthController {
         redirectAttributes.addFlashAttribute("successMsg", "密碼重設成功，請使用新密碼登入。");
 
         return "redirect:/auth/login";
+    }
+    
+    
+    /**
+     * 根據目前請求動態取得網站的 Base URL
+     * 例如：
+     * http://localhost:8080
+     * https://taipeigo.com
+     */
+    private String getBaseUrl(HttpServletRequest request) {
+    	
+    	// 取得目前使用的協定（http 或 https）
+        String scheme = request.getScheme();
+        // 取得目前網站主機名稱（例如 localhost、IP 或網域）
+        String serverName = request.getServerName();
+        // 取得目前網站 Port
+        int serverPort = request.getServerPort();
+        
+        // 判斷是否使用預設 Port（HTTP:80、HTTPS:443）
+        boolean isDefaultPort =
+                ("http".equals(scheme) && serverPort == 80)
+                || ("https".equals(scheme) && serverPort == 443);
+        
+        // 使用預設 Port 時，不需要將 Port 加入網址
+        if (isDefaultPort) {
+            return scheme + "://" + serverName;
+        }
+        
+        // 非預設 Port 時，需將 Port 一起組成完整網址
+        return scheme + "://" + serverName + ":" + serverPort;
     }
     
 }

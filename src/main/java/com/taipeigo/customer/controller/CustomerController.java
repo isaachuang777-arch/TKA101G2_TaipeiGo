@@ -20,6 +20,8 @@ import java.nio.file.StandardCopyOption;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 @Controller
 @RequestMapping("/backend/customer")
@@ -30,6 +32,9 @@ public class CustomerController {
 	
     @Autowired
     private CustomerService customerService;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // 查全部（列表頁）
     @GetMapping("/list")
@@ -87,6 +92,11 @@ public class CustomerController {
         if (result.hasErrors()) {
             return "backend/customer/addCustomer";
         }
+        
+        if (!customerVO.getCustPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z0-9]{8,20}$")) {
+            model.addAttribute("passwordError", "密碼需 8~20 字元，且必須包含大寫、小寫英文字母及數字，不可包含特殊字元");
+            return "backend/customer/addCustomer";
+        }
 
         if (customerService.isAccountExist(customerVO.getCustAccount())) {
             model.addAttribute("accountDuplicateError", "此帳號已被使用");
@@ -103,6 +113,9 @@ public class CustomerController {
             return "backend/customer/addCustomer";
         }
 
+        // 密碼使用 BCrypt 加密後再存入資料庫
+        customerVO.setCustPassword(passwordEncoder.encode(customerVO.getCustPassword()));
+        
         customerService.addCustomer(customerVO);
 
         return "redirect:/backend/customer/list";
