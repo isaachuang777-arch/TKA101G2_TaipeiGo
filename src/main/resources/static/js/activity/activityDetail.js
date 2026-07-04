@@ -348,7 +348,7 @@ function updateTotalAndPrice() {
     if (addToCartBtn && bookingBtn) {
         if (totalQty > 0) {
             // 發送請求問後端庫存夠不夠
-            fetch(`/activities/checkStock?activityId=${activityId}&quantity=${totalQty}`)
+             fetch(`/activities/checkStockWithCart?activityId=${activityId}&quantity=${totalQty}`)
                 .then(res => res.json())
                 .then(hasStock => {
                     if (hasStock) {
