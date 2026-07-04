@@ -72,7 +72,7 @@ public class AdminService {
 
         
 // 限制admAcc
-        if (!adminVO.getAdmAcc().matches("^[a-zA-Z0-9_]{4+}+$")) {
+        if (!adminVO.getAdmAcc().matches("^[a-zA-Z0-9_]{4,20}+$")) {
             throw new RuntimeException("新增失敗：帳號只能包含英文、數字或底線！");
         }
         
