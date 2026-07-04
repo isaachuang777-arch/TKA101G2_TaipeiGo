@@ -300,22 +300,39 @@ public class FrontendAuthController {
     @PostMapping("/forgot-password")
     public String forgotPassword(
             @RequestParam("email") String email,
-            Model model, 
+            Model model,
             HttpServletRequest request) {
 
         CustomerVO customerVO = customerService.findByEmail(email);
 
+        // 不論 Email 是否存在，都顯示相同訊息，避免暴露帳號是否存在
+        String successMessage = "若該 Email 已完成註冊，系統將寄送重設密碼信至該信箱，請留意收件匣及垃圾郵件。";
+
         if (customerVO == null) {
-        	
-            model.addAttribute(
-                    "errorMessage",
-                    "查無此電子信箱。");
-            
+            model.addAttribute("successMessage", successMessage);
             return "frontend/auth/forgot-password";
         }
-        
+
+        // 寄信冷卻：同一會員 60 秒內只能申請一次
+        String cooldownKey = "resetpwd:cooldown:" + customerVO.getCustId();
+
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(cooldownKey))) {
+            model.addAttribute("successMessage", successMessage);
+            return "frontend/auth/forgot-password";
+        }
+
+        // 如果之前有申請過重設密碼，先刪除舊 token，確保只保留最新一組
+        String latestKey = "resetpwd:latest:" + customerVO.getCustId();
+        String oldToken = stringRedisTemplate.opsForValue().get(latestKey);
+
+        if (oldToken != null) {
+            stringRedisTemplate.delete("resetpwd:" + oldToken);
+        }
+
+        // 產生新的重設密碼 token
         String token = UUID.randomUUID().toString();
 
+        // resetpwd:{token} -> custId，有效 30 分鐘
         stringRedisTemplate.opsForValue().set(
                 "resetpwd:" + token,
                 customerVO.getCustId().toString(),
@@ -323,14 +340,28 @@ public class FrontendAuthController {
                 TimeUnit.MINUTES
         );
 
-        String resetUrl = getBaseUrl(request) + "/auth/reset-password?token=" + token;
-        
-        sendResetPasswordEmail(customerVO.getCustEmail(), resetUrl);
-        
-        model.addAttribute(
-                "successMessage",
-                "重設密碼信已寄出，請前往您的電子郵件收信。"
+        // resetpwd:latest:{custId} -> token，有效 30 分鐘
+        stringRedisTemplate.opsForValue().set(
+                latestKey,
+                token,
+                30,
+                TimeUnit.MINUTES
         );
+
+	     // Redis Key：resetpwd:cooldown:{custId}
+	     // Value 不重要，只是表示目前仍在冷卻時間
+	     stringRedisTemplate.opsForValue().set(
+	             cooldownKey,
+	             "cooldown",
+	             60,
+	             TimeUnit.SECONDS
+	     );
+
+        String resetUrl = getBaseUrl(request) + "/auth/reset-password?token=" + token;
+
+        sendResetPasswordEmail(customerVO.getCustEmail(), resetUrl);
+
+        model.addAttribute("successMessage", successMessage);
 
         return "frontend/auth/forgot-password";
     }
@@ -431,7 +462,11 @@ public class FrontendAuthController {
         customerVO.setCustPassword(passwordEncoder.encode(newPassword));
         customerService.updateCustomer(customerVO);
 
+        // 刪除本次重設密碼 Token
         stringRedisTemplate.delete("resetpwd:" + token);
+
+        // 刪除會員最新 Token 紀錄
+        stringRedisTemplate.delete("resetpwd:latest:" + customerVO.getCustId());
 
         redirectAttributes.addFlashAttribute("successMsg", "密碼重設成功，請使用新密碼登入。");
 
