@@ -98,6 +98,26 @@ createApp({
             }
         };
 
+        // 取得目前購物車中此 ticketId 的數量（包括ticket 和 activity裡的數量）
+        const getCartQuantity = async (ticketId) => {
+            try {
+                const response = await fetch('/frontend/cart/ticketIdQuantitySearch');
+                if (response.ok) {
+                    const ticketList = await response.json();
+                    let cartQty = 0;
+                    if (Array.isArray(ticketList)) {
+                        const matched = ticketList.find(item => String(item.ticketId) === String(ticketId));
+                        if (matched) {
+                            cartQty = matched.quantity || 0;
+                        }
+                    }
+                    return cartQty;
+                }
+            } catch (err) {
+            }
+            return 0;
+        };
+
         // 呼叫 API 將商品加入購物車
         const addToCart = async (items) => {
             try {
@@ -196,8 +216,10 @@ createApp({
 
             // 以下是有登入
             // 檢查庫存，不夠的話就直接返回
-            const totalCount = quantities.value.adult + quantities.value.child + quantities.value.concession;
-            const hasStock = await checkStock(ticket.value.ticketId, totalCount);
+            const screenQty = quantities.value.adult + quantities.value.child + quantities.value.concession;
+            const cartQty = await getCartQuantity(ticket.value.ticketId);
+            const totalToCheck = screenQty + cartQty;
+            const hasStock = await checkStock(ticket.value.ticketId, totalToCheck);
             if (!hasStock) return;
 
             // 打加入購物車api 接著清理暫存後跳轉到結帳頁面
@@ -265,11 +287,16 @@ createApp({
                 const data = await res.json();
                 if (!data.login) return;
 
-                // 確認庫存
-                const totalCount = quantities.value.adult + quantities.value.child + quantities.value.concession;
-                if (totalCount <= 0) return;
+                // 確認目前購物車該 ticketid 的數量 
+                const cartQty = await getCartQuantity(ticketId);
 
-                const hasStock = await checkStock(ticketId, totalCount);
+                // 加上目前畫面選擇的數量
+                const screenQty = quantities.value.adult + quantities.value.child + quantities.value.concession;
+                if (screenQty <= 0) return;
+                const totalToCheck = screenQty + cartQty;
+
+                // 再確認庫存
+                const hasStock = await checkStock(ticketId, totalToCheck);
                 if (!hasStock) return;
 
                 // 呼叫加入購物車 API
