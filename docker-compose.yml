@@ -1,0 +1,69 @@
+services:
+  app:
+    build: .
+    restart: always
+    container_name: taipeigo-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: taipeigo
+      DB_USERNAME: taipeigo_user
+      DB_PASSWORD: taipeigo_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      UPLOAD_DIR: /app/uploads/images/
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      JAVA_OPTS: "-Xms256m -Xmx768m"
+    volumes:
+      - taipeigo_uploads:/app/uploads/images
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    container_name: taipeigo-mysql
+    ports:
+      - "3307:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: taipeigo
+      MYSQL_USER: taipeigo_user
+      MYSQL_PASSWORD: taipeigo_password
+      MYSQL_ROOT_PASSWORD: 123456
+      TZ: Asia/Taipei
+    volumes:
+      - taipeigo_mysql_data:/var/lib/mysql
+      # 可選：放 schema/data SQL 後再打開
+      # - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: taipeigo-redis
+    ports:
+      - "6380:6379"
+    restart: always
+    volumes:
+      - taipeigo_redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  taipeigo_mysql_data:
+  taipeigo_redis_data:
+  taipeigo_uploads:

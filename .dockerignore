@@ -1,0 +1,15 @@
+.git
+.gitignore
+
+target/
+.settings/
+.classpath
+.project
+.factorypath
+
+uploads/
+*.log
+*.tmp
+
+.idea/
+.vscode/
