@@ -49,7 +49,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
     //資訊部權限
     .requestMatchers("/backend/admin/it/**").hasAnyRole("資訊部", "SuperAdmin")
     
-    //訂單部權限
+    //訂單部權限 *訂單部可以看會員列表但不能修改*
     .requestMatchers("/backend/orders/**", "/backend/ticket/**", "/backend/ticketCategory/**", "/backend/activity/**", "/backend/product/**","/backend/customer/list**","/backend/customer/view**").hasAnyRole("訂單部", "SuperAdmin")
 
     //客服中心權限

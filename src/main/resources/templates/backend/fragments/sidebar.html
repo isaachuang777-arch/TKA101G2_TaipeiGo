@@ -273,7 +273,7 @@
 
         <div class="menu-title">主要管理</div>
 
-        <a th:href="@{/backend/customer/list}" sec:authorize="hasAnyRole('客服中心','訂單部','SuperAdmin')"
+        <a th:href="@{/backend/customer/list}" sec:authorize="hasAnyRole('客服中心','訂單部','SuperAdmin')" 
            th:classappend="${activePage == 'customer'} ? ' active'">
             <i class="bi bi-people-fill"></i>
             <span>會員管理</span>
