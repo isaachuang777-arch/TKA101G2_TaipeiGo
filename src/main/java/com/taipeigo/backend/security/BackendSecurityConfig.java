@@ -50,7 +50,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
     .requestMatchers("/backend/admin/it/**").hasAnyRole("資訊部", "SuperAdmin")
     
     //訂單部權限
-    .requestMatchers("/backend/orders/**", "/backend/ticket/**", "/backend/ticketCategory/**", "/backend/activity/**", "/backend/product/**").hasAnyRole("訂單部", "SuperAdmin")
+    .requestMatchers("/backend/orders/**", "/backend/ticket/**", "/backend/ticketCategory/**", "/backend/activity/**", "/backend/product/**","/backend/customer/list**","/backend/customer/view**").hasAnyRole("訂單部", "SuperAdmin")
 
     //客服中心權限
     .requestMatchers("/backend/cs/**", "/backend/customer/**").hasAnyRole("客服中心", "SuperAdmin")
