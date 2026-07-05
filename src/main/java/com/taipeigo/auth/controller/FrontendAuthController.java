@@ -84,21 +84,30 @@ public class FrontendAuthController {
         // 依照帳號去資料庫查會員
         CustomerVO customer = customerService.findByAccount(custAccount);
 
-        // 查不到會員，代表帳號不存在
+        // 帳號不一致，但為了不暴露帳號是否存在，錯誤訊息調整為"帳號或密碼錯誤"
         if (customer == null) {
-            model.addAttribute("errorMsg", "帳號不存在");
+            model.addAttribute("errorMsg", "帳號或密碼錯誤");
             return "frontend/auth/login";
         }
 
-        // 密碼不一致，代表密碼錯誤
+        // 密碼不一致，錯誤訊息同帳號不一致邏輯設定
         if (!passwordEncoder.matches(custPassword, customer.getCustPassword())) {
-            model.addAttribute("errorMsg", "密碼錯誤");
+            model.addAttribute("errorMsg", "帳號或密碼錯誤");
             return "frontend/auth/login";
         }
 
         // 0 = 未啟用，不允許登入
         if (customer.getCustStatus() != null && customer.getCustStatus() == 0) {
-            model.addAttribute("errorMsg", "帳號尚未啟用");
+
+            model.addAttribute(
+                "errorMsg",
+                "帳號尚未完成 Email 驗證。<br><br>"
+                + "請至您的電子信箱完成驗證。<br>"
+                + "若未收到驗證信或驗證連結已失效，請點選下方重新寄送驗證信。"
+            );
+
+            model.addAttribute("showResendVerify", true);
+
             return "frontend/auth/login";
         }
 
@@ -184,9 +193,21 @@ public class FrontendAuthController {
 		// 產生驗證 token
 		String token = UUID.randomUUID().toString();
 
-		// 存入 Redis：verify:token -> custId，有效 30 分鐘
-		stringRedisTemplate.opsForValue().set("verify:" + token, customerVO.getCustId().toString(), 30,
-				TimeUnit.MINUTES);
+		// 存入 Redis：verify:{token} -> custId，有效 30 分鐘
+		stringRedisTemplate.opsForValue().set(
+		        "verify:" + token,
+		        customerVO.getCustId().toString(),
+		        30,
+		        TimeUnit.MINUTES
+		);
+
+		// 記錄此會員最新的驗證 token，方便補寄時讓舊 token 失效
+		stringRedisTemplate.opsForValue().set(
+		        "verify:latest:" + customerVO.getCustId(),
+		        token,
+		        30,
+		        TimeUnit.MINUTES
+		);
 
 		String verifyUrl = getBaseUrl(request) + "/auth/verify?token=" + token;
 
@@ -227,6 +248,7 @@ public class FrontendAuthController {
 	    customerService.updateCustomer(customer);
 
 	    stringRedisTemplate.delete("verify:" + token);
+	    stringRedisTemplate.delete("verify:latest:" + customer.getCustId());
 
 	    redirectAttributes.addFlashAttribute(
 	            "successMsg",
@@ -288,6 +310,80 @@ public class FrontendAuthController {
             e.printStackTrace();
 
         }
+    }
+    
+    // 顯示重新寄送驗證信頁面
+    @GetMapping("/resend-verify")
+    public String showResendVerifyPage() {
+        return "frontend/auth/resend-verify";
+    }
+    
+    // 重新寄送會員驗證信
+    @PostMapping("/resend-verify")
+    public String resendVerify(
+            @RequestParam("email") String email,
+            Model model,
+            HttpServletRequest request) {
+
+        String successMessage = "若該 Email 尚未完成驗證，系統將重新寄送驗證信至註冊信箱，請留意收件匣及垃圾郵件。";
+
+        CustomerVO customerVO = customerService.findByEmail(email);
+
+        if (customerVO == null) {
+            model.addAttribute("successMessage", successMessage);
+            return "frontend/auth/resend-verify";
+        }
+
+        // 只有未啟用 (0) 的會員才能重新寄送驗證信
+        if (customerVO.getCustStatus() == null || customerVO.getCustStatus() != 0) {
+            model.addAttribute("successMessage", successMessage);
+            return "frontend/auth/resend-verify";
+        }
+
+        String cooldownKey = "verify:cooldown:" + customerVO.getCustId();
+
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(cooldownKey))) {
+            model.addAttribute("successMessage", successMessage);
+            return "frontend/auth/resend-verify";
+        }
+
+        String latestKey = "verify:latest:" + customerVO.getCustId();
+        String oldToken = stringRedisTemplate.opsForValue().get(latestKey);
+
+        if (oldToken != null) {
+            stringRedisTemplate.delete("verify:" + oldToken);
+        }
+
+        String token = UUID.randomUUID().toString();
+
+        stringRedisTemplate.opsForValue().set(
+                "verify:" + token,
+                customerVO.getCustId().toString(),
+                30,
+                TimeUnit.MINUTES
+        );
+
+        stringRedisTemplate.opsForValue().set(
+                latestKey,
+                token,
+                30,
+                TimeUnit.MINUTES
+        );
+
+        stringRedisTemplate.opsForValue().set(
+                cooldownKey,
+                "cooldown",
+                60,
+                TimeUnit.SECONDS
+        );
+
+        String verifyUrl = getBaseUrl(request) + "/auth/verify?token=" + token;
+
+        sendVerifyEmail(customerVO.getCustEmail(), verifyUrl);
+
+        model.addAttribute("successMessage", successMessage);
+
+        return "frontend/auth/resend-verify";
     }
     
     // 忘記密碼頁面
