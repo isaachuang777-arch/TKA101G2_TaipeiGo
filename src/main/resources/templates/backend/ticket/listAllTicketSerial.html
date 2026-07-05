@@ -154,12 +154,11 @@
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center">#</th>
-                                <th width="8%" class="text-center">序號 ID</th>
-                                <th width="20%">對應門票商品</th>
-                                <th width="15%">序號號碼</th>
-                                <th width="10%">購買會員</th>
-                                <th width="10%" class="text-center">關聯訂單</th>
-                                <th width="12%">使用期限</th>
+                                <th width="25%">對應門票商品</th>
+                                <th width="18%">序號號碼</th>
+                                <th width="12%">購買會員</th>
+                                <th width="12%" class="text-center">關聯訂單</th>
+                                <th width="13%">使用期限</th>
                                 <th style="min-width: 85px;" class="text-center">狀態</th>
                                 <th style="min-width: 85px;" class="text-center">操作</th>
                             </tr>
@@ -167,7 +166,7 @@
 
                         <tbody>
                             <tr th:if="${ticketSerialListData == null or ticketSerialListData.isEmpty()}">
-                                <td colspan="9">
+                                <td colspan="8">
                                     <div class="empty-state">
                                         <i class="bi bi-upc"></i>
                                         <div>目前沒有任何門票序號資料</div>
@@ -179,7 +178,6 @@
                             <tr th:each="serial, iterStat : ${ticketSerialListData}">
                                 <td class="text-center" style="color:#94a3b8; font-size:0.8rem;"
                                     th:text="${currentPage * 10 + iterStat.index + 1}"></td>
-                                <td class="text-center text-muted" th:text="${serial.ticketSerialId}"></td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div>
