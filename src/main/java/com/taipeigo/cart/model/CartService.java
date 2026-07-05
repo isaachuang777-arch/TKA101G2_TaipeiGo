@@ -1,5 +1,6 @@
 package com.taipeigo.cart.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -557,6 +558,30 @@ public class CartService {
 	        message.append("\n庫存不足，請再確認購買數量。");
 	        throw new RuntimeException(message.toString());
 	    }
+	}
+	
+/*===============hasExpiredProduct======確認商品日期====================================================*/
+	public boolean hasExpiredProduct(HttpSession session) {
+	    List<CartVO> cartList = queryCart(session);
+	    LocalDate today = LocalDate.now();
+	    for (CartVO item : cartList) {
+	        if (item.getExpiryDate() != null &&
+	            item.getExpiryDate().toLocalDate().isBefore(today)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
+/*===============removeExpiredProduct======刪除過期商品====================================================*/
+	public void removeExpiredProduct(HttpSession session){
+	    List<CartVO> cartList = queryCart(session);
+	    LocalDate today = LocalDate.now();
+	    cartList.removeIf(item ->
+	        item.getExpiryDate() != null &&
+	        item.getExpiryDate().toLocalDate().isBefore(today)
+	    );
+	    saveCart(session, cartList);
 	}
 }
 	

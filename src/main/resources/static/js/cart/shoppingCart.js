@@ -2,8 +2,9 @@
 let cartData = [];
 
 /* ========================= 頁面初始化 ========================= */
-document.addEventListener("DOMContentLoaded", function () {
-    loadCart();
+document.addEventListener("DOMContentLoaded", async function () {
+    await checkExpiredProduct();   /***先檢查過期商品***/ 
+    await loadCart();              /**再載入購物車***/ 
     document.getElementById("clearCartBtn").addEventListener("click", clearCart);
     document.getElementById("checkoutBtn").addEventListener("click", checkStockAndCheckout);
 });
@@ -235,3 +236,28 @@ document.addEventListener("DOMContentLoaded", function () {
 	        alert("系統忙碌中，請稍後再試");
 	    }
 	}
+	
+/* ========================= 檢查並刪除過期商品 ========================= */
+async function checkExpiredProduct() {
+    try {
+        /**先確認是否有過期商品**/ 
+        const response = await fetch("/frontend/cart/checkExpired");
+        if (!response.ok) {
+            return;
+        }
+        const hasExpired = await response.json();
+        if (hasExpired) {
+            alert("購物車內有已過期商品，按下確定後將自動刪除。");
+            /****呼叫刪除 API，不需要解析回傳值*/ 
+            await fetch("/frontend/cart/removeExpired", {
+                method: "POST"
+            });
+			/**重新導入購物車頁，Header購物車數量也會重新整理**/ 
+			window.location.href = "/frontend/cart/shoppingCart";
+			return;
+        }
+    } catch (error) {
+        console.error(error);
+        alert("系統忙碌中，請稍後再試");
+    }
+}

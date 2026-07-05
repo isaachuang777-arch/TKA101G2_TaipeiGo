@@ -1,5 +1,6 @@
 package com.taipeigo.cart.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,6 +171,42 @@ public class CartController {
 	    } catch (RuntimeException e) {
 	        return ResponseEntity.badRequest().body(e.getMessage());
 	    }
+	}
+	
+/* ========== 確認門票是否過期功能 */
+	@GetMapping("/checkExpired")
+	@ResponseBody
+	public boolean checkExpired(HttpSession session) {
+		  return cartService.hasExpiredProduct(session); 
+	}
+	
+/* ========== 購物車刪除門票功能 */
+	@PostMapping("/removeExpired")
+	@ResponseBody
+	public String removeExpired(HttpSession session){
+	    cartService.removeExpiredProduct(session);
+	    return "success";
+
+	}
+	
+	/* ========== 測試：將購物車第一筆商品改成過期 ========== */
+	@GetMapping("/testExpired")
+	@ResponseBody
+	public String testExpired(HttpSession session) {
+	    List<CartVO> cartList = cartService.queryCart(session);
+	    if (cartList == null || cartList.isEmpty()) {
+	        return "購物車沒有商品";
+	    }
+
+	    // 將第一筆商品日期改成過去
+	    cartList.get(0).setExpiryDate(LocalDateTime.of(2026, 7, 1, 0, 0));
+	    
+	    // 存回 Redis
+	    CustomerVO customer = (CustomerVO) session.getAttribute("loginCustomer");
+	    String key = "cart:" + customer.getCustId();
+	    redisTemplate.opsForValue().set(key, cartList);
+
+	    return "success";
 	}
 
 }

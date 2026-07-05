@@ -1,8 +1,11 @@
 /* ========================= 初始化 ========================= */
 document.addEventListener("DOMContentLoaded", async function () {
 
-    await checkoutStockCheck();
-
+	/**先檢查是否有過期商品**/ 
+	await checkExpiredProduct();   
+	/**再檢查庫存**/ 
+	await checkoutStockCheck();
+	
     const cardName = document.getElementById("cardName");
     const cardNumber = document.getElementById("cardNumber");
     const expiry = document.getElementById("expiry");
@@ -208,5 +211,29 @@ async function checkoutStockCheck() {
     } catch (error) {
         console.error(error);
         alert("系統忙碌中，請稍後再試");
+    }
+}
+/* ========================= 檢查過期商品 ========================= */
+async function checkExpiredProduct() {
+    try {
+        const response = await fetch("/frontend/cart/checkExpired");
+        if (!response.ok) {
+            return false;
+        }
+        const hasExpired = await response.json();
+        if (hasExpired) {
+            alert("為您移除已過期商品，請重新於購物車確認購買商品內容！");
+            await fetch("/frontend/cart/removeExpired", {
+                method: "POST"
+            });
+            // 回購物車讓使用者重新確認商品
+            window.location.href = "/frontend/cart/shoppingCart";
+            return ;
+        }
+        return false;
+    } catch (error) {
+        console.error(error);
+        alert("系統忙碌中，請稍後再試");
+        return true;
     }
 }
