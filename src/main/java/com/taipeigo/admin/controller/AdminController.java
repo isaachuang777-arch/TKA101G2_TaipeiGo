@@ -126,6 +126,7 @@ public class AdminController {
     @PostMapping("/it/createAdmin")
     public String createAdmin(@Valid AdminVO adminVO, BindingResult bindingResult, Integer[] funcIds, Model model, HttpSession session,
             RedirectAttributes redirectAttributes) {
+        String keywordString = adminVO.getAdmName();
     	//增加驗證
     	if(bindingResult.hasErrors()) {
     		StringBuilder errorBuilder = new StringBuilder();
@@ -137,12 +138,12 @@ public class AdminController {
     		model.addAttribute("funcList", adminFuncService.getAlladmFuncs());
     		return "backend/admin/it/addAdmin";
     	}
-    	
+
         try {
             adminService.createAdmin(adminVO, funcIds);
 
-            redirectAttributes.addFlashAttribute("successMsg", " 已經成功新增 " + adminVO.getAdmAcc() + " 帳號！");
-
+            redirectAttributes.addFlashAttribute("successMsg", " 已經成功新增 " + adminVO.getAdmName() + " 帳號！");
+            redirectAttributes.addAttribute("keyword", keywordString);
             return "redirect:/backend/admin/it/listAll";
         } catch (RuntimeException e) {
 
@@ -311,6 +312,7 @@ public class AdminController {
     public String showPermission(
             @RequestParam(required = false) Integer funcId,
             Model model,
+            @RequestParam(required = false) String keyword,
             @RequestParam(value = "page", defaultValue = "1") Integer page) {
         
 
@@ -322,7 +324,10 @@ public class AdminController {
             pageResult = adminService.getByAdmPerVOisEmptyByPage(page);
         } else if (funcId != null) { // 1. 先判斷是要全list還是以by權限 =>顯示Admin的List
             pageResult = adminService.getByAdminByFuncIdByPage(funcId, page);
-        } else { // 沒輸入就代表給他全表
+        } else if(keyword != null) {
+        	pageResult = adminService.getByAdmAccContainingOrAdmNameContainingBypage(keyword, page);
+        }
+        else { // 沒輸入就代表給他全表
             pageResult = adminService.getAllAdminBypage(page);
         }
         // 2. 顯示各權限 => FuncName
@@ -371,7 +376,9 @@ public class AdminController {
     @PostMapping("/it/updatepermission")
     public String updatepermission(@RequestParam("admId") Integer admId, Integer[] funcIds, Model model,
             RedirectAttributes redirectAttributes, HttpSession session) {
-        // 檢查 loginedAdmin 是否 等於 改自己
+    	AdminVO adminVO2 = adminService.findByAdmId(admId);
+    	String keywordString = adminVO2.getAdmName();
+    	// 檢查 loginedAdmin 是否 等於 改自己
             AdminVO loginedAdmin = (AdminVO) session.getAttribute("adminVO");
         
             if(loginedAdmin.getAdmId().equals(admId)){
@@ -382,6 +389,7 @@ public class AdminController {
         adminService.updateAdminPer(admId, funcIds);
         AdminVO adminVO = adminService.findByAdmId(admId);
         redirectAttributes.addFlashAttribute("successMsg", "成功修改 " + adminVO.getAdmName() + " 的權限！");
+        redirectAttributes.addAttribute("keyword", keywordString);
         return "redirect:/backend/admin/it/permission";
     }
 }
