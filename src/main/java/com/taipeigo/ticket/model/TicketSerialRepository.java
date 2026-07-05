@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TicketSerialRepository extends JpaRepository<TicketSerialVO, Integer> {
 
     // 撈出所有門票序號 （分頁）
-    @Query("SELECT s FROM TicketSerialVO s ORDER BY s.ticketSerialId DESC")
+    @Query("SELECT s FROM TicketSerialVO s ORDER BY s.ticketSerialId ASC")
     Page<TicketSerialVO> findAllSerials(Pageable pageable);
 
     // 模糊搜尋門票序號 (搜尋序號、商品名稱、會員名稱) （分頁）
@@ -23,11 +23,11 @@ public interface TicketSerialRepository extends JpaRepository<TicketSerialVO, In
            "WHERE s.serialNumber LIKE concat('%', :keyword, '%') " +
            "OR t.ticketName LIKE concat('%', :keyword, '%') " +
            "OR c.custName LIKE concat('%', :keyword, '%') " +
-           "ORDER BY s.ticketSerialId DESC")
+           "ORDER BY s.ticketSerialId ASC")
     Page<TicketSerialVO> searchSerials(@Param("keyword") String keyword, Pageable pageable);
 
     // 依門票 ID 取得所有門票序號 (分頁)
-    @Query("SELECT s FROM TicketSerialVO s WHERE s.ticketVO.ticketId = :ticketId ORDER BY s.ticketSerialId DESC")
+    @Query("SELECT s FROM TicketSerialVO s WHERE s.ticketVO.ticketId = :ticketId ORDER BY s.ticketSerialId ASC")
     Page<TicketSerialVO> findSerialsByTicketId(@Param("ticketId") Integer ticketId, Pageable pageable);
 
     // 檢查該筆序號是否已存在在資料庫
