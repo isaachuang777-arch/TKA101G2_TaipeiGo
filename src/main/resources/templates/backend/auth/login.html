@@ -76,7 +76,7 @@
             color: #1a365d;
         }
         .btn-login {
-            background-color: #1a365d; /* 深色企業藍 */
+            background-color: #1a365d; 
             border: none;
             padding: 12px;
             font-weight: 600;
@@ -86,11 +86,28 @@
             color: #fff;
         }
         .btn-login:hover {
-            background-color: #0f223f; /* 更深的深藍色 */
+            background-color: #0f223f; 
             color: #fff;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(26, 54, 93, 0.25);
         }
+          .btn-logindemo {
+            background-color: #94a3b8; 
+            border: none;
+            padding: 05px;
+            font-weight: 50;
+            font-size: 10;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            color: #000000;
+        }
+        .btn-logindemo:hover {
+            background-color: #1a365d; 
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.25);
+        }
+        
     </style>
 </head>
 <body>
@@ -131,14 +148,14 @@
             <div class="mb-4">
                 <div class="input-group input-group-lg">
                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                    <input type="text" name="admAcc" class="form-control" placeholder="請輸入管理員帳號" required autocomplete="username">
+                    <input type="text" id="admAcc" name="admAcc" class="form-control" placeholder="請輸入管理員帳號" required autocomplete="username">
                 </div>
             </div>
             
             <div class="mb-4">
                 <div class="input-group input-group-lg">
                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" name="admPw" class="form-control" placeholder="請輸入密碼" required autocomplete="current-password">
+                    <input type="password" id="admPw" name="admPw" class="form-control" placeholder="請輸入密碼" required autocomplete="current-password">
                 </div>
             </div>
             
@@ -146,6 +163,30 @@
                 <button type="submit" class="btn btn-login btn-lg">
                     登入系統 <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
                 </button>
+                <br>
+             <button type="button"
+			        class="btn btn-logindemo"
+			        onclick="fillbossAccount()">
+			    SuperAdmin Demo 帳號快速填入
+			</button>
+
+              <button type="button"
+	       		class="btn btn-logindemo"
+		        onclick="fillorderAccount()">
+			    訂單部 Demo 帳號快速填入
+			</button>
+			
+              <button type="button"
+	       		class="btn btn-logindemo"
+		        onclick="fillcsAccount()">
+			    客服 Demo 帳號快速填入
+			</button>
+              <button type="button"
+	       		class="btn btn-logindemo"
+		        onclick="fillitAccount()">
+			    訂單部 Demo 帳號快速填入
+			</button>
+			
             </div>
             
         </form>
@@ -154,5 +195,23 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+    function fillbossAccount() {
+        document.getElementById("admAcc").value = "boss";
+        document.getElementById("admPw").value = "123456";
+    }
+    function fillorderAccount() {
+        document.getElementById("admAcc").value = "order_alice";
+        document.getElementById("admPw").value = "123456";
+    }
+    function fillcsAccount() {
+        document.getElementById("admAcc").value = "cs_bob";
+        document.getElementById("admPw").value = "123456";
+    }
+    function fillitAccount() {
+        document.getElementById("admAcc").value = "it_charlie";
+        document.getElementById("admPw").value = "123456";
+    }
+    </script>
 </body>
 </html>
