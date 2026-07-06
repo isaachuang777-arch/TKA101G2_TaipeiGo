@@ -65,6 +65,7 @@
                             <span th:if="${cs.caseCate == 11}">操作問題</span>
                             <span th:if="${cs.caseCate == 12}">訂單問題</span>
                             <span th:if="${cs.caseCate == 13}">其他問題</span>
+                                       - 案件編號： <span th:text="${cs.csId}"></span>
                         </h3>
                         <div>
                             <span th:if="${cs.caseStatus == 0}" class="status-badge status-0">新增</span>
