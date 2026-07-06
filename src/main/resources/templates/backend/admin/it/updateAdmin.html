@@ -106,9 +106,13 @@
                     <span class="badge bg-secondary">員工編號：<span th:text="${adminVO.admId}"></span></span>
                 </div>
             </div>
-
+			        <div th:if="${errorMsg != null}" class="alert alert-danger" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${errorMsg}"></span>
+        </div>
             <form th:action="@{/backend/admin/it/updateAdmintoDB}" method="post">
                 <input type="hidden" name="admId" th:value="${adminVO.admId}">
+                <input type="hidden" name="admAcc" th:value="${adminVO.admAcc}">
+                <input type="hidden" name="admPw" th:value="${adminVO.admPw}">
                 
                 <div class="mb-4">
                     <label class="form-label">管理員姓名 <span class="text-danger">*</span></label>
