@@ -89,11 +89,16 @@ input[type="file"].hidden-upload { display: none; }
 
             <div class="case-card" style="margin-bottom: 30px; cursor: default; transform: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05);" th:object="${caseData}">
                 <div class="card-left">
-                    <h3>案件分類：
+                    <h3>案件分類 ：
                         <span th:if="${caseData.caseCate == 11}">操作問題</span>
                         <span th:if="${caseData.caseCate == 12}">訂單問題</span>
                         <span th:if="${caseData.caseCate == 13}">其他問題</span>
                     </h3>
+                    <div>案件編號　：
+                    <span th:text="${caseData.csId}"></span>
+                    </div>
+                    
+                    
                     <div>目前的狀態：
                         <span th:if="${caseData.caseStatus == 0}" class="status-badge status-0">新增</span>
                         <span th:if="${caseData.caseStatus == 1}" class="status-badge status-1">待處理</span>
