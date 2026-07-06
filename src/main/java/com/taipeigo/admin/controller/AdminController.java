@@ -93,7 +93,7 @@ public class AdminController {
 
     // (Update2)(save) admin to DB
     @PostMapping("/it/updateAdmintoDB")
-    public String updateAdmintoDB(AdminVO adminVO, Model model, HttpSession session,
+    public String updateAdmintoDB(@Valid AdminVO adminVO, BindingResult bindingResult, Model model, HttpSession session,
             RedirectAttributes redirectAttributes) {
         // 檢查 loginedAdmin 是否 等於 改自己
         AdminVO loginedAdmin = (AdminVO) session.getAttribute("adminVO");
@@ -102,6 +102,15 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMsg", "您無法修改自己的系統管理員資料!");
             return "redirect:/backend/admin/it/listAll";
         }
+        if(bindingResult.hasErrors()) {
+    		StringBuilder errorBuilder = new StringBuilder();
+    		
+    		for(FieldError error : bindingResult.getFieldErrors()) {
+    			errorBuilder.append(error.getDefaultMessage()).append(" ");
+    		}
+    		model.addAttribute("errorMsg",errorBuilder.toString());
+    		return "backend/admin/it/updateAdmin";
+    	}
         try {
             adminService.updateAdmin(adminVO);
             redirectAttributes.addFlashAttribute("successMsg", "已經成功修改管理員 " + adminVO.getAdmName() + " 資料！");
