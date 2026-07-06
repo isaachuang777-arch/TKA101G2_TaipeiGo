@@ -153,6 +153,36 @@ public class CustomerController {
         // 保留原本頭像
         customerVO.setCustImg(db.getCustImg());
         
+        if (!customerVO.getCustAccount().equals(db.getCustAccount())
+                && customerService.isAccountExist(customerVO.getCustAccount())) {
+
+            model.addAttribute("activePage", "customer");
+            model.addAttribute("customerVO", customerVO);
+            model.addAttribute("accountDuplicateError", "此帳號已被使用");
+
+            return "backend/customer/updateCustomer";
+        }
+
+        if (!customerVO.getCustEmail().equals(db.getCustEmail())
+                && customerService.isEmailExist(customerVO.getCustEmail())) {
+
+            model.addAttribute("activePage", "customer");
+            model.addAttribute("customerVO", customerVO);
+            model.addAttribute("emailDuplicateError", "此 Email 已被註冊");
+
+            return "backend/customer/updateCustomer";
+        }
+
+        if (!customerVO.getCustIdCard().equals(db.getCustIdCard())
+                && customerService.isIdCardExist(customerVO.getCustIdCard())) {
+
+            model.addAttribute("activePage", "customer");
+            model.addAttribute("customerVO", customerVO);
+            model.addAttribute("idCardDuplicateError", "此身分證字號已存在");
+
+            return "backend/customer/updateCustomer";
+        }
+        
         // 如果驗證錯誤，回到修改頁，不要 update
         if (result.hasErrors()) {
             model.addAttribute("activePage", "customer");
@@ -195,7 +225,7 @@ public class CustomerController {
 	            e.printStackTrace();
 	            model.addAttribute("activePage", "customer");
 	            model.addAttribute("customerVO", customerVO);
-	            model.addAttribute("uploadError", "圖片上傳失敗，請重新選擇圖片");
+	            model.addAttribute("uploadError", "會員資料更新失敗，請稍後再試");
 	            return "backend/customer/updateCustomer";
 	        }
 
