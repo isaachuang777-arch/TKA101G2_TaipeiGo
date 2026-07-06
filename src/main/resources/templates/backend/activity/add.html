@@ -1,194 +1,222 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新增一日活動 - TaipeiGo 後台</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增一日活動 - TaipeiGo 後台</title>
 
-<!-- 共用 Bootstrap & Fonts -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 共用 Bootstrap & Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" th:href="@{/css/activity/backend-list.css}">
-<link rel="stylesheet" th:href="@{/css/activity/backend-activity-form.css}">
+    <link rel="stylesheet" th:href="@{/css/activity/backend-list.css}">
+    <link rel="stylesheet" th:href="@{/css/activity/backend-activity-form.css}">
 
-<style>
-/* 基礎排版設定，確保畫面不被側邊欄覆蓋 */
-.main-wrap {
-    margin-left: 260px; /* 對齊側邊欄的寬度 */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-.topbar {
-    background: #fff; 
-    padding: 14px 40px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    border-bottom: 1px solid #e2e8f0; 
-    position: sticky; 
-    top: 0; 
-    z-index: 50;
-}
-.topbar-title { font-size: 1.1rem; font-weight: 700; color: #1a2236; }
-.content-area { padding: 32px 40px; flex: 1; }
-.custom-tag-btn {
-    border: 1px dashed #9ca3af;
-    padding: 6px 16px;
-    border-radius: 9999px;
-    color: #4b5563;
-    background-color: #fff;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    margin: 0;
-    font-weight: 500;
-    font-size: 14px;
-    display: inline-block;
-}
-.custom-tag-btn:hover {
-    background-color: #f3f4f6;
-}
-.btn-check:checked + .custom-tag-btn {
-    background-color: #e0f2fe;
-    border-color: #38bdf8;
-    color: #0284c7;
-    border-style: dashed;
-}
-</style>
+    <style>
+        /* 基礎排版設定，確保畫面不被側邊欄覆蓋 */
+        .main-wrap {
+            margin-left: 260px; /* 對齊側邊欄的寬度 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            background: #fff; 
+            padding: 14px 40px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 1px solid #e2e8f0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 50;
+        }
+        .topbar-title { font-size: 1.1rem; font-weight: 700; color: #1a2236; }
+        .content-area { padding: 32px 40px; flex: 1; }
+        .custom-tag-btn {
+            border: 1px dashed #9ca3af;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            color: #4b5563;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            margin: 0;
+            font-weight: 500;
+            font-size: 14px;
+            display: inline-block;
+        }
+        .custom-tag-btn:hover { background-color: #f3f4f6; }
+        .btn-check:checked + .custom-tag-btn {
+            background-color: #e0f2fe;
+            border-color: #38bdf8;
+            color: #0284c7;
+            border-style: dashed;
+        }
+    </style>
 </head>
 <body>
 
+    <!-- 側邊欄 -->
     <th:block th:replace="~{backend/fragments/sidebar :: sidebar}"></th:block>
 
-    <div class="main-wrap">
-        <div class="topbar">
-            <div class="topbar-title">一日活動管理 <span>/ 新增活動</span></div>
-            <div class="admin-top-info"><div class="admin-top-name">Admin</div></div>
-        </div>
+    <!-- 這裡原本是 div，改為具有語意的 main -->
+    <main class="main-wrap">
+        
+        <!-- 頂部導覽列，改用 header -->
+        <header class="topbar">
+            <h1 class="topbar-title mb-0">一日活動管理 <span>/ 新增活動</span></h1>
+            <div class="admin-top-info"><span class="admin-top-name">Admin</span></div>
+        </header>
 
-        <div class="content-area">
+        <!-- 主內容區，改用 section -->
+        <section class="content-area">
             
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- 標題與返回按鈕區 -->
+            <header class="d-flex justify-content-between align-items-center mb-4">
                 <div class="d-flex align-items-center">
                     <h2 class="h4 mb-0 fw-bold me-2">新增活動</h2>
+                    
                     <div class="form-check form-switch mb-0 d-flex align-items-center ms-3">
                         <input class="form-check-input fs-5 m-0" style="cursor: pointer;" type="checkbox" role="switch" id="statusSwitch" checked>
                         <label class="form-check-label ms-2 fw-bold text-primary mb-0" style="cursor: pointer; padding-top: 2px;" for="statusSwitch" id="statusLabel">上架中</label>
                     </div>
+                    
                     <div class="form-check form-switch mb-0 d-flex align-items-center ms-4">
                         <input class="form-check-input fs-5 m-0" style="cursor: pointer;" type="checkbox" role="switch" id="recommendSwitch">
-                        <label class="form-check-label ms-2 fw-bold text-warning mb-0" style="cursor: pointer; padding-top: 2px;" for="recommendSwitch"><i class="bi bi-star-fill"></i> 設為首頁推薦</label>
+                        <label class="form-check-label ms-2 fw-bold text-warning mb-0" style="cursor: pointer; padding-top: 2px;" for="recommendSwitch">
+                            <i class="bi bi-star-fill"></i> 設為首頁推薦
+                        </label>
                     </div>
                 </div>
+                
                 <a th:href="@{/backend/activity}" class="btn btn-outline-secondary shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i> 返回列表
                 </a>
-            </div>
+            </header>
 
+            <!-- 錯誤訊息 -->
             <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <span th:text="${errorMessage}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card p-4">
-                        <form th:action="@{/backend/activity/add}" method="post" enctype="multipart/form-data">
+            <!-- 表單區卡片 -->
+            <article class="card p-4 shadow-sm border-0">
+                <form th:action="@{/backend/activity/add}" method="post" enctype="multipart/form-data">
+                    
+                    <!-- 隱藏欄位 -->
+                    <input type="hidden" name="activityStatus" id="hiddenActivityStatus" value="1">
+                    <input type="hidden" name="isRecommended" id="hiddenIsRecommended" value="0">
+                    
+                    <div class="row g-4">
+                        <!-- 左半邊區塊，改用 section 包裝 -->
+                        <section class="col-md-6">
                             
-                            <input type="hidden" name="activityStatus" id="hiddenActivityStatus" value="1">
-                            <input type="hidden" name="isRecommended" id="hiddenIsRecommended" value="0">
-                            <div class="row g-4">
+                            <!-- 基本資訊 -->
+                            <h5 class="fw-bold mb-3 border-bottom pb-2">
+                                <i class="bi bi-info-circle me-2 text-primary"></i>基本資訊
+                            </h5>
+                            
+                            <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-info-circle me-2 text-primary"></i>基本資訊</h5>
-                                    
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="activityName" class="form-label">活動名稱 <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="activityName" name="activityName" th:value="${activityVO.activityName}" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="discount" class="form-label">折扣金額 <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="discount" name="discount" th:value="${activityVO.discount}" min="0" required>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="activityDesc" class="form-label">活動描述</label>
-                                        <textarea class="form-control" id="activityDesc" name="activityDesc" rows="4" th:text="${activityVO.activityDesc}"></textarea>
-                                    </div>
-
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2 mt-4"><i class="bi bi-geo-alt me-2 text-primary"></i>一日活動明細</h5>
-                                    <div class="ticket-list-container mb-4">
-                                        <div id="ticketListContainer">
-                                            
-                                            <div class="ticket-item">
-                                                <div class="ticket-sequence">1</div>
-                                                <div class="ticket-select-wrapper">
-                                                    <select name="ticketIds" class="form-select" required>
-                                                        <option value="">-- 請選擇門票 --</option>
-                                                        <th:block th:each="ticket : ${ticketList}">
-                                                            <option th:value="${ticket.ticketId}" th:text="${ticket.ticketName}"></option>
-                                                        </th:block>
-                                                    </select>
-                                                </div>
-                                                <button type="button" class="btn-remove-ticket"><i class="bi bi-trash3"></i></button>
-                                            </div>
-
-                                        </div>
-                                        
-                                        <button type="button" class="btn-add-ticket mt-3" id="btnAddTicket">
-                                            <i class="bi bi-plus-circle me-1"></i> 新增下一站行程
-                                        </button>
-                                    </div>
+                                    <label for="activityName" class="form-label">活動名稱 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="activityName" name="activityName" th:value="${activityVO.activityName}" required>
                                 </div>
-
                                 <div class="col-md-6">
-
-                                    <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-image me-2 text-primary"></i>活動圖片</h5>
-                                    
-                                    <div class="mb-4">
-                                        <div class="upload-drop-zone" id="uploadDropZone">
-                                            <input type="file" name="upFiles" id="upFiles" class="file-input-hidden" multiple accept="image/*">
-                                            <i class="bi bi-cloud-arrow-up"></i>
-                                            <h5>拖曳圖片至此處上傳</h5>
-                                            <p>或點擊選擇檔案</p>
-                                        </div>
-                                        <div id="previewContainer" class="preview-container"></div>
-                                    </div>
-
-                                    <div class="mb-3 mt-4">
-                                        <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-tags me-2 text-primary"></i>活動類別標籤</h5>
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <div th:each="cate : ${activityCateList}">
-                                                <input class="btn-check" type="checkbox" name="cateIds" autocomplete="off" th:value="${cate.activityCateId}" th:id="'cate_' + ${cate.activityCateId}">
-                                                <label class="custom-tag-btn" th:for="'cate_' + ${cate.activityCateId}" th:text="${cate.cateName}"></label>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                    <label for="discount" class="form-label">折扣金額 <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="discount" name="discount" th:value="${activityVO.discount}" min="0" required>
                                 </div>
                             </div>
-
-                            <hr class="my-4">
                             
-                            <div class="text-end">
-                                <a th:href="@{/backend/activity}" class="btn btn-light me-2 px-4">取消</a>
-                                <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
-                                    <i class="bi bi-check-lg me-1"></i> 確認新增
+                            <div class="mb-3">
+                                <label for="activityDesc" class="form-label">活動描述</label>
+                                <textarea class="form-control" id="activityDesc" name="activityDesc" rows="4" th:text="${activityVO.activityDesc}"></textarea>
+                            </div>
+
+                            <!-- 一日活動明細 -->
+                            <h5 class="fw-bold mb-3 border-bottom pb-2 mt-4">
+                                <i class="bi bi-geo-alt me-2 text-primary"></i>一日活動明細
+                            </h5>
+                            
+                            <!-- 門票不足的錯誤提示 -->
+                            <div th:if="${ticketError}" th:text="${ticketError}" class="alert alert-danger fw-bold mb-3 py-2"></div>
+                            
+                            <div class="ticket-list-container mb-4">
+                                <div id="ticketListContainer">
+                                    <!-- 單筆門票選擇 -->
+                                    <div class="ticket-item">
+                                        <span class="ticket-sequence">1</span>
+                                        <div class="ticket-select-wrapper">
+                                            <select name="ticketIds" class="form-select" required>
+                                                <option value="">-- 請選擇門票 --</option>
+                                                <th:block th:each="ticket : ${ticketList}">
+                                                    <option th:value="${ticket.ticketId}" th:text="${ticket.ticketName}"></option>
+                                                </th:block>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn-remove-ticket"><i class="bi bi-trash3"></i></button>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn-add-ticket mt-3" id="btnAddTicket">
+                                    <i class="bi bi-plus-circle me-1"></i> 新增下一站行程
                                 </button>
                             </div>
+                        </section> <!-- /左半邊區塊結束 -->
 
-                        </form>
+                        <!-- 右半邊區塊，改用 section 包裝 -->
+                        <section class="col-md-6">
+                            
+                            <!-- 圖片上傳 -->
+                            <h5 class="fw-bold mb-3 border-bottom pb-2">
+                                <i class="bi bi-image me-2 text-primary"></i>活動圖片
+                            </h5>
+                            
+                            <div class="mb-4">
+                                <div class="upload-drop-zone" id="uploadDropZone">
+                                    <input type="file" name="upFiles" id="upFiles" class="file-input-hidden" multiple accept="image/*">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <h5>拖曳圖片至此處上傳</h5>
+                                    <p class="mb-0">或點擊選擇檔案</p>
+                                </div>
+                                <div id="previewContainer" class="preview-container"></div>
+                            </div>
+
+                            <!-- 分類標籤 -->
+                            <div class="mb-3 mt-4">
+                                <h5 class="fw-bold mb-3 border-bottom pb-2">
+                                    <i class="bi bi-tags me-2 text-primary"></i>活動類別標籤
+                                </h5>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div th:each="cate : ${activityCateList}">
+                                        <input class="btn-check" type="checkbox" name="cateIds" autocomplete="off" th:value="${cate.activityCateId}" th:id="'cate_' + ${cate.activityCateId}">
+                                        <label class="custom-tag-btn" th:for="'cate_' + ${cate.activityCateId}" th:text="${cate.cateName}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </section> <!-- /右半邊區塊結束 -->
                     </div>
-                </div>
-            </div>
 
-        </div>
-    </div>
+                    <hr class="my-4">
+                    
+                    <!-- 送出按鈕區，改用 footer -->
+                    <footer class="text-end">
+                        <a th:href="@{/backend/activity}" class="btn btn-light me-2 px-4">取消</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
+                            <i class="bi bi-check-lg me-1"></i> 確認新增
+                        </button>
+                    </footer>
 
+                </form>
+            </article> <!-- /表單區卡片結束 -->
+
+        </section>
+    </main>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

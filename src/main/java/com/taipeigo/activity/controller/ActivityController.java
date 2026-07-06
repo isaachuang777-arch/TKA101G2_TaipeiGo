@@ -112,6 +112,12 @@ public class ActivityController {
         @RequestParam("activityId") Integer activityId,
         @RequestParam("quantity") Integer quantity,
         HttpSession session){
+
+
+            // 一收到負數的就先檔掉
+            if (quantity <= 0) {
+                return ResponseEntity.ok(false); 
+            }
         
             try{
 
