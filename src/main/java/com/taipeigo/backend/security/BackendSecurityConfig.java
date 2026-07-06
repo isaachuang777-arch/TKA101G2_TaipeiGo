@@ -49,11 +49,16 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
     //資訊部權限
     .requestMatchers("/backend/admin/it/**").hasAnyRole("資訊部", "SuperAdmin")
     
-    //訂單部權限 *訂單部可以看會員列表但不能修改*
-    .requestMatchers("/backend/orders/**", "/backend/ticket/**", "/backend/ticketCategory/**", "/backend/activity/**", "/backend/product/**","/backend/customer/list**","/backend/customer/view**").hasAnyRole("訂單部", "SuperAdmin")
+    //會員模組-檢視權限 (訂單部、客服中心皆可觀看)
+    .requestMatchers("/backend/customer/list**","/backend/customer/view**").hasAnyRole("訂單部", "客服中心", "SuperAdmin")
 
-    //客服中心權限
+    //客服中心權限 (客服系統以及其他的會員模組權限)
     .requestMatchers("/backend/cs/**", "/backend/customer/**").hasAnyRole("客服中心", "SuperAdmin")
+    
+    //訂單部權限
+    .requestMatchers("/backend/orders/**", "/backend/ticket/**", "/backend/ticketCategory/**", "/backend/activity/**", "/backend/product/**").hasAnyRole("訂單部", "SuperAdmin")
+
+
 
     //可能的新頁面 實習生不會看到
     .requestMatchers("/backend/**").hasAnyRole("SuperAdmin","訂單部", "客服中心", "資訊部")
