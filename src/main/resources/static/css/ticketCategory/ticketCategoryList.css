@@ -130,7 +130,17 @@ body {
 
 .search-bar {
     position: relative;
-    max-width: 240px;
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.search-bar .input-wrapper {
+    position: relative;
+    flex-grow: 1;
+    min-width: 0;
 }
 
 .search-bar i {
@@ -140,9 +150,12 @@ body {
     transform: translateY(-50%);
     color: #94a3b8;
     font-size: 0.9rem;
+    pointer-events: none;
+    z-index: 10;
 }
 
 .search-bar input {
+    width: 100%;
     padding-left: 32px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
@@ -154,6 +167,19 @@ body {
     outline: none;
     box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
     border-color: var(--primary);
+}
+
+.search-bar button,
+.search-bar a.btn {
+    height: 36px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    padding: 0 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .custom-table {
