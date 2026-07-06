@@ -123,6 +123,14 @@ public class ActivityBackendController {
             @RequestParam(value = "cateIds", required = false) List<Integer> cateIds,
             Model model) {
 
+        if(ticketIds == null || ticketIds.size() < 3){
+
+            model.addAttribute("ticketError","一日活動至少選擇三張門票！");
+
+            return "backend/activity/add";
+        }
+        
+
         if (result.hasErrors()) {
 
             return "backend/activity/add";
