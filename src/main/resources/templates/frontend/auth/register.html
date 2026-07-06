@@ -205,6 +205,7 @@ body {
                     <label>姓名</label>
                     <input type="text"
                            th:field="*{custName}"
+                           autocomplete="name"
                            placeholder="請輸入姓名">
                 </div>
 
@@ -221,6 +222,7 @@ body {
                     <label>電話</label>
                     <input type="text"
                            th:field="*{custTel}"
+                           autocomplete="tel"
                            placeholder="09xxxxxxxx">
                 </div>
 
@@ -228,6 +230,7 @@ body {
                     <label>Email</label>
                     <input type="text"
                            th:field="*{custEmail}"
+                           autocomplete="email"
                            placeholder="example@email.com">
                 </div>
 
@@ -235,6 +238,7 @@ body {
                     <label>地址</label>
                     <input type="text"
                            th:field="*{custAddress}"
+                           autocomplete="street-address"
                            placeholder="請輸入地址">
                 </div>
 
@@ -248,13 +252,15 @@ body {
                 <div class="form-group">
                     <label>生日</label>
                     <input type="date"
-                           th:field="*{custBirthday}">
+                           th:field="*{custBirthday}"
+       					   autocomplete="bday">
                 </div>
 
                 <div class="form-group">
                     <label>帳號</label>
                     <input type="text"
                            th:field="*{custAccount}"
+                           autocomplete="username"
                            placeholder="6~20位英文或數字">
                 </div>
 
@@ -266,6 +272,7 @@ body {
 				        <input type="password"
 				               id="custPassword"
 				               th:field="*{custPassword}"
+				               autocomplete="new-password"
 				               placeholder="請輸入密碼">
 				
 				        <button type="button"
