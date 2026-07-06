@@ -93,20 +93,15 @@
                         <span th:text="${'共 ' + pageResult.totalElements + ' 筆'}"></span>
                     </div>
 
-                    <form th:action="@{/backend/ticketCategory/list}" method="get"
-                        class="search-bar d-flex align-items-center gap-1" style="max-width: 320px;">
-                        <div style="position: relative; flex-grow: 1;">
-                            <i class="bi bi-search"
-                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+                    <form th:action="@{/backend/ticketCategory/list}" method="get" class="search-bar">
+                        <div class="input-wrapper">
+                            <i class="bi bi-search"></i>
                             <input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋分類名稱..."
-                                class="form-control"
-                                style="padding-left: 32px; border-radius: 8px; height: 36px; font-size: 0.85rem;">
+                                class="form-control">
                         </div>
-                        <button class="btn btn-primary btn-sm" type="submit"
-                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px;">搜尋</button>
+                        <button class="btn btn-primary btn-sm" type="submit">搜尋</button>
                         <a th:if="${keyword != null and keyword != ''}" th:href="@{/backend/ticketCategory/list}"
-                            class="btn btn-outline-secondary btn-sm"
-                            style="height: 36px; font-size: 0.85rem; border-radius: 8px; padding: 0 12px; display: inline-flex; align-items: center; white-space: nowrap;">重置</a>
+                            class="btn btn-outline-secondary btn-sm">重置</a>
                     </form>
                 </div>
 
