@@ -411,13 +411,6 @@
                         th:text="${csVO.resolvedAt != null ? #dates.format(csVO.resolvedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">-</span>
                 </div>
             </div>
-
-            <!-- 第一筆留言  -->
-            <div class="initial-message" th:if="${csMsgList != null and !csMsgList.isEmpty()}"
-                th:with="initialMsg=${csMsgList[0]}">
-                <h3><i class="fa-solid fa-quote-left"></i> 初始問題描述</h3>
-                <p th:text="${initialMsg.msgContent}">這是客戶一開始發問的內容...</p>
-            </div>
         </div>
 
         <!-- 歷史對話區塊 -->
