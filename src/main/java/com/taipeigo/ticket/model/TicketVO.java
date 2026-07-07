@@ -232,8 +232,9 @@ public class TicketVO implements java.io.Serializable {
 		if (this.ticketSerials == null) {
 			return 0;
 		}
+		// 檢查會員物件是不是 null (代表還在) 並且僅統計狀態為在庫(1)的序號
 		return this.ticketSerials.stream()
-				.filter(serial -> serial.getCustomerVO() == null) // 檢查會員物件是不是 null (代表還在)
+				.filter(serial -> serial.getStatus() != null && serial.getStatus() == 1)
 				.count();
 	}
 
