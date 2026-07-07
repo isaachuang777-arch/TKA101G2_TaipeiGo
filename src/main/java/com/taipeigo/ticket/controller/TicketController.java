@@ -53,12 +53,16 @@ public class TicketController {
         long activeCount = allTicketsList.stream().filter(vo -> vo.getTicketStatus() == 1).count();
         long inactiveCount = allTicketsList.stream().filter(vo -> vo.getTicketStatus() == 0).count();
 
+        // 取得熱門門票商品 (前五名)
+        List<TicketVO> popularTickets = ticketService.getPopularTickets(5);
+
         model.addAttribute("activePage", "ticket");
         model.addAttribute("pageResult", pageResult);
         model.addAttribute("ticketListData", pageResult.getContent());
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("activeCount", activeCount);
         model.addAttribute("inactiveCount", inactiveCount);
+        model.addAttribute("popularTickets", popularTickets);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pageResult.getTotalPages());
 
