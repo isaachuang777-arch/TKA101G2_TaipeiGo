@@ -238,7 +238,7 @@ public class TicketController {
             @RequestParam(value = "status", required = false) Integer status) {
 
         Page<TicketSerialVO> pageResult;
-        
+
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         boolean hasStatus = status != null;
 
@@ -291,10 +291,22 @@ public class TicketController {
             RedirectAttributes redirectAttributes) {
         try {
             ticketService.offMarketTicketSerial(ticketSerialId);
-            // redirectAttributes.addFlashAttribute("success", "序號 (編號: " + ticketSerialId +
-            // ") 已成功下架！");
+            redirectAttributes.addFlashAttribute("success", "序號 (編號: " + ticketSerialId + ") 已成功下架");
         } catch (Exception e) {
-            // redirectAttributes.addFlashAttribute("error", "下架序號失敗：" + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "下架序號失敗：" + e.getMessage());
+        }
+        return "redirect:/backend/ticket/serialList";
+    }
+
+    /* 上架序號 */
+    @PostMapping("/onMarketSerial")
+    public String onMarketSerial(@RequestParam("ticketSerialId") Integer ticketSerialId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            ticketService.onMarketTicketSerial(ticketSerialId);
+            redirectAttributes.addFlashAttribute("success", "序號 (編號: " + ticketSerialId + ") 已成功上架");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "上架序號失敗：" + e.getMessage());
         }
         return "redirect:/backend/ticket/serialList";
     }

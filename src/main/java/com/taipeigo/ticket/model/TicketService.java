@@ -304,6 +304,21 @@ public class TicketService {
 		ticketSerialRepository.save(serial);
 	}
 
+	/* 上架序號 */
+	@Transactional
+	public void onMarketTicketSerial(Integer ticketSerialId) {
+		TicketSerialVO serial = ticketSerialRepository.findById(ticketSerialId)
+				.orElseThrow(() -> new IllegalArgumentException("找不到該序號：" + ticketSerialId));
+
+		if (serial.getStatus() != 5) {
+			throw new IllegalStateException("該序號狀態非下架狀態，無法上架！");
+		}
+
+		// 改回在庫/可販售
+		serial.setStatus(1);
+		ticketSerialRepository.save(serial);
+	}
+
 	/* 取消訂單，status 改為作廢，保留 cust_id */
 	@Transactional
 	public void cancelTicketSerial(Integer ordersId) {
