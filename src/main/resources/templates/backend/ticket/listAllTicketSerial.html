@@ -133,7 +133,8 @@
                     </div>
 
                     <form th:action="@{/backend/ticket/serialList}" method="get" class="search-bar">
-                        <select name="status" class="form-select form-select-sm" style="width: auto; min-width: 105px; height: 36px; border-radius: 8px; font-size: 0.85rem;">
+                        <select name="status" class="form-select form-select-sm"
+                            style="width: auto; min-width: 105px; height: 36px; border-radius: 8px; font-size: 0.85rem;">
                             <option value="">全部狀態</option>
                             <option value="1" th:selected="${status == 1}">在庫</option>
                             <option value="2" th:selected="${status == 2}">售出</option>
@@ -148,8 +149,8 @@
                                 class="form-control">
                         </div>
                         <button class="btn btn-primary btn-sm" type="submit">搜尋</button>
-                        <a th:if="${(keyword != null and keyword != '') or status != null}" th:href="@{/backend/ticket/serialList}"
-                            class="btn btn-outline-secondary btn-sm">重置</a>
+                        <a th:if="${(keyword != null and keyword != '') or status != null}"
+                            th:href="@{/backend/ticket/serialList}" class="btn btn-outline-secondary btn-sm">重置</a>
                     </form>
                 </div>
 
@@ -254,7 +255,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <!-- Only show action for status = 1 (庫存中) -->
+                                    <!-- 只有 status = 1 (庫存中) 才顯示 -->
                                     <form th:if="${serial.status == 1}" th:action="@{/backend/ticket/offMarketSerial}"
                                         method="post" class="d-inline" style="margin:0;"
                                         onsubmit="return confirm('確定要將此門票序號下架嗎？');">
@@ -264,7 +265,18 @@
                                             <i class="bi bi-dash-circle me-1"></i>下架
                                         </button>
                                     </form>
-                                    <span th:unless="${serial.status == 1}" class="text-muted small">—</span>
+                                    <!-- 只有 status = 5 (已下架) 才顯示 -->
+                                    <form th:if="${serial.status == 5}" th:action="@{/backend/ticket/onMarketSerial}"
+                                        method="post" class="d-inline" style="margin:0;"
+                                        onsubmit="return confirm('確定要將此門票序號上架嗎？');">
+                                        <input type="hidden" name="ticketSerialId" th:value="${serial.ticketSerialId}">
+                                        <button type="submit" class="btn btn-sm btn-outline-success px-2 py-1"
+                                            style="border-radius: 6px; font-size: 13px; font-weight: 500;">
+                                            <i class="bi bi-check-circle me-1"></i>上架
+                                        </button>
+                                    </form>
+                                    <span th:unless="${serial.status == 1 or serial.status == 5}"
+                                        class="text-muted small">—</span>
                                 </td>
                             </tr>
                         </tbody>

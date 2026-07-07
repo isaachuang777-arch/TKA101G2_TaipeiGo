@@ -57,12 +57,14 @@
 
             <div class="ticket-grid" id="ticketGridContainer">
                 <div v-for="ticket in tickets" :key="ticket.ticketId" class="ticket-card"
+                    :class="{ 'sold-out': ticket.availableSerialCount <= 0 }"
                     @click="goToDetail(ticket.ticketId)">
 
                     <div class="ticket-image-box">
                         <img v-if="ticket.imageUrls && ticket.imageUrls.length > 0" :src="ticket.imageUrls[0]"
                             alt="門票封面">
                         <div v-else class="no-image-placeholder">無圖片</div>
+                        <div v-if="ticket.availableSerialCount <= 0" class="sold-out-badge-on-image">已售完</div>
                     </div>
 
                     <div class="ticket-info">
