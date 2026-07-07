@@ -27,9 +27,11 @@ public class OrderDetailController {
 	/* orders首頁--查全部 */
 	@GetMapping("/{orderId}")
 	public String orderId(@PathVariable Integer orderId, Model model) {
-
 		List<OrderDetailVO> details = orderDetailService.findByOrderId(orderId);
+	    String cancelMessage = ordersService.getCancelMessage(orderId);
 		model.addAttribute("details", details);
+		model.addAttribute("cancelMessage", cancelMessage);
+		model.addAttribute("canCancel", cancelMessage == null);
 		return "/backend/orders/orderDetail";
 
 	}

@@ -235,17 +235,34 @@
         .container { margin-left: 0 !important; padding: 16px; }
     }
     
-	    .btn-save:disabled {
+	.btn-save:disabled {
 	    background: #cbd5e1;
-	    color: #ffffff;
+	    color: #64748b;
 	    cursor: not-allowed;
-	    opacity: .75;
-	    box-shadow: none;
+	    opacity: .8;
 	}
 	
 	.btn-save:disabled:hover {
 	    background: #cbd5e1;
 	    transform: none;
+	}
+	
+		/* 無法取消提醒 */
+	.cancel-warning {
+	    margin-top: 20px;
+	    padding: 10px 14px;
+	    border: 1px solid #fecaca;
+	    background: #fef2f2;
+	    color: #b91c1c;
+	    border-radius: 8px;
+	    font-size: 0.85rem;
+	    display: flex;
+	    align-items: center;
+	    gap: 8px;
+	}
+	
+	.cancel-warning i {
+	    font-size: 0.95rem;
 	}
 </style>
 
@@ -288,32 +305,45 @@
                     <span class="info-label">建立時間：</span>
                     <span th:text="${details[0].ordersVO.createdAt}"></span>
                 </div>
+					<div class="info-row">
+						<span class="info-label">訂單狀態：</span>
 
-				<div class="info-row">
-				    <span class="info-label">訂單狀態：</span>
-				    <!-- 取消：顯示文字 -->
-				    <span th:if="${details[0].ordersVO.orderStatus == '取消'}"
-				          th:text="${details[0].ordersVO.orderStatus}">
-				    </span>
-				    <!-- 已完成：顯示下拉 -->
-				    <select
-				        th:if="${details[0].ordersVO.orderStatus != '取消'}"
-				        name="orderStatus">
-				        <option value="已完成"
-				            th:selected="${details[0].ordersVO.orderStatus == '已完成'}">  已完成 </option>
-				        <option value="取消"> 取消 </option>
-				    </select>
-				</div>
+						<!-- 已取消 -->
+						<span th:if="${details[0].ordersVO.orderStatus == '取消'}"
+							th:text="${details[0].ordersVO.orderStatus}"> </span>
 
+						<!-- 可取消 -->
+						<select
+							th:if="${details[0].ordersVO.orderStatus != '取消' && canCancel}"
+							name="orderStatus">
+
+							<option value="已完成"
+								th:selected="${details[0].ordersVO.orderStatus == '已完成'}">
+								已完成</option>
+
+							<option value="取消">取消</option>
+
+						</select>
+
+						<!-- 不可取消 -->
+						<span
+							th:if="${details[0].ordersVO.orderStatus != '取消' && !canCancel}"
+							th:text="${details[0].ordersVO.orderStatus}"> </span>
+
+					</div>
 					<div class="info-row">
 						<span class="info-label">付款狀態：</span> <span
 							th:text="${details[0].ordersVO.paymentStatus}"></span>
 					</div>
-
-                <div class="button-group">
-                   	<button  type="submit"  class="btn btn-save" th:disabled="${details[0].ordersVO.orderStatus == '取消'}">更新狀態</button>
-                    <a th:href="@{/backend/orders}"class="btn btn-back">返回列表</a>
-                </div>
+					<div th:if="${!canCancel}" class="cancel-warning">
+						<i class="bi bi-exclamation-triangle-fill"></i> <span> <strong>無法取消原因：</strong>
+							<span th:text="${cancelMessage}"></span>
+						</span>
+					</div>
+					<div class="button-group">
+						<button type="submit" class="btn btn-save" th:disabled="${details[0].ordersVO.orderStatus == '取消' || !canCancel}">更新狀態</button>
+						<a th:href="@{/backend/orders}" class="btn btn-back"> 返回列表 </a>
+					</div>
             </div>
         </form>
 

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.taipeigo.ticket.model.TicketSerialVO;
+
 
 public interface OrdersRepository   extends JpaRepository<OrdersVO, Integer>{
 
@@ -25,4 +27,14 @@ public interface OrdersRepository   extends JpaRepository<OrdersVO, Integer>{
 	        @Param("ordersId") Integer ordersId,
 	        @Param("orderStatus") String orderStatus,
 	        @Param("paymentStatus") String paymentStatus);
+	
+	
+	/***從TicketSerialVO去找到序號狀態是3(已使用) 或是4(已過期)*****/
+	@Query("""
+		    SELECT ts
+		    FROM TicketSerialVO ts
+		    WHERE ts.ordersVO.orderId = :orderId
+		""")
+		List<TicketSerialVO> findTicketSerialByOrderId(@Param("orderId") Integer orderId);
+	
 }
