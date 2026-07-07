@@ -335,6 +335,18 @@ public class TicketService {
 		return ticketSerialRepository.searchSerials(keyword, pageable);
 	}
 
+	// 撈出特定狀態的門票序號 （分頁）
+	public Page<TicketSerialVO> getTicketSerialsByStatusByPage(Integer status, int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10);
+		return ticketSerialRepository.findByStatus(status, pageable);
+	}
+
+	// 模糊搜尋特定狀態的門票序號 （分頁）
+	public Page<TicketSerialVO> searchTicketSerialsWithStatusByPage(String keyword, Integer status, int pageNumber) {
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber, 10);
+		return ticketSerialRepository.searchSerialsWithStatus(keyword, status, pageable);
+	}
+
 	/* 利用已啟用的 categoryId 找到所有取得啟用的門票（ticketStatus = 1） 有分頁 */
 	public Page<TicketVO> getActiveTicketsByCategory(Integer categoryId, Pageable pageable) {
 		return ticketRepository.findActiveTicketsByCategoryId(categoryId, pageable);

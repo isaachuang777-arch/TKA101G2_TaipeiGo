@@ -234,13 +234,24 @@ public class TicketController {
     public String listAllTicketSerial(
             ModelMap model,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "keyword", required = false) String keyword) {
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "status", required = false) Integer status) {
 
         Page<TicketSerialVO> pageResult;
+        
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        boolean hasStatus = status != null;
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
+        if (hasKeyword && hasStatus) {
+            model.addAttribute("keyword", keyword.trim());
+            model.addAttribute("status", status);
+            pageResult = ticketService.searchTicketSerialsWithStatusByPage(keyword.trim(), status, page);
+        } else if (hasKeyword) {
             model.addAttribute("keyword", keyword.trim());
             pageResult = ticketService.searchTicketSerialsByPage(keyword.trim(), page);
+        } else if (hasStatus) {
+            model.addAttribute("status", status);
+            pageResult = ticketService.getTicketSerialsByStatusByPage(status, page);
         } else {
             pageResult = ticketService.getAllTicketSerialsByPage(page);
         }
