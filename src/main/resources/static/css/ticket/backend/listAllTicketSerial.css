@@ -29,6 +29,10 @@
     height: 100%;
 }
 
+.search-bar {
+    max-width: 480px !important;
+}
+
 .stat-icon-mini {
     width: 36px;
     height: 36px;

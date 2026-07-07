@@ -46,9 +46,7 @@
                         </div>
                         <div>
                             <div class="stat-label">總門票商品</div>
-                            <div class="stat-value" th:text="${totalCount}">
-                                0
-                            </div>
+                            <div class="stat-value" th:text="${totalCount}">0</div>
                         </div>
                     </div>
                 </div>
@@ -60,9 +58,7 @@
                         </div>
                         <div>
                             <div class="stat-label">上架中</div>
-                            <div class="stat-value" th:text="${activeCount}">
-                                0
-                            </div>
+                            <div class="stat-value" th:text="${activeCount}">0</div>
                         </div>
                     </div>
                 </div>
@@ -74,8 +70,27 @@
                         </div>
                         <div>
                             <div class="stat-label">已下架</div>
-                            <div class="stat-value" th:text="${inactiveCount}">
-                                0
+                            <div class="stat-value" th:text="${inactiveCount}">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 熱門前五名 -->
+            <div class="popular-section mb-4" th:if="${popularTickets != null and !popularTickets.isEmpty()}">
+                <div class="section-title-custom">
+                    <span>熱銷門票排行 Top 5</span>
+                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                    <div class="col" th:each="ticket, iterStat : ${popularTickets}">
+                        <div class="popular-horizontal-card compact">
+                            <div class="popular-rank-badge static" th:classappend="'rank-' + ${iterStat.count}"
+                                th:text="${iterStat.count}">1</div>
+                            <div class="popular-card-info">
+                                <div class="popular-card-name" th:text="${ticket.ticketName}">門票名稱</div>
+                                <div class="popular-card-sold">
+                                    已售 <span class="sold-count" th:text="${ticket.soldCount}">0</span> 張
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,19 +122,20 @@
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center">#</th>
-                                <th width="28%">門票商品名稱與描述</th>
+                                <th width="24%">門票商品名稱與描述</th>
                                 <th width="12%">所屬分類</th>
-                                <th width="15%">地址</th>
+                                <th width="14%">地址</th>
                                 <th width="10%" class="text-center">可用庫存</th>
-                                <th width="15%" class="text-end">票種 售價 (原價)</th>
-                                <th width="8%" class="text-center">狀態</th>
-                                <th width="7%" class="text-center">操作</th>
+                                <th width="10%" class="text-center">已售數量</th>
+                                <th width="14%" class="text-end">票種 售價 (原價)</th>
+                                <th width="6%" class="text-center">狀態</th>
+                                <th width="5%" class="text-center">操作</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             <tr th:if="${ticketListData == null or ticketListData.isEmpty()}">
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="empty-state">
                                         <i class="bi bi-inbox"></i>
                                         <div>目前沒有任何門票商品資料</div>
@@ -161,14 +177,15 @@
                                         </div>
                                     </div>
                                 </td>
-                                 <td>
+                                <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <th:block th:each="category : ${ticket.ticketCategories}">
                                             <span th:if="${category.ticketCategoryStatus != 2}"
                                                 th:class="${category.ticketCategoryStatus == 1 ? 'category-badge' : 'category-badge disabled'}"
                                                 th:text="${category.ticketCategoryStatus == 1 ? category.ticketCategoryName : category.ticketCategoryName + ' (未啟用)'}">景點</span>
                                         </th:block>
-                                        <span th:if="${#lists.isEmpty(ticket.ticketCategories?.?[ticketCategoryStatus != 2])}"
+                                        <span
+                                            th:if="${#lists.isEmpty(ticket.ticketCategories?.?[ticketCategoryStatus != 2])}"
                                             class="text-muted small">未分類</span>
                                     </div>
                                 </td>
@@ -184,6 +201,9 @@
                                             ＋ 新增
                                         </button>
                                     </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-bold text-secondary" th:text="${ticket.soldCount}">0</span>
                                 </td>
                                 <td class="text-end">
                                     <div class="mb-1">
@@ -297,8 +317,7 @@
 
                             <!-- 第一頁 -->
                             <li class="page-item" th:if="${adjustedStartPage > 0}">
-                                <a class="page-link"
-                                    th:href="@{/backend/ticket/list(keyword=${keyword}, page=0)}">1</a>
+                                <a class="page-link" th:href="@{/backend/ticket/list(keyword=${keyword}, page=0)}">1</a>
                             </li>
                             <!-- 前省略號 -->
                             <li class="page-item disabled" th:if="${adjustedStartPage > 1}">

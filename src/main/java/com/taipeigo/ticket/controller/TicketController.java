@@ -53,12 +53,16 @@ public class TicketController {
         long activeCount = allTicketsList.stream().filter(vo -> vo.getTicketStatus() == 1).count();
         long inactiveCount = allTicketsList.stream().filter(vo -> vo.getTicketStatus() == 0).count();
 
+        // 取得熱門門票商品 (前五名)
+        List<TicketVO> popularTickets = ticketService.getPopularTickets(5);
+
         model.addAttribute("activePage", "ticket");
         model.addAttribute("pageResult", pageResult);
         model.addAttribute("ticketListData", pageResult.getContent());
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("activeCount", activeCount);
         model.addAttribute("inactiveCount", inactiveCount);
+        model.addAttribute("popularTickets", popularTickets);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pageResult.getTotalPages());
 
@@ -230,13 +234,24 @@ public class TicketController {
     public String listAllTicketSerial(
             ModelMap model,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "keyword", required = false) String keyword) {
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "status", required = false) Integer status) {
 
         Page<TicketSerialVO> pageResult;
+        
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        boolean hasStatus = status != null;
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
+        if (hasKeyword && hasStatus) {
+            model.addAttribute("keyword", keyword.trim());
+            model.addAttribute("status", status);
+            pageResult = ticketService.searchTicketSerialsWithStatusByPage(keyword.trim(), status, page);
+        } else if (hasKeyword) {
             model.addAttribute("keyword", keyword.trim());
             pageResult = ticketService.searchTicketSerialsByPage(keyword.trim(), page);
+        } else if (hasStatus) {
+            model.addAttribute("status", status);
+            pageResult = ticketService.getTicketSerialsByStatusByPage(status, page);
         } else {
             pageResult = ticketService.getAllTicketSerialsByPage(page);
         }

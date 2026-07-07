@@ -16,6 +16,10 @@ public interface TicketSerialRepository extends JpaRepository<TicketSerialVO, In
     @Query("SELECT s FROM TicketSerialVO s ORDER BY s.ticketSerialId ASC")
     Page<TicketSerialVO> findAllSerials(Pageable pageable);
 
+    // 撈出特定狀態的門票序號 （分頁）
+    @Query("SELECT s FROM TicketSerialVO s WHERE s.status = :status ORDER BY s.ticketSerialId ASC")
+    Page<TicketSerialVO> findByStatus(@Param("status") Integer status, Pageable pageable);
+
     // 模糊搜尋門票序號 (搜尋序號、商品名稱、會員名稱) （分頁）
     @Query("SELECT DISTINCT s FROM TicketSerialVO s " +
            "LEFT JOIN s.ticketVO t " +
@@ -25,6 +29,17 @@ public interface TicketSerialRepository extends JpaRepository<TicketSerialVO, In
            "OR c.custName LIKE concat('%', :keyword, '%') " +
            "ORDER BY s.ticketSerialId ASC")
     Page<TicketSerialVO> searchSerials(@Param("keyword") String keyword, Pageable pageable);
+
+    // 模糊搜尋特定狀態的門票序號 (搜尋序號、商品名稱、會員名稱) （分頁）
+    @Query("SELECT DISTINCT s FROM TicketSerialVO s " +
+           "LEFT JOIN s.ticketVO t " +
+           "LEFT JOIN s.customerVO c " +
+           "WHERE s.status = :status AND (" +
+           "s.serialNumber LIKE concat('%', :keyword, '%') " +
+           "OR t.ticketName LIKE concat('%', :keyword, '%') " +
+           "OR c.custName LIKE concat('%', :keyword, '%')) " +
+           "ORDER BY s.ticketSerialId ASC")
+    Page<TicketSerialVO> searchSerialsWithStatus(@Param("keyword") String keyword, @Param("status") Integer status, Pageable pageable);
 
     // 依門票 ID 取得所有門票序號 (分頁)
     @Query("SELECT s FROM TicketSerialVO s WHERE s.ticketVO.ticketId = :ticketId ORDER BY s.ticketSerialId ASC")

@@ -133,13 +133,22 @@
                     </div>
 
                     <form th:action="@{/backend/ticket/serialList}" method="get" class="search-bar">
+                        <select name="status" class="form-select form-select-sm" style="width: auto; min-width: 105px; height: 36px; border-radius: 8px; font-size: 0.85rem;">
+                            <option value="">全部狀態</option>
+                            <option value="1" th:selected="${status == 1}">在庫</option>
+                            <option value="2" th:selected="${status == 2}">售出</option>
+                            <option value="3" th:selected="${status == 3}">已使用</option>
+                            <option value="4" th:selected="${status == 4}">過期</option>
+                            <option value="5" th:selected="${status == 5}">下架</option>
+                            <option value="6" th:selected="${status == 6}">作廢</option>
+                        </select>
                         <div class="input-wrapper">
                             <i class="bi bi-search"></i>
                             <input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋序號、商品、會員..."
                                 class="form-control">
                         </div>
                         <button class="btn btn-primary btn-sm" type="submit">搜尋</button>
-                        <a th:if="${keyword != null and keyword != ''}" th:href="@{/backend/ticket/serialList}"
+                        <a th:if="${(keyword != null and keyword != '') or status != null}" th:href="@{/backend/ticket/serialList}"
                             class="btn btn-outline-secondary btn-sm">重置</a>
                     </form>
                 </div>
@@ -278,7 +287,7 @@
                             <!-- 上一頁 -->
                             <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                                 <a class="page-link"
-                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=${currentPage - 1})}">
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, status=${status}, page=${currentPage - 1})}">
                                     上一頁
                                 </a>
                             </li>
@@ -286,7 +295,7 @@
                             <!-- 第一頁 -->
                             <li class="page-item" th:if="${adjustedStartPage > 0}">
                                 <a class="page-link"
-                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=0)}">1</a>
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, status=${status}, page=0)}">1</a>
                             </li>
                             <!-- 前省略號 -->
                             <li class="page-item disabled" th:if="${adjustedStartPage > 1}">
@@ -297,7 +306,7 @@
                             <li class="page-item" th:each="i : ${#numbers.sequence(adjustedStartPage, endPage)}"
                                 th:classappend="${i == currentPage} ? 'active'">
                                 <a class="page-link" th:text="${i + 1}"
-                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=${i})}"></a>
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, status=${status}, page=${i})}"></a>
                             </li>
 
                             <!-- 後省略號 -->
@@ -307,13 +316,13 @@
                             <!-- 最後一頁 -->
                             <li class="page-item" th:if="${endPage < totalPages - 1}">
                                 <a class="page-link" th:text="${totalPages}"
-                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=${totalPages - 1})}"></a>
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, status=${status}, page=${totalPages - 1})}"></a>
                             </li>
 
                             <!-- 下一頁 -->
                             <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                                 <a class="page-link"
-                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, page=${currentPage + 1})}">
+                                    th:href="@{/backend/ticket/serialList(keyword=${keyword}, status=${status}, page=${currentPage + 1})}">
                                     下一頁
                                 </a>
                             </li>
