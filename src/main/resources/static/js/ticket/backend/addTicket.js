@@ -8,7 +8,7 @@ async function previewImages(input) {
     // 檢查加入新圖後是否會超過 8 張上限
     if (uploadedFiles.length + input.files.length > MAX_IMAGES) {
         alert(`圖片數量超過上限！最多只能上傳 ${MAX_IMAGES} 張圖片，您目前已選 ${uploadedFiles.length} 張。`);
-        input.value = ''; 
+        input.value = '';
         return;
     }
 
@@ -19,13 +19,13 @@ async function previewImages(input) {
         const dataUrl = await readFileAsDataURL(file);
         uploadedFiles.push(file);
         // 抓取物件當前在陣列的最新位置，並直接掛到舊圖尾端
-        const currentIndex = uploadedFiles.length - 1; 
+        const currentIndex = uploadedFiles.length - 1;
         const previewElement = createPreviewDOM(file, dataUrl, currentIndex);
         container.appendChild(previewElement);
     }
 
     updateUploadCount();
-    input.value = ''; 
+    input.value = '';
 }
 
 // 將 FileReader 包裝成 Promise 的同步序列
@@ -53,7 +53,7 @@ function createPreviewDOM(file, src, index) {
     deleteBtn.title = '刪除此圖片';
 
     // 點擊刪除按鈕事件
-    deleteBtn.onclick = function() {
+    deleteBtn.onclick = function () {
         const realIndex = uploadedFiles.indexOf(file);
         if (realIndex !== -1) {
             uploadedFiles.splice(realIndex, 1);
@@ -77,7 +77,7 @@ function updateUploadCount() {
 }
 
 // 表單送出攔截與驗證
-document.getElementById('ticketForm').addEventListener('submit', function(e) {
+document.getElementById('ticketForm').addEventListener('submit', function (e) {
     let hasError = false;
     let firstErrorElement = null;
 
@@ -190,7 +190,7 @@ document.getElementById('ticketForm').addEventListener('submit', function(e) {
 });
 
 // 清除所有前端與後端錯誤狀態的事件監聽
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById('ticketForm');
     if (!form) return;
 
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // 清除後端錯誤
             const serverErrors = document.querySelectorAll('.server-error-' + el.name);
             serverErrors.forEach(msg => msg.style.display = 'none');
-            
+
             // 清除前端錯誤
             el.classList.remove('is-invalid');
             const clientErrorEl = document.getElementById(el.id + 'Error');
@@ -243,10 +243,85 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // 清空
 function resetForm() {
-    if(confirm("確定要重設表單內容與清除所有已選圖片嗎？")) {
+    if (confirm("確定要重設表單內容與清除所有已選圖片嗎？")) {
         document.getElementById('ticketForm').reset();
         uploadedFiles = [];
         document.getElementById('previewContainer').innerHTML = '';
         document.getElementById('uploadCountText').innerText = `(目前 0/${MAX_IMAGES} 張)`;
     }
 }
+
+// Demo 資料填入
+function fillDemoData() {
+    // 門票名稱
+    const ticketName = document.getElementById('ticketName');
+    if (ticketName) {
+        ticketName.value = "袖珍博物館門票";
+        ticketName.dispatchEvent(new Event('input'));
+    }
+
+    // 門票狀態 (預設上架)
+    const ticketStatus = document.getElementById('ticketStatus');
+    if (ticketStatus) {
+        ticketStatus.value = "1";
+        ticketStatus.dispatchEvent(new Event('change'));
+    }
+
+    // 門票分類 (勾選藝文場所跟公共藝術)
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][name="ticketCategories"]');
+    let checkedAny = false;
+    checkboxes.forEach(cb => {
+        const label = document.querySelector(`label[for="${cb.id}"]`);
+        if (label) {
+            const labelText = label.textContent.trim();
+            if (labelText.includes("藝文館所") || labelText.includes("公共藝術")) {
+                cb.checked = true;
+                checkedAny = true;
+            } else {
+                cb.checked = false;
+            }
+        } else {
+            cb.checked = false;
+        }
+        cb.dispatchEvent(new Event('change'));
+    });
+
+    // 如果沒有這兩個分類，預設勾選第一個
+    if (!checkedAny && checkboxes.length > 0) {
+        checkboxes[0].checked = true;
+        checkboxes[0].dispatchEvent(new Event('change'));
+    }
+
+    // 景點地址
+    const ticketAddress = document.getElementById('ticketAddress');
+    if (ticketAddress) {
+        ticketAddress.value = "台北市中山區建國北路一段96號B1";
+        ticketAddress.dispatchEvent(new Event('input'));
+    }
+
+    // 門票詳細描述
+    const ticketDescription = document.getElementById('ticketDescription');
+    if (ticketDescription) {
+        ticketDescription.value = "【袖珍博物館】\n袖珍博物館是亞洲第一座專門收藏當代袖珍藝術品的博物館，擁有許多精緻的娃娃屋與縮小比例模型，帶您走進奇幻的縮小世界。\n\n【使用須知】\n1. 請於入場前至入口處出示 QR code 進行核銷。\n2. 門票僅限單次使用，一旦出園即失效。\n3. 館內禁止飲食及觸摸展品，拍照請勿使用閃光燈。";
+        ticketDescription.dispatchEvent(new Event('input'));
+    }
+
+    // 票價設定
+    const prices = {
+        'adultOriginalPrice': '250',
+        'adultPrice': '200',
+        'childOriginalPrice': '150',
+        'childPrice': '120',
+        'concessionOriginalPrice': '200',
+        'concessionPrice': '160'
+    };
+
+    for (const [id, val] of Object.entries(prices)) {
+        const input = document.getElementById(id);
+        if (input) {
+            input.value = val;
+            input.dispatchEvent(new Event('input'));
+        }
+    }
+}
+
