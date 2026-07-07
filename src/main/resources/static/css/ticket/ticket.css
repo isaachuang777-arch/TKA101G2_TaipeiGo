@@ -29,7 +29,7 @@ body {
 }
 
 .category-section-title i {
-    color: #ff5722; 
+    color: #ff5722;
     font-size: 30px;
 }
 
@@ -45,11 +45,12 @@ body {
     overflow-x: auto;
     padding-top: 10px;
     padding-bottom: 10px;
-    scrollbar-width: none; 
+    scrollbar-width: none;
     -ms-overflow-style: none;
     scroll-behavior: smooth;
     width: 100%;
 }
+
 .category-scroll-container::-webkit-scrollbar {
     display: none;
 }
@@ -64,7 +65,7 @@ body {
     background: white;
     border: 1px solid #f0f0f0;
     border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     font-size: 14px;
     color: #666;
     cursor: pointer;
@@ -74,7 +75,7 @@ body {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease-in-out; 
+    transition: all 0.3s ease-in-out;
 }
 
 .category-carousel-wrapper:hover .scroll-btn:not(.bound-hidden) {
@@ -85,11 +86,17 @@ body {
 .scroll-btn:hover {
     background: #f8f9fa;
     color: #333;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     transform: translateY(-50%) scale(1.05);
 }
-.left-btn { left: -18px; }
-.right-btn { right: -18px; }
+
+.left-btn {
+    left: -18px;
+}
+
+.right-btn {
+    right: -18px;
+}
 
 
 .category-item {
@@ -97,20 +104,20 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 110px;        
-    max-width: 140px;        
-    padding: 12px 14px;      
+    min-width: 110px;
+    max-width: 140px;
+    padding: 12px 14px;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    flex-shrink: 0;          
-    white-space: nowrap;     
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .category-item:hover {
-    border-color: #ff5b00; 
+    border-color: #ff5b00;
     box-shadow: 0 4px 12px rgba(255, 91, 0, 0.1);
     transform: translateY(-2px);
 }
@@ -124,9 +131,9 @@ body {
     font-size: 13px;
     font-weight: 500;
     color: #555555;
-    width: 100%;           
+    width: 100%;
     text-align: center;
-    overflow: hidden;     
+    overflow: hidden;
     text-overflow: ellipsis;
 }
 
@@ -187,7 +194,7 @@ body {
 }
 
 .ticket-card:hover .ticket-image-box img {
-    transform: scale(1.05); 
+    transform: scale(1.05);
 }
 
 /* 文字訊息區塊 */
@@ -232,8 +239,8 @@ body {
 }
 
 .ticket-tag {
-    background: #fff4ed; 
-    color: #ff5b00; 
+    background: #fff4ed;
+    color: #ff5b00;
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 12px;
@@ -265,7 +272,7 @@ body {
 
 .current-price strong {
     font-size: 18px;
-    color: #ff5b00; 
+    color: #ff5b00;
     font-weight: 800;
 }
 
@@ -286,3 +293,18 @@ body {
     text-align: center;
 }
 
+/* 已售完標籤覆蓋在圖片右上角 */
+.sold-out-badge-on-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #757575;
+    /* 灰色 */
+    color: #ffffff;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    border-bottom-left-radius: 12px;
+    z-index: 2;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.15);
+}
