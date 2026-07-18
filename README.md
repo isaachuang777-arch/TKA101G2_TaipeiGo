@@ -6,19 +6,21 @@ TaipeiGo 是一個基於 Spring Boot 開發的線上票券與活動預訂平台�
 專案主要模組劃分如下：
 * `com.taipeigo.activity`: 活動模組
 * `com.taipeigo.admin`: 後台管理員功能(包括管理員更改個人密碼以及 管理員管理中心) - (後台: 魏美雪)
-* `com.taipeigo.auth`: 前台登入與安全攔截
+* `com.taipeigo.auth`: 前台登入、註冊與帳號驗證 - (前台：李俊霖)
+* `com.taipeigo.auth.controller.BackendAuthController`: 後台登入頁面與登入狀態導向 - (後台：魏美雪)
 * `com.taipeigo.backend`: 後台通用邏輯或頁面
-* `com.taipeigo.backend.security`身分驗證與安全攔截 (Spring Security) - (後台:魏美雪)
+* `com.taipeigo.backend.controller`: 後台首頁（Dashboard） - (後台：李俊霖)
+* `com.taipeigo.backend.security`: 身分驗證與安全攔截 (Spring Security) - (後台:魏美雪)
 * `com.taipeigo.cart`: 購物車邏輯
 * `com.taipeigo.checkout`: 結帳邏輯
 * `com.taipeigo.common`: 共用工具或常數定義
 * `com.taipeigo.config`: 系統配置與設定
 * `com.taipeigo.cs`: 客服系統模組  - (前後台:魏美雪)
-* `com.taipeigo.customer`: 前台會員功能
+* `com.taipeigo.customer`: 前台會員功能與後台會員管理 - (前後台：李俊霖)
 * `com.taipeigo.faq`: 常見問題模組  - (前台:魏美雪) (後台:李俊霖)
-* `com.taipeigo.favorite`: 我的收藏功能
-* `com.taipeigo.frontend`: 前台通用邏輯或頁面
-* `com.taipeigo.myticket`: 個人票券夾管理
+* `com.taipeigo.favorite`: 我的最愛功能 - (前台：李俊霖)
+* `com.taipeigo.frontend.filter`: 前台登入攔截與頁面導向 - (前台：李俊霖)
+* `com.taipeigo.myticket`: 個人票券夾管理 - (前台：李俊霖)
 * `com.taipeigo.order`: 訂單管理
 * `com.taipeigo.orders`: 歷史訂單管理
 * `com.taipeigo.product`: 產品模組
@@ -47,7 +49,7 @@ TaipeiGo 是一個基於 Spring Boot 開發的線上票券與活動預訂平台�
 * **Backend**: Java 17, Spring Boot, Spring Data JPA, Hibernate, Lombok
 * **Security**: Spring Security (專門應用於後台管理系統的安全防護)
 * **Frontend**: Thymeleaf, Bootstrap, JSTL, HTML/CSS/JS
-* **Database**: MySQL 8.x, Redis (用於前台購物車)
+* **Database**: MySQL 8.x, Redis (用於前台購物車、Email 驗證與重設密碼 Token)
 * **Others**: JavaMail (Gmail SMTP 寄信服務), JSON/Gson, Maven
 
 
