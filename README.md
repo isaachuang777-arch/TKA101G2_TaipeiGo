@@ -11,8 +11,8 @@ TaipeiGo 是一個基於 Spring Boot 開發的線上票券與活動預訂平台�
 * `com.taipeigo.backend`: 後台通用邏輯或頁面
 * `com.taipeigo.backend.controller`: 後台首頁（Dashboard） - (後台：李俊霖)
 * `com.taipeigo.backend.security`: 身分驗證與安全攔截 (Spring Security) - (後台:魏美雪)
-* `com.taipeigo.cart`: 購物車邏輯
-* `com.taipeigo.checkout`: 結帳邏輯
+* `com.taipeigo.cart`: 購物車功能(CRUD, 確認庫存API) - (前台:黃依甯)
+* `com.taipeigo.checkout`: 結帳功能(付款後新增訂單API, 結帳前確認庫存API, 刪除無庫存API) - (前台:黃依甯)
 * `com.taipeigo.common`: 共用工具或常數定義
 * `com.taipeigo.config`: 系統配置與設定
 * `com.taipeigo.cs`: 客服系統模組  - (前後台:魏美雪)
@@ -21,8 +21,8 @@ TaipeiGo 是一個基於 Spring Boot 開發的線上票券與活動預訂平台�
 * `com.taipeigo.favorite`: 我的最愛功能 - (前台：李俊霖)
 * `com.taipeigo.frontend.filter`: 前台登入攔截與頁面導向 - (前台：李俊霖)
 * `com.taipeigo.myticket`: 個人票券夾管理 - (前台：李俊霖)
-* `com.taipeigo.order`: 訂單管理
-* `com.taipeigo.orders`: 歷史訂單管理
+* `com.taipeigo.orders`: 訂單管理功能(前台:會員訂單及訂單明細查詢API, 後台:訂單及訂單明細查詢API, 訂單編號查詢API, 會員編號查詢API, 更新訂單狀態API) - (前台/後台:黃依甯)
+* `com.taipeigo.order_detail`: 訂單明細功能(訂單明細查詢)- (後台:黃依甯)
 * `com.taipeigo.product`: 產品模組
 * `com.taipeigo.ticket`: 票券模組
 * `com.taipeigo.ticketcategory`: 票券類別模組
