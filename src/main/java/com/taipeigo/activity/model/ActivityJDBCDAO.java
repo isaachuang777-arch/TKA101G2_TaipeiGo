@@ -2,7 +2,10 @@ package com.taipeigo.activity.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Collections;
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,19 +27,25 @@ public class ActivityJDBCDAO {
     @SuppressWarnings("null")
     public List<ActivityVO> getSearch(MultiValueMap<String, String> map, boolean isFrontend) {
 
-        // String[]複合查詢核心之一，一個key有多個vaule，尤其多個checkbox
+        // 避免JOIN來JOIN去浪費效能，這邊還是乖乖寫個判斷式
 
-        // join 一日活動明細以及票券
-        StringBuilder sql = new StringBuilder(
+        // 確保前端的keyword進來不是空的
+        boolean needJoin = map.containsKey("keyword") && map.get("keyword").get(0).trim().length() > 0;
 
-                "SELECT DISTINCT a.* FROM ACTIVITY a " +
-                "JOIN ACTIVITY_DETAIL ad ON a.ACTIVITY_ID = ad.ACTIVITY_ID " +
-                "JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID " +
-                "LEFT JOIN ACTIVITY_CATE_INFO aci ON a.ACTIVITY_ID = aci.ACTIVITY_ID " +
-                "LEFT JOIN ACTIVITY_CATE ac ON aci.ACTIVITY_CATE_ID = ac.ACTIVITY_CATE_ID " +
+        StringBuilder sql = new StringBuilder("SELECT DISTINCT a.* FROM ACTIVITY a ");
 
-                "WHERE 1=1 "
-            );
+        // 如果前端 keyword 有傳進來，再用判斷式去join
+
+        if(needJoin) {
+
+            sql.append("JOIN ACTIVITY_DETAIL ad ON a.ACTIVITY_ID = ad.ACTIVITY_ID ")
+               .append("JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID ")
+               .append("LEFT JOIN ACTIVITY_CATE_INFO aci ON a.ACTIVITY_ID = aci.ACTIVITY_ID")
+               .append("LEFT JOIN ACTIVITY_CATE ac ON aci.ACTIVITY_CATE_ID = ac.ACTIVITY_CATE_ID ");
+        }
+
+        sql.append("WHERE 1=1 ");
+
 
         List<Object> args = new ArrayList<>();
 
@@ -132,59 +141,70 @@ public class ActivityJDBCDAO {
         args.add(offset);
         
 
-        // 先把搜尋節果活動暫存在一個 list 裡面，包含之前的分頁
+        // 先把搜尋節果活動暫存在一個 list 裡面
         BeanPropertyRowMapper<ActivityVO> bpr = new BeanPropertyRowMapper<ActivityVO>(ActivityVO.class);
 
         List<ActivityVO> list = jdbcTemplate.query(sql.toString(), bpr, args.toArray());
 
-        for (ActivityVO act : list) {
-
-            String imgSql = "SELECT ACTIVITY_IMAGE_SRC FROM ACTIVITY_IMAGE WHERE ACTIVITY_ID = ?";
-
-            // jdbcTemplate 執行這段 SQL，回傳一個img的字串清單
-
-            List<String> imgs = jdbcTemplate.queryForList(imgSql, String.class, act.getActivityId());
-
-            if (!imgs.isEmpty()) {
-
-                List<ActivityImageVO> imgList = new ArrayList<>();
-
-                for (String imgSrc : imgs) {
-                    ActivityImageVO imgVO = new ActivityImageVO();
-                    imgVO.setActivityImageSrc(imgSrc);
-                    imgList.add(imgVO);
-                }
-
-                act.setActivityImage(imgList);
-            }
-
-            // 計算三種票價：找出這個活動所有綁定的門票，分別加總，再扣掉活動本身的折扣
-
-            String priceSql = "SELECT " +
-                    "COALESCE(SUM(t.ADULT_PRICE),0) AS ADULT_TOTAL, " +
-                    "COALESCE(SUM(t.ADULT_ORIGINAL_PRICE),0) AS ADULT_ORIGINAL_TOTAL," +
-                    "COALESCE(SUM(t.CHILD_PRICE), 0) AS CHILD_TOTAL, " +
-                    "COALESCE(SUM(t.CONCESSION_PRICE), 0) AS CONCESSION_TOTAL " +
-                    "FROM ACTIVITY_DETAIL ad " +
-                    "JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID " +
-                    "WHERE ad.ACTIVITY_ID = ?";
-
-            jdbcTemplate.query(priceSql, rs -> {
-                int discount = act.getDiscount() != null ? act.getDiscount() : 0;
-
-                int adultFinal = rs.getInt("ADULT_TOTAL") - discount;
-                int adultOriginalFinal = rs.getInt("ADULT_ORIGINAL_TOTAL");
-                int childFinal = rs.getInt("CHILD_TOTAL") - discount;
-                int concessionFinal = rs.getInt("CONCESSION_TOTAL") - discount;
-
-                // 確保價格不會變負數，若折扣過多則保底收取 30 元手續費
-                act.setAdultPrice(adultFinal <= 0 ? 30 : adultFinal);
-                act.setAdultOriginalPrice(adultOriginalFinal);
-                act.setChildPrice(childFinal <= 0 ? 30 : childFinal);
-                act.setConcessionPrice(concessionFinal <= 0 ? 30 : concessionFinal);
-
-            }, act.getActivityId());
+        //一日活動如果沒東西直接return這個查詢結果
+        if(list.isEmpty()){
+            return list;
         }
+
+        Map<Integer, ActivityVO> activityMap = new HashMap<>();
+        List<Integer> activityId = new ArrayList<>();
+
+
+        for(ActivityVO actVO : list){
+            activityMap.put(actVO.getActivityId(), actVO);
+            activityId.add(actVO.getActivityId());
+            actVO.setActivityImage(new ArrayList<>());
+        }
+
+        // 產生跟activityId一樣多的"?"
+        String joinSql = String.join(",", Collections.nCopies(activityId.size(), "?"));
+
+        // 一次把這頁所有活動的圖片拿回來
+        String imgSql = "SELECT ACTIVITY_ID, ACTIVITY_IMAGE_SRC FROM ACTIVITY_IMAGE WHERE ACTIVITY_ID IN (" + joinSql + ")";
+
+        jdbcTemplate.query(imgSql, rs -> {
+            Integer actId = rs.getInt("ACTIVITY_ID");
+            String src = rs.getString("ACTIVITY_IMAGE_SRC");
+
+            ActivityImageVO imgVO = new ActivityImageVO();
+            imgVO.setActivityImageSrc(src);
+
+            // 用map找到對應的 activityVO 會比較快，在把圖片路徑塞進去
+
+            activityMap.get(actId).getActivityImage().add(imgVO);
+            
+        }, activityId.toArray());
+
+
+        String priceSql = "SELECT ad.ACTIVITY_ID, " +
+                          "COALESCE(SUM(t.ADULT_PRICE),0) AS ADULT_TOTAL, " +
+                          "COALESCE(SUM(t.ADULT_ORIGINAL_PRICE),0) AS ADULT_ORIGINAL_TOTAL, " +
+                          "COALESCE(SUM(t.CHILD_PRICE), 0) AS CHILD_TOTAL, " +
+                          "COALESCE(SUM(t.CONCESSION_PRICE), 0) AS CONCESSION_TOTAL " +
+                          "FROM ACTIVITY_DETAIL ad " +
+                          "JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID " +
+                          "WHERE ad.ACTIVITY_ID IN (" + joinSql + ") " +
+                          "GROUP BY ad.ACTIVITY_ID";
+
+        jdbcTemplate.query(priceSql, rs -> {
+            Integer actId = rs.getInt("ACTIVITY_ID");
+            ActivityVO act = activityMap.get(actId);
+            
+            int discount = act.getDiscount() != null ? act.getDiscount() : 0;
+            int adultFinal = rs.getInt("ADULT_TOTAL") - discount;
+            int childFinal = rs.getInt("CHILD_TOTAL") - discount;
+            int concessionFinal = rs.getInt("CONCESSION_TOTAL") - discount;
+
+            act.setAdultPrice(adultFinal <= 0 ? 30 : adultFinal);
+            act.setAdultOriginalPrice(rs.getInt("ADULT_ORIGINAL_TOTAL"));
+            act.setChildPrice(childFinal <= 0 ? 30 : childFinal);
+            act.setConcessionPrice(concessionFinal <= 0 ? 30 : concessionFinal);
+        }, activityId.toArray());
 
         return list;
 

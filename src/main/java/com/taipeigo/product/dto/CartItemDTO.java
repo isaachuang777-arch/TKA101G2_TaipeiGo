@@ -16,7 +16,7 @@ public class CartItemDTO implements Serializable {
     private String imageUrl;           // 購物車上的顯示縮圖
     
     private Integer subtotal;           // 小計 (單價 * 數量)
-    private LocalDateTime expiryDate;   // 票券到期日 (如果是活動，這個欄位就
+    private LocalDateTime expiryDate;   // 票券到期日 
     private String spec;                // 記錄票種用的 - 成人票兒童票之類的
 
     public CartItemDTO() {
