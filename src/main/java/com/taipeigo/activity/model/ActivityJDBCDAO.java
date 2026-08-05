@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.MultiValueMap;
 
+
 @Repository
 public class ActivityJDBCDAO {
 
@@ -40,7 +41,7 @@ public class ActivityJDBCDAO {
 
             sql.append("JOIN ACTIVITY_DETAIL ad ON a.ACTIVITY_ID = ad.ACTIVITY_ID ")
                .append("JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID ")
-               .append("LEFT JOIN ACTIVITY_CATE_INFO aci ON a.ACTIVITY_ID = aci.ACTIVITY_ID")
+               .append("LEFT JOIN ACTIVITY_CATE_INFO aci ON a.ACTIVITY_ID = aci.ACTIVITY_ID ")
                .append("LEFT JOIN ACTIVITY_CATE ac ON aci.ACTIVITY_CATE_ID = ac.ACTIVITY_CATE_ID ");
         }
 
@@ -130,6 +131,8 @@ public class ActivityJDBCDAO {
 
         sql.append(" ORDER BY a.ACTIVITY_ID DESC ");
 
+
+        //一頁五筆資料
         int pageSize = map.containsKey("pageSize") ? Integer.parseInt(map.get("pageSize").get(0)) : 5;
 
         int currentPage = map.containsKey("page") ? Integer.parseInt(map.get("page").get(0)) : 1;
@@ -211,21 +214,28 @@ public class ActivityJDBCDAO {
     }
 
     //算總頁數的方法，反正只給後台用就把前後台判斷拿掉
-    public int getTotalPage(MultiValueMap<String, String> map){
+    public int getTotalPage(MultiValueMap<String, String> map, boolean isFrontend){
 
-        int pageSize = map.containsKey("pageSize") ? Integer.parseInt(map.get("pageSize").get(0)) : 6;
+        int pageSize = map.containsKey("pageSize") ? Integer.parseInt(map.get("pageSize").get(0)) : 5;
 
-        StringBuilder sql = new StringBuilder(
+        boolean needJoin = map.containsKey("keyword") && map.get("keyword").get(0).trim().length() > 0;
 
-            "SELECT COUNT(DISTINCT a.ACTIVITY_ID) FROM ACTIVITY a " +
-            "JOIN ACTIVITY_DETAIL ad ON a.ACTIVITY_ID = ad.ACTIVITY_ID " +
-            "JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID " +
-            "LEFT JOIN ACTIVITY_CATE_INFO aci ON a.ACTIVITY_ID = aci.ACTIVITY_ID " +
-            "LEFT JOIN ACTIVITY_CATE ac ON aci.ACTIVITY_CATE_ID = ac.ACTIVITY_CATE_ID " +
+        StringBuilder sql = new StringBuilder("SELECT COUNT(DISTINCT a.ACTIVITY_ID) FROM ACTIVITY a ");
 
-            "WHERE 1=1 "
-        );
+        if (needJoin) {
 
+            sql.append("JOIN ACTIVITY_DETAIL ad ON a.ACTIVITY_ID = ad.ACTIVITY_ID ")
+               .append("JOIN TICKET t ON ad.TICKET_ID = t.TICKET_ID ")
+               .append("LEFT JOIN ACTIVITY_CATE_INFO aci ON a.ACTIVITY_ID = aci.ACTIVITY_ID ")
+               .append("LEFT JOIN ACTIVITY_CATE ac ON aci.ACTIVITY_CATE_ID = ac.ACTIVITY_CATE_ID ");
+        }
+
+        sql.append(" WHERE 1=1 ");
+
+        if(isFrontend){
+            sql.append(" AND a.ACTIVITY_STATUS = 1 ");
+        }
+        
         List<Object> args = new ArrayList<>();
 
 

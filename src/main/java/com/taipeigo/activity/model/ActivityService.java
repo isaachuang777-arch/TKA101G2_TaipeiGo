@@ -74,6 +74,11 @@ public class ActivityService {
         return activityJDBCDAO.getSearch(map, true);
     }
 
+    public int getTotalPageByCompositeQuery(MultiValueMap<String, String> map){
+        
+        return activityJDBCDAO.getTotalPage(map, true);
+    }
+
     // -----------------後台萬用查詢-----------------
 
     public List<ActivityVO> getBackendActivitiesByCompositeQuery(MultiValueMap<String, String> map) {
@@ -81,10 +86,9 @@ public class ActivityService {
         return activityJDBCDAO.getSearch(map, false);
     }
 
-    public int getTotalPageByCompositeQuery(MultiValueMap<String, String> map){
+    public int getBackendTotalPageByCompositeQuery(MultiValueMap<String, String> map){
 
-        return activityJDBCDAO.getTotalPage(map);
-
+        return activityJDBCDAO.getTotalPage(map, false);
 
     }
 
