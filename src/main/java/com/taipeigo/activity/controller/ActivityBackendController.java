@@ -61,7 +61,7 @@ public class ActivityBackendController {
         List<ActivityVO> activityList = activityService.getBackendActivitiesByCompositeQuery(params);
 
         // 總頁數
-        int totalPage = activityService.getTotalPageByCompositeQuery(params);
+        int totalPage = activityService.getBackendTotalPageByCompositeQuery(params);
 
         //抓出算好的頁數 - 三元判斷 沒有的話就 1
         int currentPage = params.containsKey("page") ? Integer.parseInt(params.get("page").get(0)) : 1;
@@ -75,11 +75,6 @@ public class ActivityBackendController {
         long totalCount = activityService.countAllActivities();
         long onCount = activityService.countActivitiesByStatus(1);
         long offCount = activityService.countActivitiesByStatus(0);
-        System.out.println("============================================");
-        System.out.println("TOTAL ACTIVITIES: " + totalCount);
-        System.out.println("ON SHELF: " + onCount);
-        System.out.println("OFF SHELF: " + offCount);
-        System.out.println("============================================");
         
         model.addAttribute("totalActivitiesCount", totalCount);
         model.addAttribute("onShelfCount", onCount);
