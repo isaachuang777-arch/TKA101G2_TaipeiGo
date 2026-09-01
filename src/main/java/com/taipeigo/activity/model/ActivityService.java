@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +114,15 @@ public class ActivityService {
 
     // ----------------- 後臺新增 -----------------
 
+    private void validateMinimumTickets(List<Integer> ticketIds) {
+        if (ticketIds == null || ticketIds.stream().filter(Objects::nonNull).distinct().count() < 3) {
+            throw new IllegalArgumentException("一日活動至少需要三張不同門票");
+        }
+    }
+
     public void addActivity(ActivityVO activity, List<Integer> ticketIds, MultipartFile[] images, List<Integer> cateIds) {
+
+        validateMinimumTickets(ticketIds);
 
         // 組合一日活動
 
@@ -225,6 +234,8 @@ public class ActivityService {
 
     public void updateActivity(Integer activityId, ActivityVO updatedActivity,
             List<Integer> newTicketId, MultipartFile[] newImages, List<Integer> deleteImageIds, List<Integer> cateIds) {
+
+        validateMinimumTickets(newTicketId);
 
         Optional<ActivityVO> box = activityRepo.findById(activityId);
 
